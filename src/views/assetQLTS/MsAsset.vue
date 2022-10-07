@@ -29,15 +29,15 @@
     </div>
   </div>
 
-  <ms-grid :columns="columns" :allData="dt" ref="abc"> </ms-grid>
+  <ms-grid :columns="columns" :allData="allData" ref="abc"> </ms-grid>
 </template>
 <script>
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
-import { getCurrentInstance, ref } from "vue";
-
+import { getCurrentInstance, onMounted, ref } from "vue";
+import assetAPI from "@/apis/api/assetAPI.js";
 export default {
   name: "MsAsset",
   components: {
@@ -55,10 +55,16 @@ export default {
       this.isShowPopup = false;
     },
   },
-  setup() {
+  async setup() {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
 
+    onMounted(async () => {
+      let res = await assetAPI.get("AssetGetAll", {});
+      // console.log(res?.Data);
+      proxy.allData.value = res?.Data;
+      console.log(allData);
+    });
     const columns = ref([
       {
         field: "selected",
@@ -141,20 +147,6 @@ export default {
     const allData = [
       {
         fixedAssetId: 1,
-        fixedAssetCode: "asd",
-        fixed_asset_name: "asd",
-        fixed_asset_category_name: "asd",
-        department_name: "asd",
-        cost: 11,
-        quantity: 1111111,
-        depreciation_rate: 111111,
-        depreciationAsset: 111111,
-      },
-    ];
-
-    const dt = [
-      {
-        fixedAssetId: 1,
         fixedAssetCode: "55H7WN72/2022",
         fixed_asset_name: "Dell Inspiron",
         fixed_asset_category_name: "Máy vi tính xách tay",
@@ -164,220 +156,11 @@ export default {
         depreciation_rate: 894000,
         depreciationAsset: 19106000,
       },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
-      {
-        fixedAssetId: 2,
-        fixedAssetCode: "MXT88618",
-        fixed_asset_name: "Máy tính xách tay Fujisu",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng thư ký",
-        cost: 1,
-        quantity: 5000000,
-        depreciation_rate: 1681020,
-        depreciationAsset: 38000000,
-      },
     ];
+
     return {
       columns,
       allData,
-      dt,
     };
   },
   data() {

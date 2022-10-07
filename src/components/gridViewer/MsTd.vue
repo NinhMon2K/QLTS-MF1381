@@ -109,4 +109,8 @@ export default {
 .td-inner {
   font-size: 13px;
 }
+input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+}
 </style>

@@ -69,7 +69,7 @@ export default {
           arrow: "",
         },
         {
-          path: "",
+          path: "/asset",
           icon: "ic-car",
           text: Resource.LeftMenu.FA,
           arrow: "ic-angle-down",
