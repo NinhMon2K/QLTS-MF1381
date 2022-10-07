@@ -5,10 +5,13 @@
     </div>
     <div class="right-header">
       <div class="organization-name header-item">Sở tài chính</div>
-      <div class="ctr-number header-item">
+      <!-- <div class="ctr-number header-item">
         <label>Năm</label>
         <input type="number" value="2022" />
-      </div>
+      </div> -->
+      <ms-input-year
+      :Lable='aa'
+      ></ms-input-year>
       <div class="tool-header">
         <div class="tool notification">
           <div class="app-icon ic-notification"></div>
@@ -32,9 +35,10 @@
   </div>
 </template>
 <script>
+  import MsInputYear from "@/components/input/MsInputYear.vue";
 export default {
   name: "TheHeader",
-  components: {},
+  components: {MsInputYear},
   data() {
     return {};
   },

@@ -101,7 +101,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-
     return {};
   },
 });

@@ -29,15 +29,17 @@
     </div>
   </div>
 
-  <ms-grid :columns="columns" :allData="allData" ref="abc"> </ms-grid>
+  <ms-grid :columns="columns" :allData="allData.value" ref="abc"> </ms-grid>
 </template>
 <script>
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
+
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import { getCurrentInstance, onMounted, ref } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
+import ResourceTable from '@/resource/dictionary/ResourceTable.js';
 export default {
   name: "MsAsset",
   components: {
@@ -45,6 +47,7 @@ export default {
     MsInput,
     MsGrid,
     MsPopupAsset,
+
   },
   methods: {
     handleClickAdd() {
@@ -58,13 +61,17 @@ export default {
   async setup() {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
-
+ 
+    
     onMounted(async () => {
       let res = await assetAPI.get("AssetGetAll", {});
       // console.log(res?.Data);
       proxy.allData.value = res?.Data;
-      console.log(allData);
+    
     });
+    const allData = [
+    
+    ];
     const columns = ref([
       {
         field: "selected",
@@ -74,61 +81,61 @@ export default {
       },
       {
         field: "fixedAssetId",
-        title: "STT",
+        title: ResourceTable.lblTableAssets.STT,
         type: "Number",
         width: 48,
       },
       {
-        field: "fixedAssetCode",
-        title: "Mã tài sản",
+        field: ResourceTable.FieldAsset.fixedAssetCode,
+        title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
         width: 150,
       },
       {
-        field: "fixed_asset_name",
-        title: "Tên tài sản",
+        field: ResourceTable.FieldAsset.fixedAssetName,
+        title:ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
         minWidth: 159,
       },
       {
-        field: "fixed_asset_category_name",
-        title: "Loại tài sản",
+        field: ResourceTable.FieldAsset.fixedAssetCategoryName,
+        title: ResourceTable.lblTableAssets.lblAssetCategoryName,
         type: "Text",
         width: 163,
       },
       {
-        field: "department_name",
-        title: "Bộ phận sử dụng",
+        field: ResourceTable.FieldDepartment.departmentName,
+        title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
         width: 178,
       },
       {
-        field: "cost",
-        title: "Số lượng",
+        field: ResourceTable.FieldAsset.quantity,
+        title: ResourceTable.lblTableAssets.lblQuantity,
         type: "Number",
         width: 98,
       },
       {
-        field: "quantity",
-        title: "Nguyên giá",
+        field: ResourceTable.FieldAsset.cost,
+        title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
         width: 97,
       },
       {
-        field: "depreciation_rate",
-        title: "HM/KH lũy kế",
+        field: ResourceTable.FieldAsset.cost*ResourceTable.FieldAsset.depreciationRate,
+        title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
         width: 118,
       },
       {
-        field: "depreciationAsset",
-        title: "Giá trị còn lại",
+        field:  ResourceTable.FieldAsset.cost-ResourceTable.FieldAsset.cost*ResourceTable.FieldAsset.depreciationRate,
+        title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
         width: 97,
       },
       {
         field: "c",
-        title: "Chức năng",
+        title: ResourceTable.Controls.FunctionControl,
         type: "Action",
         width: 83,
         action: [
@@ -144,23 +151,11 @@ export default {
       },
     ]);
 
-    const allData = [
-      {
-        fixedAssetId: 1,
-        fixedAssetCode: "55H7WN72/2022",
-        fixed_asset_name: "Dell Inspiron",
-        fixed_asset_category_name: "Máy vi tính xách tay",
-        department_name: "Phòng hành chính kế toán",
-        cost: 1,
-        quantity: 20000000,
-        depreciation_rate: 894000,
-        depreciationAsset: 19106000,
-      },
-    ];
-
+  
+    
     return {
       columns,
-      allData,
+     allData
     };
   },
   data() {

@@ -3,30 +3,22 @@
     <div class="grid-view">
       <table>
         <thead>
-          <div>
-            <tr>
-              <ms-th ref="th" v-for="col in columns" :key="col" :config="col">
-                {{ col.title }}
-              </ms-th>
-            </tr>
-          </div>
+          <tr>
+            <ms-th ref="th" v-for="col in columns" :key="col" :config="col">
+              {{ col.title }}
+            </ms-th>
+          </tr>
         </thead>
         <tbody>
-          <div>
-            <table>
-              <tbody>
-                <tr v-for="item in allData" :key="item">
-                  <ms-td
-                    v-for="col in columns"
-                    :key="col"
-                    :config="col"
-                    :value="item[col.field]"
-                  >
-                  </ms-td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <tr v-for="item in allData" :key="item">
+            <ms-td
+              v-for="col in columns"
+              :key="col"
+              :config="col"
+              :value="item[col.field]"
+            >
+            </ms-td>
+          </tr>
         </tbody>
         <tfoot>
           <tr>
@@ -67,12 +59,8 @@
                 </div>
               </div>
             </td>
-            <td style="font-size: 13px; font-weight: 700">
-              {{ allData.length }}
-            </td>
-            <td style="font-size: 13px; font-weight: 700">249.000.000</td>
-            <td style="font-size: 13px; font-weight: 700">19.716.000</td>
-            <td style="font-size: 13px; font-weight: 700">229.284.000</td>
+            <td style="font-size: 13px; font-weight: 700"> {{  allData.length }}</td>
+            <td style="font-size: 13px; font-weight: 700"></td>
             <td></td>
           </tr>
         </tfoot>
@@ -114,10 +102,13 @@ export default defineComponent({
   },
 
   setup(props) {
-    const handleCost = (allData) => {
+
+    const handleCost = (allData)=> {
+
       let a = 0;
-      a = allData.columns;
-    };
+      a = allData.columns
+      
+    }
   },
 });
 </script>
