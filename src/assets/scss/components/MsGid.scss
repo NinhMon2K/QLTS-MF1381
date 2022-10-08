@@ -1,18 +1,22 @@
 /* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
+// ::-webkit-scrollbar {
+//   width: 20px;
+// }
 
 /* Track */
 ::-webkit-scrollbar-track {
   border-radius: 4px;
-  background: #d1dae9;
+  background: #fff;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #abb6c8;
+  background: red;
   border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
 }
 
 .table {
@@ -22,9 +26,7 @@
   height: 630px;
   overflow: auto;
 }
-thead {
-  border-bottom: 1px solid #e9ebee;
-}
+
 .row--selected {
   background-color: rgba(26, 164, 200, 0.2);
 }
@@ -37,46 +39,60 @@ table {
   border-top-left-radius: 3.5px;
   border-top-right-radius: 3.5px;
   position: relative;
-}
+  thead {
+    border-bottom: 1px solid #e9ebee;
+    position: sticky;
+    top: 0;
+    background-color: #f5f5f5;
+    border-top-left-radius: 3.5px;
+    border-top-right-radius: 3.5px;
+    tr {
+      width: 100%;
+      height: 40px;
+      border-bottom: 1px solid #9e9e9e;
+      box-sizing: border-box;
+      cursor: pointer;
 
-thead {
-  position: sticky;
-  top: 0;
-  background-color: #f5f5f5;
-  border-top-left-radius: 3.5px;
-  border-top-right-radius: 3.5px;
-}
-
-thead tr {
-  height: 38px;
-}
-
-tbody tr {
-  height: 40px;
-  border-bottom: 1px solid #e9ebee;
-}
-
-tbody tr:hover {
-  background-color: rgba(26, 164, 200, 0.2);
-}
-
-tfoot {
-  position: sticky;
-  bottom: 0;
-  background-color: #ffffff;
+      td {
+        padding: 0;
+        position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+  }
+  tbody {
+    flex: 1;
+    table-layout: fixed;
+    tr {
+      height: 38px;
+      border-bottom: 1px solid #e9ebee;
+      &:hover {
+        background-color: rgba(26, 164, 200, 0.2);
+      }
+      &:focus,
+      &:focus-within,
+      &:active {
+        background-color: rgba(26, 164, 200, 0.2);
+      }
+    }
+  }
+  tfoot {
+    position: sticky;
+    bottom: 0;
+    background-color: #ffffff;
+    height: 40px;
+    border-bottom-left-radius: 3.5px;
+    border-bottom-right-radius: 3.5px;
+  }
 }
 
 .table-function {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-}
-
-tfoot {
-  height: 40px;
-  background-color: #ffffff;
-  border-bottom-left-radius: 3.5px;
-  border-bottom-right-radius: 3.5px;
 }
 
 tfoot::before {
@@ -236,7 +252,7 @@ th {
 }
 /* scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
   position: fixed;
 }
 ::-webkit-scrollbar-thumb {
@@ -245,22 +261,25 @@ th {
 }
 
 ::-webkit-scrollbar-track {
-  /* display: none; */
+  display: none;
+}
+thead:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  //border-bottom: 1px solid #9e9e9e;
 }
 
 tbody {
-  flex: 1;
-  table-layout: fixed;
-  // overflow: auto;
-  tr {
-    height: 39px;
+  width: 100%;
+  height: calc(100% - 38px);
 
-    td {
-      position: relative;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: normal;
-      word-break: break-word;
-    }
+  tr:hover,
+  tr:focus,
+  tr:active,
+  tr:focus-within {
+    background-color: #d1edf4;
   }
 }

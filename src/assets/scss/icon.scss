@@ -11,6 +11,9 @@
 @mixin commonApp() {
   background-image: url("../images/icons/qlts-icon.svg");
 }
+@mixin commonAppDropDown() {
+  background-image: url("../images/icons/icons8-v-24.png");
+}
 .app-icon {
   @include commonApp();
   @include setSquare(24);
@@ -127,7 +130,7 @@
     background-position: -460px -107px;
   }
   &.ic-fillter {
-    background-position: -240px -64px;
+    background-position: -239px -64px;
   }
   &.ic-date {
     background-position: -287px -67px;
@@ -150,6 +153,17 @@
   }
   &.ic-angle-right {
     background-position: -64px -240px;
+  }
+  &.ic-angle_down {
+    @include setSquare(8);
+    background-position: -205px -341px;
+  }
+  &.ic-angle_up {
+    @include setSquare(8);
+    background-position: -205px -330px;
+  }
+  &.ic-dropdown{
+    @include commonAppDropDown();
   }
 }
 

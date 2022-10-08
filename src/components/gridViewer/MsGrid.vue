@@ -59,8 +59,18 @@
                 </div>
               </div>
             </td>
-            <td style="font-size: 13px; font-weight: 700"> {{  allData.length }}</td>
-            <td style="font-size: 13px; font-weight: 700"></td>
+            <td style="font-size: 13px; font-weight: 700">
+              {{ allData.length }}
+            </td>
+            <td style="font-size: 13px; font-weight: 700">
+              {{ allData.length }}
+            </td>
+            <td style="font-size: 13px; font-weight: 700">
+              {{ allData.length }}
+            </td>
+            <td style="font-size: 13px; font-weight: 700">
+              {{ allData.length }}
+            </td>
             <td></td>
           </tr>
         </tfoot>
@@ -102,13 +112,10 @@ export default defineComponent({
   },
 
   setup(props) {
-
-    const handleCost = (allData)=> {
-
+    const handleCost = (allData) => {
       let a = 0;
-      a = allData.columns
-      
-    }
+      a = allData.columns;
+    };
   },
 });
 </script>

@@ -65,7 +65,10 @@
           flex: 1;
           padding-left: 10px;
         }
-        &:hover {
+        &:hover,
+        &:active,
+        &:focus,
+        &:focus-within {
           background-color: #1aa4c8;
         }
       }

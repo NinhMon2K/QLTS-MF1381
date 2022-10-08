@@ -39,7 +39,14 @@
 //import { getCurrentInstance } from "vue";
 import Resource from "./../../resource/dictionary/Resource.js";
 import { collapsed, sideBarWidth } from "./../../commons/state.js";
-import { ref } from "vue";
+import {
+  computed,
+  getCurrentInstance,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 
 export default {
   name: "LeftMenu",
@@ -52,9 +59,42 @@ export default {
       return this.getMenuItems();
     },
   },
-  setup() {
-    //  const { proxy } = getCurrentInstance();
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
 
+    const cancelEvent = (e) => {
+      if (e) {
+        if (typeof e.preventDefault === "function") {
+          e.preventDefault();
+        }
+        if (typeof e.stopPropagation === "function") {
+          e.stopPropagation();
+        }
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
+      }
+    };
+
+    const Listsioner = computed(() => {
+      const me = this;
+      return {
+        click: (event) => {
+          cancelEvent(event);
+        },
+        mousedown: (event) => {
+          cancelEvent(event);
+        },
+        keydown: (event) => {
+          cancelEvent(event);
+          emit("keydown", event);
+        },
+        focus: (event) => {
+          cancelEvent(event);
+          emit("keydown", event);
+        },
+      };
+    });
     const collapsed = ref(false);
     const toggleSideBar = () => {
       collapsed.value = !collapsed.value;
@@ -113,6 +153,7 @@ export default {
       collapsed,
       toggleSideBar,
       sideBarWidth,
+      Listsioner,
     };
   },
 };

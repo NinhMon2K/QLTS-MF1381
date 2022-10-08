@@ -4,7 +4,7 @@ export default {
         lblAssetCode:'Mã tài sản',
         lblAssetName:'Tên tài sản',
         lblAssetCategoryName:'Loại tài sản',
-        lblDepartmentName:'Bộ phận sử dụng"',
+        lblDepartmentName:'Bộ phận sử dụng',
         lblQuantity:'Số lượng',
         lblCost:'Nguyên giá',
         lblAccumulated:'HM/KH lũy kế',
@@ -14,6 +14,7 @@ export default {
       FunctionControl: "Chức năng",
     },
     FieldAsset: {
+        STT:'STT',
         fixedAssetId:'fixed_asset_id',
         fixedAssetCode:'fixed_asset_code',
         fixedAssetName:'fixed_asset_name',

@@ -10,8 +10,11 @@
         <input type="number" value="2022" />
       </div> -->
       <ms-input-year
-      :Lable='aa'
-      ></ms-input-year>
+        label="Năm"
+        topIcon="ic-angle_up"
+        bottomIcon="ic-angle_down"
+      >
+      </ms-input-year>
       <div class="tool-header">
         <div class="tool notification">
           <div class="app-icon ic-notification"></div>
@@ -35,10 +38,10 @@
   </div>
 </template>
 <script>
-  import MsInputYear from "@/components/input/MsInputYear.vue";
+import MsInputYear from "@/components/input/MsInputYear.vue";
 export default {
   name: "TheHeader",
-  components: {MsInputYear},
+  components: { MsInputYear },
   data() {
     return {};
   },

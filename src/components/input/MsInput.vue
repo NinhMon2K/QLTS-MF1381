@@ -5,7 +5,7 @@
       <span v-if="hasInput">*</span>
     </label>
     <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
-      <div class="iconFilter">
+      <div class="icon-filter">
         <span
           :class="[
             'app-icon icon--left',
@@ -32,7 +32,9 @@
         v-if="rightIcon"
       ></div>
     </div>
-    <span class="error-message">{{message ? message : ''}}</span>
+    <span v-if="disabledMessage" class="error-message">{{
+      message ? message : ""
+    }}</span>
   </div>
 </template>
 <script>
@@ -74,6 +76,10 @@ export default defineComponent({
       default: false,
       type: Boolean,
     },
+    disabledMessage: {
+      default: false,
+      type: Boolean,
+    },
     customWarring: {
       default: null,
       type: Object,
@@ -94,13 +100,14 @@ export default defineComponent({
       default: null,
       type: String,
     },
-    message:{
+    message: {
       default: null,
       type: String,
-    }
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+
     return {};
   },
 });

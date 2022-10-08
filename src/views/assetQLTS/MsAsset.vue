@@ -3,11 +3,20 @@
     <div class="toobar-left">
       <ms-input
         :hasLabel="false"
-        leftIcon="ic-search "
+        leftIcon="ic-search"
         id="txt-search"
         :radius="true"
         placeholder="Tìm kiếm tài sản"
+        :disabledMessage="false"
       ></ms-input>
+      <ms-drop-down
+        leftIcon="ic-fillter"
+        valueField="value"
+        displayField="display"
+        rightIcon="ic-angle-downs"
+        placeholder="Loại tài sản"
+        :datax="comboData"
+      ></ms-drop-down>
     </div>
     <div class="toolbar-right">
       <ms-button
@@ -37,9 +46,10 @@ import MsInput from "@/components/input/MsInput.vue";
 
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
+import MsDropDown from "@/components/dropdown/MsDropDown.vue";
 import { getCurrentInstance, onMounted, ref } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
-import ResourceTable from '@/resource/dictionary/ResourceTable.js';
+import ResourceTable from "@/resource/dictionary/ResourceTable.js";
 export default {
   name: "MsAsset",
   components: {
@@ -47,7 +57,7 @@ export default {
     MsInput,
     MsGrid,
     MsPopupAsset,
-
+    MsDropDown,
   },
   methods: {
     handleClickAdd() {
@@ -57,21 +67,36 @@ export default {
     close() {
       this.isShowPopup = false;
     },
+    hanhdleAccumulated() {},
   },
   async setup() {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
- 
-    
+    const allData = ref([]);
+
+    const comboData = ref([
+      { value: 1, display: "a" },
+      { value: 1, display: "b" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+      { value: 1, display: "a" },
+    ]);
+
     onMounted(async () => {
       let res = await assetAPI.get("AssetGetAll", {});
       // console.log(res?.Data);
-      proxy.allData.value = res?.Data;
-    
+      let data = res?.Data;
+      data.forEach((x, i) => (x.STT = i + 1));
+      proxy.allData.value = data;
     });
-    const allData = [
-    
-    ];
     const columns = ref([
       {
         field: "selected",
@@ -80,7 +105,7 @@ export default {
         width: 48,
       },
       {
-        field: "fixedAssetId",
+        field: ResourceTable.FieldAsset.STT,
         title: ResourceTable.lblTableAssets.STT,
         type: "Number",
         width: 48,
@@ -93,7 +118,7 @@ export default {
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
-        title:ResourceTable.lblTableAssets.lblAssetName,
+        title: ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
         minWidth: 159,
       },
@@ -122,13 +147,18 @@ export default {
         width: 97,
       },
       {
-        field: ResourceTable.FieldAsset.cost*ResourceTable.FieldAsset.depreciationRate,
+        field:
+          ResourceTable.FieldAsset.cost *
+          ResourceTable.FieldAsset.depreciationRate,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
         width: 118,
       },
       {
-        field:  ResourceTable.FieldAsset.cost-ResourceTable.FieldAsset.cost*ResourceTable.FieldAsset.depreciationRate,
+        field:
+          ResourceTable.FieldAsset.cost -
+          ResourceTable.FieldAsset.cost *
+            ResourceTable.FieldAsset.depreciationRate,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
         width: 97,
@@ -151,11 +181,10 @@ export default {
       },
     ]);
 
-  
-    
     return {
       columns,
-     allData
+      allData,
+      comboData,
     };
   },
   data() {
