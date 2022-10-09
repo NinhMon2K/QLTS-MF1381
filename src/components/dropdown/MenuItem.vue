@@ -5,12 +5,9 @@
     @click="emitClick"
     @keyup.enter="emitClick"
     @keyup.space="emitClick"
-    @mouseover="isShowIcon = true"
-    @mouseleave="isShowIcon = false"
   >
     <div class="app-icon icon_left-dropdown"></div>
-
-    <div class="text-item">{{ dataItem.display }}</div>
+    <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
   </li>
 </template>
 <script>
@@ -44,13 +41,15 @@ export default {
 <style lang="scss" scoped>
 .item-dropdown {
   width: 100%;
-
   overflow: hidden;
+  padding: 4px 0;
+  outline: none;
   &:active,
   &:focus,
   &:focus-within {
     transition: 0.5s;
     background-color: #c7e0f5;
+    cursor: pointer;
     .icon_left-dropdown {
       background-image: url("./../../assets/images/icons/icons8-v-24.png");
     }
@@ -58,12 +57,16 @@ export default {
   &:hover {
     transition: 0.2s;
     background-color: #c7e0f5;
+    cursor: pointer;
   }
   .icon_left-dropdown {
     margin: 0 18px 0 10px;
   }
   .text-item {
     font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 </style>

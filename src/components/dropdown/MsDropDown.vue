@@ -1,5 +1,9 @@
 <template>
   <div class="filter-dropdown">
+    <label class="text-label" v-if="hasLabel" :for="id">
+      {{ label ? label : "" }}
+      <span v-if="hasInput">*</span>
+    </label>
     <button
       class="dropdown-menu-toggle"
       ref="input"
@@ -92,6 +96,18 @@ export default {
       default: null,
       type: String,
     },
+    label: {
+      default: null,
+      type: String,
+    },
+    hasInput: {
+      default: false,
+      type: Boolean,
+    },
+    hasLabel: {
+      default: false,
+      type: Boolean,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -152,7 +168,7 @@ export default {
     function setDropdown() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetDropdown.width = offset.width;
-      offsetDropdown.height = offset.width + 5;
+      offsetDropdown.height = offset.width + 13;
     }
 
     return { itemClick, setPosition, setDropdown, style, isShowMenu, display };

@@ -26,12 +26,13 @@
               <div>
                 <div
                   class="tfooter--left"
-                  style="font-size: 11px; margin-left: 5px"
+                  style="font-size: 11px; margin-left: 4px"
                 >
                   Tổng số:
-                  <span style="font-size: 11px; font-weight: 700">{{
-                    allData.length
-                  }}</span>
+                  <span
+                    style="font-size: 11px; font-weight: 700; margin: 0 4px"
+                    >{{ allData.length }}</span
+                  >
                   bản ghi
                 </div>
                 <div class="tfooter--right"></div>
@@ -60,16 +61,17 @@
               </div>
             </td>
             <td style="font-size: 13px; font-weight: 700">
-              {{ allData.length }}
+              {{ handleSum("quantity") }}
+            </td>
+
+            <td style="font-size: 13px; font-weight: 700">
+              {{ handleSum("cost") }}
             </td>
             <td style="font-size: 13px; font-weight: 700">
-              {{ allData.length }}
+              {{ handleSum("cost") }}
             </td>
             <td style="font-size: 13px; font-weight: 700">
-              {{ allData.length }}
-            </td>
-            <td style="font-size: 13px; font-weight: 700">
-              {{ allData.length }}
+              {{ handleSum("cost") }}
             </td>
             <td></td>
           </tr>
@@ -79,10 +81,17 @@
   </div>
 </template>
 <script>
-import { defineComponent } from "@vue/runtime-core";
+import {
+  getCurrentInstance,
+  onMounted,
+  ref,
+  watch,
+  defineComponent,
+} from "vue";
 import ColumnType from "@/commons/constant/ColumnType";
 import MsTh from "./MsTh.vue";
 import MsTd from "./MsTd.vue";
+import CommonFunction from "@/commons/commonFunction.js";
 export default defineComponent({
   name: "MsGrid",
   components: { MsTh, MsTd },
@@ -111,10 +120,26 @@ export default defineComponent({
     // }
   },
 
-  setup(props) {
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
     const handleCost = (allData) => {
       let a = 0;
       a = allData.columns;
+    };
+    onMounted(() => {
+      proxy.handleSum();
+    });
+    function handleSum(value) {
+      let sumA = 0;
+      this.allData.forEach((data) => {
+        sumA += data[value];
+      });
+      return new Intl.NumberFormat("en-IN", {
+        maximumSignificantDigits: 3,
+      }).format(sumA);
+    }
+    return {
+      handleSum,
     };
   },
 });

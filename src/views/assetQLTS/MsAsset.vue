@@ -11,11 +11,11 @@
       ></ms-input>
       <ms-drop-down
         leftIcon="ic-fillter"
-        valueField="value"
-        displayField="display"
+        valueField="fixed_asset_category_id"
+        displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
-        :datax="comboData"
+        :datax="comboData.value"
       ></ms-drop-down>
     </div>
     <div class="toolbar-right">
@@ -38,6 +38,9 @@
     </div>
   </div>
 
+  <teleport to="body">
+    <ms-loading v-if="isLoading"></ms-loading>
+  </teleport>
   <ms-grid :columns="columns" :allData="allData.value" ref="abc"> </ms-grid>
 </template>
 <script>
@@ -46,8 +49,10 @@ import MsInput from "@/components/input/MsInput.vue";
 
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
+import MsLoading from "@/components/loading/MsLoading.vue";
+
 import MsDropDown from "@/components/dropdown/MsDropDown.vue";
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { getCurrentInstance, onMounted, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
 import ResourceTable from "@/resource/dictionary/ResourceTable.js";
 export default {
@@ -58,6 +63,7 @@ export default {
     MsGrid,
     MsPopupAsset,
     MsDropDown,
+    MsLoading,
   },
   methods: {
     handleClickAdd() {
@@ -73,30 +79,24 @@ export default {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
     const allData = ref([]);
-
-    const comboData = ref([
-      { value: 1, display: "a" },
-      { value: 1, display: "b" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-      { value: 1, display: "a" },
-    ]);
-
+    const isLoading = ref(false);
+    const comboData = ref([]);
+    const Loading = ref(true);
     onMounted(async () => {
+      proxy.isLoading = true;
       let res = await assetAPI.get("AssetGetAll", {});
-      // console.log(res?.Data);
       let data = res?.Data;
       data.forEach((x, i) => (x.STT = i + 1));
       proxy.allData.value = data;
+      let rusult = await assetAPI.get("AssetGetNameAD", {});
+      proxy.comboData.value = rusult?.Data;
+      proxy.isLoading = false;
     });
+
+    // methods(() => {
+    //   proxy.Loading = true;
+    // });
+
     const columns = ref([
       {
         field: "selected",
@@ -126,7 +126,7 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCategoryName,
         title: ResourceTable.lblTableAssets.lblAssetCategoryName,
         type: "Text",
-        width: 163,
+        width: 400,
       },
       {
         field: ResourceTable.FieldDepartment.departmentName,
@@ -144,24 +144,19 @@ export default {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
-        width: 97,
+        width: 125,
       },
       {
-        field:
-          ResourceTable.FieldAsset.cost *
-          ResourceTable.FieldAsset.depreciationRate,
+        field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
-        width: 118,
+        width: 125,
       },
       {
-        field:
-          ResourceTable.FieldAsset.cost -
-          ResourceTable.FieldAsset.cost *
-            ResourceTable.FieldAsset.depreciationRate,
+        field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
-        width: 97,
+        width: 125,
       },
       {
         field: "c",
@@ -185,14 +180,17 @@ export default {
       columns,
       allData,
       comboData,
+      isLoading,
+      Loading,
+      ResourceTable,
     };
   },
+
   data() {
     return {
       isShowPopup: false,
     };
   },
-  // proxy.$el.f
 };
 </script>
 <style lang="scss" scoped>

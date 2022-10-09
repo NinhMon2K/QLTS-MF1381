@@ -10,6 +10,7 @@
     "lint": "eslint --ext .js,.vue -- ignore-path --fix src"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.0.2",
     "autonumeric": "^4.6.0",
     "axios": "^0.24.0",
     "babel-plugin-wildcard": "^7.0.0",
