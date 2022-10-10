@@ -27,6 +27,7 @@
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
+      <base-tooltip content="jdasjjdk" placement="bottom">
       <ms-button
         ref="MsPopupAsset"
         text="Thêm tài sản"
@@ -35,7 +36,9 @@
         :radius="true"
         @click="handleClickAdd"
       >
+      
       </ms-button>
+    </base-tooltip>
       <ms-button leftIcon="ic-export" id="btn-export" :radius="true">
       </ms-button>
       <!-- <ms-popup-asset ></ms-popup-asset> -->
@@ -54,7 +57,7 @@
 <script>
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
-
+import BaseTooltip from "@/components/tooltip/BaseTooltip.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
@@ -74,6 +77,7 @@ export default {
     MsDropDown,
     MsLoading,
     MsCombobox,
+    BaseTooltip
   },
   methods: {
     handleClickAdd() {
@@ -127,7 +131,7 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCode,
         title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
-        width: 150,
+        width: 80,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
@@ -139,37 +143,37 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCategoryName,
         title: ResourceTable.lblTableAssets.lblAssetCategoryName,
         type: "Text",
-        width: 400,
+        width: 250,
       },
       {
         field: ResourceTable.FieldDepartment.departmentName,
         title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
-        width: 178,
+        width: 165,
       },
       {
         field: ResourceTable.FieldAsset.quantity,
         title: ResourceTable.lblTableAssets.lblQuantity,
         type: "Number",
-        width: 98,
+        width: 60,
       },
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
-        width: 125,
+        width: 110,
       },
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
-        width: 125,
+        width: 110,
       },
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
-        width: 125,
+        width: 110,
       },
       {
         field: "c",
