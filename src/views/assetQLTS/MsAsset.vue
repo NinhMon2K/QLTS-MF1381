@@ -17,6 +17,14 @@
         placeholder="Loại tài sản"
         :datax="comboData.value"
       ></ms-drop-down>
+      <ms-combobox
+        leftIcon="ic-fillter"
+        valueField="fixed_asset_category_id"
+        displayField="fixed_asset_category_name"
+        rightIcon="ic-angle-downs"
+        placeholder="Bộ phận sử dụng"
+        :datax="comboData.value"
+      ></ms-combobox>
     </div>
     <div class="toolbar-right">
       <ms-button
@@ -48,6 +56,7 @@ import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
+import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsLoading from "@/components/loading/MsLoading.vue";
 
@@ -64,6 +73,7 @@ export default {
     MsPopupAsset,
     MsDropDown,
     MsLoading,
+    MsCombobox,
   },
   methods: {
     handleClickAdd() {
@@ -84,13 +94,16 @@ export default {
     const Loading = ref(true);
     onMounted(async () => {
       proxy.isLoading = true;
+      // setTimeout(() => {
+
+      // }, 1000);
       let res = await assetAPI.get("AssetGetAll", {});
+      proxy.isLoading = false;
       let data = res?.Data;
       data.forEach((x, i) => (x.STT = i + 1));
       proxy.allData.value = data;
       let rusult = await assetAPI.get("AssetGetNameAD", {});
       proxy.comboData.value = rusult?.Data;
-      proxy.isLoading = false;
     });
 
     // methods(() => {
@@ -162,7 +175,7 @@ export default {
         field: "c",
         title: ResourceTable.Controls.FunctionControl,
         type: "Action",
-        width: 83,
+        width: 100,
         action: [
           {
             command: "Edit",

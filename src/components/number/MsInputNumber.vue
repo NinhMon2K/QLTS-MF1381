@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field">
+  <div class="ms-number">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
@@ -19,19 +19,29 @@
       <input
         :id="id ? id : ''"
         class="input-text"
-        type="text"
+        type="number"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
       />
-      <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="rightIcon"
-      ></div>
+      <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']">
+        <div
+          :class="[
+            'app-icon icon--top',
+            topIcon,
+            disabledIconTop ? 'disabled-icon' : '',
+          ]"
+          v-if="topIcon"
+        ></div>
+        <div
+          :class="[
+            'app-icon icon--bottom',
+            bottomIcon,
+            disabledIconBottom ? 'disabled-icon' : '',
+          ]"
+          v-if="bottomIcon"
+        ></div>
+      </div>
     </div>
     <span v-if="disabledMessage" class="error-message">{{
       message ? message : ""
@@ -65,7 +75,11 @@ export default defineComponent({
       default: null,
       type: String,
     },
-    rightIcon: {
+    topIcon: {
+      default: null,
+      type: String,
+    },
+    bottomIcon: {
       default: null,
       type: String,
     },
@@ -74,6 +88,18 @@ export default defineComponent({
       type: Boolean,
     },
     disabled: {
+      default: false,
+      type: Boolean,
+    },
+    disabledRight: {
+      default: false,
+      type: Boolean,
+    },
+    disabledIconTop: {
+      default: false,
+      type: Boolean,
+    },
+    disabledIconBottom: {
       default: false,
       type: Boolean,
     },
@@ -97,7 +123,7 @@ export default defineComponent({
       default: false,
       type: Boolean,
     },
-    hasReadonly:{
+    hasReadonly: {
       default: false,
       type: Boolean,
     },
@@ -118,5 +144,5 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scope="">
-@import "./../../assets/scss/components/MsInput.scss";
+@import "./../../assets/scss/components/MsInputNumber.scss";
 </style>

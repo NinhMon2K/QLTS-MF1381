@@ -60,16 +60,20 @@
         &:hover {
           opacity: 1;
         }
+        &.active {
+          opacity: 1;
+          background-color: #1aa4c8;
+        }
         .text-menu {
           color: white;
           flex: 1;
           padding-left: 10px;
+          font-size: 13px;
         }
-
-        &:hover,
         &:active,
         &:focus,
         &:focus-within {
+          opacity: 1;
           background-color: #1aa4c8;
         }
         &:hover {

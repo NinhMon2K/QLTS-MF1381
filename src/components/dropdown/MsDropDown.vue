@@ -40,6 +40,7 @@
               v-for="item in datax"
               :key="item"
               :dataItem="item"
+              :class="[selected == item ? 'selected' : '']"
               @menu-item-click="itemClick"
             >
             </dropdown-item>
@@ -60,7 +61,7 @@ import {
 } from "@vue/runtime-core";
 import DropdownItem from "./MenuItem.vue";
 export default {
-  name: "",
+  name: "MsDropdown",
   components: {
     DropdownItem,
   },
@@ -113,6 +114,8 @@ export default {
     const { proxy } = getCurrentInstance();
 
     const selected = ref(null);
+
+    window.ab = proxy;
 
     const display = computed(() => {
       if (selected.value) {
@@ -171,7 +174,15 @@ export default {
       offsetDropdown.height = offset.width + 13;
     }
 
-    return { itemClick, setPosition, setDropdown, style, isShowMenu, display };
+    return {
+      itemClick,
+      setPosition,
+      setDropdown,
+      style,
+      isShowMenu,
+      display,
+      selected,
+    };
   },
 };
 </script>

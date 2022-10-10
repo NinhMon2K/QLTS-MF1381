@@ -1,12 +1,14 @@
 <template>
   <li
-    class="item-dropdown"
+    class="item-combobox"
     tabindex="-1"
     @click="emitClick"
     @keyup.enter="emitClick"
     @keyup.space="emitClick"
   >
-    <div class="app-icon icon_left-dropdown"></div>
+    <div class="app-icon">
+      <input type="checkbox" />
+    </div>
     <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
   </li>
 </template>
@@ -39,7 +41,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.item-dropdown {
+.item-combobox {
   width: 100%;
   overflow: hidden;
   padding: 4px 0;
@@ -50,7 +52,7 @@ export default {
     transition: 0.5s;
     background-color: #c7e0f5;
     cursor: pointer;
-    .icon_left-dropdown {
+    .icon_left-combobox {
       background-image: url("./../../assets/images/icons/icons8-v-24.png");
     }
   }
@@ -59,12 +61,7 @@ export default {
     background-color: #c7e0f5;
     cursor: pointer;
   }
-  .selected {
-    .icon_left-dropdown {
-      background-image: url("./../../assets/images/icons/icons8-v-24.png") !important;
-    }
-  }
-  .icon_left-dropdown {
+  .icon_left-combobox {
     margin: 0 18px 0 10px;
   }
   .text-item {

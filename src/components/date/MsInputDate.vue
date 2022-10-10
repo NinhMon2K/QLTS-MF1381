@@ -15,11 +15,10 @@
           v-if="leftIcon"
         ></span>
       </div>
-
       <input
         :id="id ? id : ''"
         class="input-text"
-        type="text"
+        type="date"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -97,7 +96,7 @@ export default defineComponent({
       default: false,
       type: Boolean,
     },
-    hasReadonly:{
+    hasReadonly: {
       default: false,
       type: Boolean,
     },
@@ -118,5 +117,5 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scope="">
-@import "./../../assets/scss/components/MsInput.scss";
+@import "./../../assets/scss/components/MsInputDate.scss";
 </style>

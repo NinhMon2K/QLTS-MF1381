@@ -48,6 +48,9 @@
       outline: none;
       font-size: 13px;
       border: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
       &::placeholder {
         font-style: italic;
       }
@@ -81,6 +84,20 @@
       .item-dropdown {
         display: flex;
         align-items: center;
+        &.selected {
+          transition: 0.2s;
+          background-color: #c7e0f5;
+          .icon_left-dropdown {
+            background-image: url("@/assets/images/icons/icons8-v-24.png");
+          }
+        }
+        &:focus-within,
+        &:focus,
+        &:active {
+          .icon_left-dropdown {
+            background-image: url("@/assets/images/icons/icons8-v-24.png");
+          }
+        }
       }
     }
   }

@@ -16,6 +16,8 @@
           :key="index"
           :href="item.path"
           :title="collapsed ? item.text : ''"
+          :class="[item.path == activeItem?.path ? 'active' : '']"
+          @click.prevent="() => clickMenu(item)"
         >
           <div :class="['app-icon', item.icon]"></div>
           <span class="text-menu">{{ item.text }}</span>
@@ -59,8 +61,37 @@ export default {
       return this.getMenuItems();
     },
   },
+
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+
+    const isActive = ref(false);
+
+    const activeItem = ref(null);
+
+    function setActive() {
+      proxy.isActive = true;
+    }
+
+    onMounted(() => {
+      proxy.activeMenu();
+    });
+
+    watch(
+      () => isActive.value,
+      (newVal) => {
+        if (newVal) {
+          // console.log(isActive.value);
+        }
+      }
+    );
+
+    function activeMenu() {
+      let pathName = location.pathname.toLowerCase();
+      let item = proxy.menuItems.find((x) => x.path == pathName);
+
+      proxy.activeItem = item || proxy.menuItems[1];
+    }
 
     const cancelEvent = (e) => {
       if (e) {
@@ -148,12 +179,20 @@ export default {
       return menuItems;
     };
 
+    function clickMenu(item) {
+      proxy.$router.push(item.path);
+    }
+
     return {
       getMenuItems,
       collapsed,
       toggleSideBar,
       sideBarWidth,
       Listsioner,
+      isActive,
+      clickMenu,
+      activeItem,
+      activeMenu,
     };
   },
 };

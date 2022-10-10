@@ -156,20 +156,25 @@
   }
   &.ic-angle_down {
     @include setSquare(8);
-    background-position: -205px -341px;
+    background-position: -204px -341px;
   }
   &.ic-angle_up {
     @include setSquare(8);
-    background-position: -205px -330px;
+    background-position: -204px -330px;
   }
-  &.ic-dropdown{
+  &.ic-dropdown {
     @include commonAppDropDown();
+  }
+  &.ic-date {
+    background-position: -284px -64px;
   }
 }
 
 .menu-group {
   .menu-item:hover,
-  .menu-item:focus {
+  .menu-item:focus,
+  .menu-item:active,
+  .menu-item:focus-within {
     & .ic-menu__search {
       background-position: -240px -196px;
     }
@@ -188,7 +193,6 @@
     & .ic-overview {
       background-position: -20px -196px;
     }
-
     //Tài sản
     & .ic-asset {
       background-position: -108px -196px;
