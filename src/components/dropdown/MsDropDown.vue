@@ -109,6 +109,9 @@ export default {
       default: false,
       type: Boolean,
     },
+    heightCb: {
+      default: 0,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -171,7 +174,7 @@ export default {
     function setDropdown() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetDropdown.width = offset.width;
-      offsetDropdown.height = offset.width + 13;
+      offsetDropdown.height = 200.5 - this.heightCb;
     }
 
     return {

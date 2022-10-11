@@ -27,7 +27,6 @@
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
-      <base-tooltip content="jdasjjdk" placement="bottom">
       <ms-button
         ref="MsPopupAsset"
         text="Thêm tài sản"
@@ -36,9 +35,8 @@
         :radius="true"
         @click="handleClickAdd"
       >
-      
       </ms-button>
-    </base-tooltip>
+
       <ms-button leftIcon="ic-export" id="btn-export" :radius="true">
       </ms-button>
       <!-- <ms-popup-asset ></ms-popup-asset> -->
@@ -57,7 +55,6 @@
 <script>
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
-import BaseTooltip from "@/components/tooltip/BaseTooltip.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
@@ -77,7 +74,6 @@ export default {
     MsDropDown,
     MsLoading,
     MsCombobox,
-    BaseTooltip
   },
   methods: {
     handleClickAdd() {

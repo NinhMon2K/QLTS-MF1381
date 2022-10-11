@@ -46,6 +46,12 @@ export default {
   overflow: hidden;
   padding: 4px 0;
   outline: none;
+  .app-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+  }
   &:active,
   &:focus,
   &:focus-within {
@@ -69,6 +75,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    padding-left: 18px;
   }
 }
 </style>

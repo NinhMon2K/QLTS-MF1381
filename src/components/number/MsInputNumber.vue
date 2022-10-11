@@ -135,6 +135,19 @@ export default defineComponent({
       default: null,
       type: String,
     },
+
+    min:{
+      default:-99999999999999,
+      type:[Number,String]
+    },
+    max:{
+      default:99999999999999,
+      type:[Number,String]
+    },
+    step:{
+      default:1,
+      type:[Number,String]
+    }
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();

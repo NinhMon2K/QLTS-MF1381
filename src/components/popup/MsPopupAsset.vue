@@ -154,7 +154,8 @@
         </div>
         <div class="footer-popup">
           <div class="form-asset__footer">
-            <ms-button @click="close" text="Hủy" radius> </ms-button>
+            <ms-button @click="close" text="Hủy" type="secodary" radius>
+            </ms-button>
             <ms-button text="Lưu" radius></ms-button>
           </div>
         </div>
