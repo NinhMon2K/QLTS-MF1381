@@ -27,6 +27,7 @@
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
+      <ms-tooltip content="Thêm mới tài sản" placement="bottom">
       <ms-button
         ref="MsPopupAsset"
         text="Thêm tài sản"
@@ -36,7 +37,7 @@
         @click="handleClickAdd"
       >
       </ms-button>
-
+    </ms-tooltip>
       <ms-button leftIcon="ic-export" id="btn-export" :radius="true">
       </ms-button>
       <!-- <ms-popup-asset ></ms-popup-asset> -->
@@ -58,8 +59,8 @@ import MsInput from "@/components/input/MsInput.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 import MsLoading from "@/components/loading/MsLoading.vue";
-
 import MsDropDown from "@/components/dropdown/MsDropDown.vue";
 import { getCurrentInstance, onMounted, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
@@ -74,6 +75,7 @@ export default {
     MsDropDown,
     MsLoading,
     MsCombobox,
+    MsTooltip
   },
   methods: {
     handleClickAdd() {

@@ -156,7 +156,6 @@ export default {
         }
       }
     );
-
     const itemClick = (item) => {
       selected.value = item;
       emit("item-click", item);

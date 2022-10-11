@@ -10,6 +10,9 @@
   position: relative;
   border: none;
   .year-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     margin-right: 62px;
     margin-top: -1px;

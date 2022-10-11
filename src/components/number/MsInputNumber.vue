@@ -20,6 +20,8 @@
         :id="id ? id : ''"
         class="input-text"
         type="number"
+      
+        value=""
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -59,10 +61,11 @@ import {
 } from "vue";
 
 export default defineComponent({
-  name: "msInput",
+  name: "MsInput",
   props: {
     modelValue: {
-      default: null,
+      default: 0,
+      type:[Number,String]
     },
     configStyle: {
       default: {},
@@ -151,7 +154,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-
+   
     return {};
   },
 });
