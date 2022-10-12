@@ -7,13 +7,21 @@
     @keyup.space="emitClick"
   >
     <div class="app-icon">
-      <input type="checkbox" />
+      <input type="checkbox" v-model="select" @change="changeValue" />
     </div>
     <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
   </li>
 </template>
 <script>
-import { computed, onMounted, reactive, ref, watch } from "@vue/runtime-core";
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 export default {
   props: {
     icon: {
@@ -27,16 +35,26 @@ export default {
     dataItem: {
       default: {},
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     emitClick(e) {
-      this.$emit("menu-item-click", this.dataItem);
+      this.$emit("menu-item-click", this.dataItem, this.selected);
     },
   },
   setup(props, { emit }) {
-    // const { proxy } = getCurrentInstance();
+    const { proxy } = getCurrentInstance();
 
-    return {};
+    const select = ref(false);
+
+    const changeValue = function (e) {
+      proxy.$emit("change-value", proxy.dataItem, proxy.select);
+    };
+
+    return { changeValue, select };
   },
 };
 </script>

@@ -14,26 +14,30 @@
     </div>
 
     <div class="year-right">
-      <div
-        class="iconyear-top"
-        :class="[
-          'app-icon icon--top',
-          topIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="topIcon"
-        @click="years++"
-      ></div>
-      <div
-        class="iconyear-bottom"
-        :class="[
-          'app-icon icon--bottom',
-          bottomIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="bottomIcon"
-        @click="years--"
-      ></div>
+      <ms-tooltip content="Lên" placement="bottom">
+        <div
+          class="iconyear-top"
+          :class="[
+            'app-icon icon--top',
+            topIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          v-if="topIcon"
+          @click="years++"
+        ></div>
+      </ms-tooltip>
+      <ms-tooltip content="Xuống" placement="bottom">
+        <div
+          class="iconyear-bottom"
+          :class="[
+            'app-icon icon--bottom',
+            bottomIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          v-if="bottomIcon"
+          @click="years--"
+        ></div>
+      </ms-tooltip>
     </div>
   </div>
 </template>
@@ -46,8 +50,12 @@ import {
   reactive,
   onMounted,
 } from "vue";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
   name: "MsInputYear",
+  components: {
+    MsTooltip,
+  },
   props: {
     label: {
       default: null,

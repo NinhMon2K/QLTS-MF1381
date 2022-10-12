@@ -5,10 +5,6 @@
     </div>
     <div class="right-header">
       <div class="organization-name header-item">Sở tài chính</div>
-      <!-- <div class="ctr-number header-item">
-        <label>Năm</label>
-        <input type="number" value="2022" />
-      </div> -->
       <ms-input-year
         label="Năm"
         topIcon="ic-angle_up"
@@ -17,21 +13,31 @@
       </ms-input-year>
       <div class="tool-header">
         <div class="tool notification">
-          <div class="app-icon ic-notification"></div>
+          <ms-tooltip content="Thông báo" placement="bottom">
+            <div class="app-icon ic-notification"></div>
+          </ms-tooltip>
         </div>
         <div class="tool tf-home">
-          <div class="app-icon ic-view-grid"></div>
+          <ms-tooltip content="Lưới" placement="bottom">
+            <div class="app-icon ic-view-grid"></div>
+          </ms-tooltip>
         </div>
         <div class="tool help">
-          <div class="app-icon ic-question-message"></div>
+          <ms-tooltip content="Trợ giúp" placement="bottom">
+            <div class="app-icon ic-question-message"></div>
+          </ms-tooltip>
         </div>
       </div>
       <div class="user-header">
         <div class="c-2 avatar">
-          <div class="app-icon ic-user"></div>
+          <ms-tooltip content="Tài khoản" placement="bottom">
+            <div class="app-icon ic-user"></div>
+          </ms-tooltip>
         </div>
         <div class="c-2 more">
-          <div class="app-icon ic-arow"></div>
+          <ms-tooltip content="Xuống" placement="bottom">
+            <div class="app-icon ic-arow"></div>
+          </ms-tooltip>
         </div>
       </div>
     </div>
@@ -39,9 +45,10 @@
 </template>
 <script>
 import MsInputYear from "@/components/input/MsInputYear.vue";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
   name: "TheHeader",
-  components: { MsInputYear },
+  components: { MsInputYear, MsTooltip },
   data() {
     return {};
   },

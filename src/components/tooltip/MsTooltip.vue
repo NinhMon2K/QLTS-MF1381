@@ -1,16 +1,25 @@
 <template>
-  <div :class="[
-    isHidden && 'hidden',
-  ]">
-    <div ref="referenceRef" class="inline-block" @blur="hide" @focus="show" @mouseenter="show" @mouseleave="hide">
+  <div :class="[isHidden && 'hidden']">
+    <div
+      ref="referenceRef"
+      class="inline-block"
+      @blur="hide"
+      @focus="show"
+      @mouseenter="show"
+      @mouseleave="hide"
+    >
       <slot></slot>
       <teleport to="body">
-      <div class="tooltip" ref="floatingRef" :style="style" v-show="isHidden">
-       {{content }}
-      </div>
+        <div
+          :class="['tooltip', top, left, right, bottom]"
+          ref="floatingRef"
+          :style="style"
+          v-show="isHidden"
+        >
+          {{ content }}
+        </div>
       </teleport>
     </div>
-    <div class="absolute bg-gray-700 h-[8px] w-[8px] rotate-45" ref="arrowRef"></div>
   </div>
 </template>
 <script>
@@ -32,77 +41,96 @@ export default {
       default: "bottom",
       type: String,
     },
-
+    leftT: {
+      default: 0,
+      type: [Number, String],
+    },
+    top: {
+      default: null,
+      type: String,
+    },
+    left: {
+      default: null,
+      type: String,
+    },
+    right: {
+      default: null,
+      type: String,
+    },
+    bottom: {
+      default: null,
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     const isHidden = ref(false);
-    const offsetPosi = reactive(
-      {
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }
-    );
+    const offsetPosi = reactive({
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    });
     onMounted(() => {
       proxy.setPosition();
     });
     const style = computed(() => {
       let arr = [];
-      arr.push(`top: ${offsetPosi.top}px`);
-      arr.push(`left: ${offsetPosi.left}px`);
-      // switch (this.placement) {
-      //   case 'bottom':
 
-      //     break;
-      //   case 'top':
-      //     arr.push(`bottom: ${offsetPosi.bottom}`);
-      //     arr.push(`left: ${offsetPosi.left}`);
-      //     break;
-      //   case 'left':
-      //     arr.push(`left: ${offsetPosi.left}`);
-      //     arr.push(`top: ${offsetPosi.top}`);
-      //     break;
-      //   case 'right':
-      //     arr.push(`right: ${offsetPosi.right}`);
-      //     arr.push(`top: ${offsetPosi.top}`);
-      //     break;
-      //   default:
-      //     break;
-      // }
+      if (props.placement == "bottom") {
+        arr.push(`top: ${offsetPosi.top}px`);
+        arr.push(`left: ${offsetPosi.left}px`);
+      } else if (props.placement == "top") {
+        arr.push(`top: ${offsetPosi.top}px`);
+        arr.push(`left: ${offsetPosi.left}px`);
+      } else if (props.placement == "left") {
+        arr.push(`left: ${offsetPosi.left}px`);
+        arr.push(`top: ${offsetPosi.top}px`);
+      } else {
+        arr.push(`right: ${offsetPosi.right}px`);
+        arr.push(`top: ${offsetPosi.top}px`);
+      }
       return arr.join("; ");
     });
+    watch(
+      () => isHidden.value,
+      (newVal) => {
+        if (newVal) {
+          proxy.setPosition();
+        }
+      }
+    );
     function hide() {
       proxy.isHidden = false;
-      console.log('hide' + proxy.isHidden)
     }
     function show() {
-      console.log(proxy.style)
       proxy.isHidden = true;
-      console.log('show' + proxy.isHidden)
     }
 
-    
     function setPosition() {
       let offset = proxy.$refs.referenceRef.getBoundingClientRect();
-      console.log(offset)
 
-      if(this.placement == 'bottom'){
+      console.log(offset);
+      let lengthContent = props.content;
+      let valueOffset = 0;
+      if (lengthContent.length < 5) {
+        valueOffset = offset.width / 3.5;
+      } else {
+        valueOffset = offset.width / 5.5;
+      }
+      if (this.placement == "bottom") {
         offsetPosi.top = offset.bottom;
-          offsetPosi.left = offset.left + offset.width/3;      }
-      else if(this.placement == 'top'){
-        offsetPosi.bottom = offset.top;
-          offsetPosi.left = offset.left;
-      }
-      else if(this.placement == 'left'){
+        offsetPosi.left = offset.left + valueOffset - 5;
+      } else if (this.placement == "top") {
+        offsetPosi.top = offset.top - offset.height - 6;
+        offsetPosi.left = offset.left + valueOffset;
+      } else if (this.placement == "left") {
         offsetPosi.top = offset.top;
-          offsetPosi.left = offset.right;
-      }
-      else{
+        offsetPosi.left = offset.left - offset.width + 5;
+      } else {
         offsetPosi.top = offset.top;
-          offsetPosi.left = offset.left;
-      }  
+        offsetPosi.left = offset.right;
+      }
     }
 
     return {
@@ -111,22 +139,24 @@ export default {
       offsetPosi,
       show,
       hide,
-      style
+      style,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
 .tooltip {
-  margin-top: 10px;
+  margin-top: 8px;
+  border: none;
   background-color: #fff;
   color: #fff;
   position: absolute;
-   padding: 5px 10px;
+  padding: 5px 10px;
   color: #000;
-  border-radius: 5px;
+  border-radius: 2px;
   /*text-transform: uppercase;*/
   box-shadow: 0 0 7px black;
   font-size: 11px;
+  z-index: 109;
 }
 </style>

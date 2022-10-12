@@ -36,7 +36,7 @@
               :key="item"
               :dataItem="item"
               :class="[selected == item ? 'selected' : '']"
-              @menu-item-click="itemClick"
+              @change-value="changeValue"
             >
             </ms-combobox-detail>
           </ul>
@@ -111,17 +111,14 @@ export default {
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
-    const selected = ref(null);
+    const selected = ref([]);
+    window.c = proxy;
 
     window.ab = proxy;
 
-    const display = computed(() => {
-      if (selected.value) {
-        return selected.value[props.displayField];
-      } else {
-        return null;
-      }
-    });
+    const display = computed(() =>
+      proxy.selected.map((x) => x[props.displayField]).join(";")
+    );
 
     const offsetPosi = reactive({
       top: 0,
@@ -172,6 +169,19 @@ export default {
       offsetDropdown.height = 200.5 - this.heightCb;
     }
 
+    const changeValue = function (item, select) {
+      if (select) {
+        proxy.selected.push(item);
+      } else {
+        let i = proxy.selected.findIndex(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        );
+
+        proxy.selected.slice(i, 1);
+      }
+      proxy.$emit("change-value", proxy.selected, proxy.dataItem);
+    };
+
     return {
       itemClick,
       setPosition,
@@ -180,6 +190,7 @@ export default {
       isShowMenu,
       display,
       selected,
+      changeValue,
     };
   },
 };

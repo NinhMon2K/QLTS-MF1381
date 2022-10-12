@@ -27,23 +27,28 @@
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
-      <ms-tooltip content="Thêm mới tài sản" placement="bottom">
-      <ms-button
-        ref="MsPopupAsset"
-        text="Thêm tài sản"
-        id="btn-add"
-        leftIcon="ic-add"
-        :radius="true"
-        @click="handleClickAdd"
-      >
-      </ms-button>
-    </ms-tooltip>
-      <ms-button leftIcon="ic-export" id="btn-export" :radius="true">
-      </ms-button>
-      <!-- <ms-popup-asset ></ms-popup-asset> -->
-
-      <ms-button leftIcon="ic-delete__toolbar" id="btn-delete" :radius="true">
-      </ms-button>
+      <ms-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
+        <ms-button
+          ref="MsPopupAsset"
+          text="Thêm tài sản"
+          id="btn-add"
+          leftIcon="ic-add"
+          :radius="true"
+          @click="handleClickAdd"
+        >
+        </ms-button>
+      </ms-tooltip>
+      <ms-tooltip content="Xuất Excel" placement="bottom">
+        <ms-button
+          leftIcon="ic-export"
+          id="btn-export"
+          :radius="true"
+        ></ms-button>
+      </ms-tooltip>
+      <ms-tooltip content="Xóa" placement="bottom">
+        <ms-button leftIcon="ic-delete__toolbar" id="btn-delete" :radius="true">
+        </ms-button>
+      </ms-tooltip>
       <ms-popup-asset titlePopup="Thêm mới" v-if="isShowPopup"></ms-popup-asset>
     </div>
   </div>
@@ -75,11 +80,10 @@ export default {
     MsDropDown,
     MsLoading,
     MsCombobox,
-    MsTooltip
+    MsTooltip,
   },
   methods: {
     handleClickAdd() {
-      console.log("ninh");
       this.isShowPopup = true;
     },
     close() {

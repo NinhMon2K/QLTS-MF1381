@@ -25,7 +25,6 @@
 import ColumnType from "@/commons/constant/ColumnType";
 import { computed } from "@vue/runtime-core";
 import commonFunction from "@/commons/commonFunction";
-
 export default {
   name: "MsTd",
   props: {

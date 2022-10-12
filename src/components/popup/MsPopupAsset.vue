@@ -15,8 +15,6 @@
                   hasInput
                   :radius="false"
                   placeholder="Mã tài sản"
-                  message="lỗi 1"
-                  disabledMessage="true"
                 ></ms-input>
               </div>
               <div class="form-group__right">
@@ -126,7 +124,7 @@
             <div class="form-group">
               <div class="form-group__left">
                 <ms-input-date
-                  label="Tỉ lệ hao mòn(%)"
+                  label="Ngày mua"
                   hasLabel
                   hasInput
                   rightIcon="ic-date"
@@ -136,13 +134,15 @@
                 ></ms-input-date>
               </div>
               <div class="form-group__right">
-                <ms-input
-                  label="Tên tài sản"
+                <ms-input-date
+                  label="Ngày bắt đầu sử dụng"
                   hasLabel
                   hasInput
+                  rightIcon="ic-date"
+                  topIcon="ic-angle_up"
+                  bottomIcon="ic-angle_down"
                   :radius="true"
-                  placeholder="Nhập tên tài sản"
-                ></ms-input>
+                ></ms-input-date>
                 <el-date-picker
                   class="date-picker"
                   v-model="valueDate"
@@ -156,9 +156,13 @@
         </div>
         <div class="footer-popup">
           <div class="form-asset__footer">
-            <ms-button @click="close" text="Hủy" type="secodary" radius>
-            </ms-button>
-            <ms-button text="Lưu" radius></ms-button>
+            <ms-tooltip content="Hủy" placement="top" right="top">
+              <ms-button @click="close" text="Hủy" type="secodary" radius>
+              </ms-button>
+            </ms-tooltip>
+            <ms-tooltip content="Lưu và cất" placement="top" right="top">
+              <ms-button text="Lưu" radius></ms-button>
+            </ms-tooltip>
           </div>
         </div>
       </div>
@@ -184,6 +188,7 @@ import MsInput from "@/components/input/MsInput.vue";
 import MsInputDate from "@/components/date/MsInputDate.vue";
 import MsInputNumber from "@/components/number/MsInputNumber.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
   name: "MsPopupAsset",
   components: {
@@ -192,6 +197,7 @@ export default {
     MsCombobox,
     MsInputNumber,
     MsInputDate,
+    MsTooltip,
   },
   props: {
     configStyle: {
