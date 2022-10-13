@@ -39,7 +39,7 @@
 </template>
 <script>
 //import { getCurrentInstance } from "vue";
-import Resource from "./../../resource/dictionary/Resource.js";
+import Resource from "../../resource/dictionary/resource.js";
 import { collapsed, sideBarWidth } from "./../../commons/state.js";
 import {
   computed,

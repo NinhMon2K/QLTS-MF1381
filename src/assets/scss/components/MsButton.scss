@@ -49,12 +49,12 @@
     }
     &:active {
       background-color: $btn-primary-active-bg;
-      border: solid 1px #D1EDF4;
+      border: solid 1px #d1edf4;
     }
   }
   &.secodary {
     background-color: #fff;
-    // border: 1px solid #afafaf;
+    border: 1px solid #afafaf;
     color: #000;
     .btn-text {
       color: #000;

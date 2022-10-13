@@ -52,7 +52,19 @@
       <ms-popup-asset titlePopup="Thêm mới" v-if="isShowPopup"></ms-popup-asset>
     </div>
   </div>
-
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      valueMessageBox="09"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteMultiple.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isToastMessageBox"
+    >
+      <ms-button text="Không" type="secodary" radius></ms-button>
+      <ms-button text="Xóa" radius></ms-button>
+    </ms-message-box>
+  </teleport>
   <teleport to="body">
     <ms-loading v-if="isLoading"></ms-loading>
   </teleport>
@@ -62,6 +74,7 @@
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
+import MsMessageBox from "@/components/toast/MsMessageBox.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
@@ -69,7 +82,8 @@ import MsLoading from "@/components/loading/MsLoading.vue";
 import MsDropDown from "@/components/dropdown/MsDropDown.vue";
 import { getCurrentInstance, onMounted, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
-import ResourceTable from "@/resource/dictionary/ResourceTable.js";
+import ResourceTable from "@/resource/dictionary/resourceTable.js";
+import Resource from "@/resource/dictionary/resource.js";
 export default {
   name: "MsAsset",
   components: {
@@ -81,6 +95,7 @@ export default {
     MsLoading,
     MsCombobox,
     MsTooltip,
+    MsMessageBox,
   },
   methods: {
     handleClickAdd() {
@@ -96,20 +111,24 @@ export default {
     window.a = proxy;
     const allData = ref([]);
     const isLoading = ref(false);
+    const isToastMessageBox = ref(false);
     const comboData = ref([]);
     const Loading = ref(true);
     onMounted(async () => {
-      proxy.isLoading = true;
-      // setTimeout(() => {
-
-      // }, 1000);
-      let res = await assetAPI.get("AssetGetAll", {});
-      proxy.isLoading = false;
-      let data = res?.Data;
-      data.forEach((x, i) => (x.STT = i + 1));
-      proxy.allData.value = data;
-      let rusult = await assetAPI.get("AssetGetNameAD", {});
-      proxy.comboData.value = rusult?.Data;
+      try {
+        proxy.isLoading = true;
+        // setTimeout(() => {
+        // }, 1000);
+        let res = await assetAPI.get("AssetGetAll", {});
+        proxy.isLoading = false;
+        let data = res?.Data;
+        data.forEach((x, i) => (x.STT = i + 1));
+        proxy.allData.value = data;
+        let rusult = await assetAPI.get("AssetGetNameAD", {});
+        proxy.comboData.value = rusult?.Data;
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // methods(() => {
@@ -202,6 +221,8 @@ export default {
       isLoading,
       Loading,
       ResourceTable,
+      Resource,
+      isToastMessageBox,
     };
   },
 
@@ -214,4 +235,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/view/assetsQLTS/MsAsset.scss";
+@import "@/assets/scss/components/MsMessageBox.scss";
 </style>

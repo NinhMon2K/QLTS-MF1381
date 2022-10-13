@@ -14,7 +14,7 @@
           :class="['tooltip', top, left, right, bottom]"
           ref="floatingRef"
           :style="style"
-          v-show="isHidden"
+          v-if="isHidden"
         >
           {{ content }}
         </div>
@@ -109,8 +109,6 @@ export default {
 
     function setPosition() {
       let offset = proxy.$refs.referenceRef.getBoundingClientRect();
-
-      console.log(offset);
       let lengthContent = props.content;
       let valueOffset = 0;
       if (lengthContent.length < 5) {
