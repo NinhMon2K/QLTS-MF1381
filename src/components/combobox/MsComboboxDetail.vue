@@ -1,4 +1,5 @@
 <template>
+   <ms-tooltip :content="dataItem.fixed_asset_category_name" placement="right">
   <li
     class="item-combobox"
     tabindex="-1"
@@ -9,8 +10,10 @@
     <div class="app-icon">
       <input type="checkbox" v-model="select" @change="changeValue" />
     </div>
+   
     <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
   </li>
+</ms-tooltip>
 </template>
 <script>
 import {
@@ -22,7 +25,9 @@ import {
   ref,
   watch,
 } from "@vue/runtime-core";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
+  components:{MsTooltip},
   props: {
     icon: {
       type: [Array, String],
@@ -64,6 +69,8 @@ export default {
   overflow: hidden;
   padding: 4px 0;
   outline: none;
+  display: flex;
+  align-items: center;
   .app-icon {
     display: flex;
     justify-content: center;

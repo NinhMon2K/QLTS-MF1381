@@ -67,7 +67,7 @@ table {
     flex: 1;
     table-layout: fixed;
     tr {
-      height: 39px;
+      height: 40px;
       border-bottom: 1px solid #e9ebee;
       &:hover {
         background-color: rgba(26, 164, 200, 0.2);
@@ -81,7 +81,7 @@ table {
   }
   tfoot {
     position: sticky;
-    bottom: 0;
+    bottom: -1px;
     background-color: #ffffff;
     height: 40px;
     border-bottom-left-radius: 3.5px;

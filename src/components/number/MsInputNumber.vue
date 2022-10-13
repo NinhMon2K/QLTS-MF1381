@@ -20,8 +20,7 @@
         :id="id ? id : ''"
         class="input-text"
         type="number"
-      
-        value=""
+        v-model="modelValue"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -63,7 +62,7 @@ import {
 export default defineComponent({
   name: "MsInput",
   props: {
-    modelValue: {
+    valueField: {
       default: 0,
       type:[Number,String]
     },
@@ -155,7 +154,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
    
-    return {};
+  const modelValue = ref(0);
+  onMounted(()=>{
+    proxy.modelValue = props.valueField;
+  });
+    return {modelValue};
   },
 });
 </script>

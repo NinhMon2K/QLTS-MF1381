@@ -44,6 +44,7 @@
                   label="Tên bộ phận sử dụng"
                   hasLabel
                   hasReadonly="true"
+                  disabled="true" 
                   :radius="true"
                 ></ms-input>
               </div>
@@ -65,6 +66,7 @@
                   label="Tên loại tài sản"
                   hasReadonly="true"
                   hasLabel
+                  disabled="true" 
                   :radius="true"
                 ></ms-input>
               </div>
@@ -143,13 +145,15 @@
                   bottomIcon="ic-angle_down"
                   :radius="true"
                 ></ms-input-date>
-                <el-date-picker
-                  class="date-picker"
-                  v-model="valueDate"
-                  type="date"
-                  format="DD/MM/YYYY"
-                  value-format="YYYY-MM-DD"
-                />
+                <ms-input-date
+                  label="Ngày bắt đầu sử dụng"
+                  hasLabel
+                  hasInput
+                  rightIcon="ic-date"
+                  topIcon="ic-angle_up"
+                  bottomIcon="ic-angle_down"
+                  :radius="true"
+                ></ms-input-date>
               </div>
             </div>
           </div>

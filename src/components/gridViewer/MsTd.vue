@@ -7,12 +7,11 @@
 
       <template v-else-if="config.type == ColumnType.Action">
         <div class="action-group">
-          <div
-            v-for="btn in config.action"
-            :key="btn"
-            class="app-icon icon"
-            :class="btn.icon"
-          ></div>
+          <div v-for="btn in config.action" :key="btn">
+            <ms-tooltip :content="btn.icon == 'ic-edit' ? 'Sửa' : 'Nhân bản'" placement="top" right="top">
+              <div class="app-icon icon" :class="btn.icon"></div>
+            </ms-tooltip>
+          </div>
         </div>
       </template>
 
@@ -25,8 +24,13 @@
 import ColumnType from "@/commons/constant/ColumnType";
 import { computed } from "@vue/runtime-core";
 import commonFunction from "@/commons/commonFunction";
+import Resource from "@/resource/dictionary/resource.js"
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
   name: "MsTd",
+  components: {
+    MsTooltip
+  },
   props: {
     config: {
       default: {},
@@ -87,6 +91,7 @@ export default {
       ColumnType,
       styles,
       cls,
+      Resource
     };
   },
 };
@@ -102,12 +107,15 @@ export default {
     margin: 0 4px;
   }
 }
+
 .th-inner {
   font-size: 13px;
 }
+
 .td-inner {
   font-size: 13px;
 }
+
 input[type="checkbox"] {
   width: 14px;
   height: 14px;

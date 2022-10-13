@@ -14,7 +14,7 @@
           :class="['tooltip', top, left, right, bottom]"
           ref="floatingRef"
           :style="style"
-          v-if="isHidden"
+          v-show="isHidden"
         >
           {{ content }}
         </div>
@@ -80,14 +80,16 @@ export default {
       if (props.placement == "bottom") {
         arr.push(`top: ${offsetPosi.top}px`);
         arr.push(`left: ${offsetPosi.left}px`);
-      } else if (props.placement == "top") {
+      } 
+       if (props.placement == "top") {
         arr.push(`top: ${offsetPosi.top}px`);
         arr.push(`left: ${offsetPosi.left}px`);
-      } else if (props.placement == "left") {
+      } 
+       if (props.placement == "left") {
         arr.push(`left: ${offsetPosi.left}px`);
         arr.push(`top: ${offsetPosi.top}px`);
-      } else {
-        arr.push(`right: ${offsetPosi.right}px`);
+      } if(props.placement == "right") {
+        arr.push(`left: ${offsetPosi.right}px`);
         arr.push(`top: ${offsetPosi.top}px`);
       }
       return arr.join("; ");
@@ -119,18 +121,20 @@ export default {
       if (this.placement == "bottom") {
         offsetPosi.top = offset.bottom;
         offsetPosi.left = offset.left + valueOffset - 5;
-      } else if (this.placement == "top") {
+      } 
+       if (this.placement == "top") {
         offsetPosi.top = offset.top - offset.height - 6;
         offsetPosi.left = offset.left + valueOffset;
-      } else if (this.placement == "left") {
+      } 
+       if (this.placement == "left") {
         offsetPosi.top = offset.top;
         offsetPosi.left = offset.left - offset.width + 5;
-      } else {
+      } 
+      if(this.placement == "right") {
         offsetPosi.top = offset.top;
-        offsetPosi.left = offset.right;
+        offsetPosi.right = offset.left + offset.width+15;
       }
     }
-
     return {
       isHidden,
       setPosition,
@@ -153,7 +157,7 @@ export default {
   color: #000;
   border-radius: 2px;
   /*text-transform: uppercase;*/
-  box-shadow: 0 0 7px black;
+  box-shadow: 0 0 7px #ccc;
   font-size: 11px;
   z-index: 109;
 }

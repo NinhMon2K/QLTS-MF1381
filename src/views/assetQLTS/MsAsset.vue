@@ -140,7 +140,7 @@ export default {
         field: "selected",
         title: "abc",
         type: "Checkbox",
-        width: 48,
+        width: 50,
       },
       {
         field: ResourceTable.FieldAsset.STT,
@@ -203,11 +203,11 @@ export default {
         width: 100,
         action: [
           {
-            command: "Edit",
+            command: "edit",
             icon: "ic-edit",
           },
           {
-            command: "Edit",
+            command: "replication",
             icon: "ic-replication",
           },
         ],
