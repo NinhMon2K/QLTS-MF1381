@@ -124,6 +124,13 @@ export default {
     const isShowMessage = ref(false);
     const comboData = ref([]);
     const Loading = ref(true);
+    const fixed_asset_id = ref('');
+    const assetData = ref({
+
+      fixed_asset_id: '',
+      fixed_asset_code:''
+
+    });
     onMounted(async () => {
       try {
         proxy.isLoading = true;
@@ -145,10 +152,13 @@ export default {
     //   proxy.Loading = true;
     // });
 
-    const clickMenu = (action, val) => {
+    const clickMenu = async (action, val) => {
       switch (action) {
         case 0: {
           console.log(val);
+          let resultAssetID = await assetAPI.get("AssetSelectID", { fixed_asset_id : val });
+     
+          console.log(resultAssetID?.Data)
           break;
         }
         case 1: {
@@ -163,6 +173,18 @@ export default {
         proxy.handleShowMessage();
       }
     );
+    const changeValue = function (item, select) {
+      if (select) {
+        proxy.selected.push(item);
+      } else {
+        let i = proxy.selected.findIndex(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        );
+
+        proxy.selected.splice(i, 1);
+      }
+      proxy.$emit("change-value", proxy.selected, proxy.dataItem);
+    };
 
     function handleShowMessage() {
       proxy.isShowMessage = true;
@@ -263,7 +285,7 @@ export default {
       isToastMessageBox,
       clickMenu,
       isShowMessage,
-      handleShowMessage,
+      handleShowMessage,fixed_asset_id
     };
   },
 

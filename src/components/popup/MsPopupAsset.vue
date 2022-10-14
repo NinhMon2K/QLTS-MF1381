@@ -15,6 +15,8 @@
                   hasInput
                   :radius="false"
                   placeholder="Mã tài sản"
+                  disabledMessage="true"
+                  message="dd"
                 ></ms-input>
               </div>
               <div class="form-group__right">

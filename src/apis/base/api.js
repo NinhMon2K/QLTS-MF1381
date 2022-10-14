@@ -8,9 +8,12 @@ export default class BaseAPI {
   }
 
   async get(action, payload) {
+    
     let request = {
       url: this.getBaseURL() + "/" + action,
+      Data:payload
     };
+    console.log(request)
     return httpclient.getAsync(request);
   }
   async push(action, payload) {

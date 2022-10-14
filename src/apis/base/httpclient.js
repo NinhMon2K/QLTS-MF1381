@@ -103,6 +103,7 @@ class AxiosHttpClient {
         if (config.data) {
           let queryString = Qs.stringify(config.data || {});
           if (queryString) {
+            console.log(queryString)
             config.url = [config.url, queryString].join(
               config.url.indexOf("?") === -1 ? "?" : "&"
             );

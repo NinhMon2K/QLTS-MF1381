@@ -1,7 +1,7 @@
 import BaseAPI from "../base/api";
 
-class TestAPI extends BaseAPI {
+class AssetApi extends BaseAPI {
   controllerName = "Dictionary";
 }
 
-export default new TestAPI();
+export default new AssetApi();

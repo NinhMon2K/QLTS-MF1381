@@ -2,22 +2,14 @@
   <td :style="styles" :class="cls">
     <div class="td-inner">
       <template v-if="config.type == ColumnType.Checkbox">
-        <ms-checkbox></ms-checkbox>
+        <ms-checkbox v-model="select"></ms-checkbox>
       </template>
 
       <template v-else-if="config.type == ColumnType.Action">
         <div class="action-group">
           <div v-for="btn in config.action" :key="btn">
-            <ms-tooltip
-              :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
-              placement="top"
-              right="top"
-            >
-              <div
-                class="app-icon icon"
-                :class="btn.icon"
-                @click="btn.click && btn.click(btn.command, value)"
-              ></div>
+            <ms-tooltip :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'" placement="top" right="top">
+              <div class="app-icon icon" :class="btn.icon" @click="btn.click && btn.click(btn.command, value)"></div>
             </ms-tooltip>
           </div>
         </div>
@@ -29,8 +21,16 @@
 </template>
 
 <script>
+import {
+  computed,
+  getCurrentInstance,
+  onMounted,
+  reactive,
+  methods,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 import ColumnType from "@/commons/constant/ColumnType";
-import { computed } from "@vue/runtime-core";
 import commonFunction from "@/commons/commonFunction";
 import Resource from "@/resource/dictionary/resource.js";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
@@ -48,15 +48,31 @@ export default {
     value: {
       default: null,
     },
+  }, methods: {
+    emitClick(e) {
+      this.$emit("menu-item-click", this.dataItem, this.select);
+    },
   },
   setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
+    const select = ref(false);
+    onMounted(() => {
+      proxy.select = proxy.selected;
+    });
+    watch(
+      () => select.value,
+      () => {
+        console.log(proxy.select);
+        proxy.$emit("change-value", proxy.value, proxy.select);
+      }
+    );
+
     const styles = computed(() => {
       let arr = [];
       if (props.config.width) {
         arr.push("width: " + props.config.width + "px;");
         arr.push("min-width: " + props.config.width + "px;");
       }
-
       if (props.config.minWidth) {
         arr.push("min-width: " + props.config.minWidth + "px;");
       }
@@ -101,7 +117,7 @@ export default {
       ColumnType,
       styles,
       cls,
-      Resource,
+      Resource, select
     };
   },
 };

@@ -6,6 +6,10 @@
     color: red;
     font-size: 13px;
     margin-top: 5px;
+    // position: relative;
+     max-width: 100%;
+     text-overflow: ellipsis;
+    // white-space: no;
   }
   .text-label {
     display: flex;
@@ -108,4 +112,7 @@ input[type="text"]:disabled {
   &:hover {
     border: none !important;
   }
+}
+.mg-12{
+  margin-bottom: -8px !important;
 }

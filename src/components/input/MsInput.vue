@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field">
+  <div class="input-field" :class="disabledMessage ? 'mg-12' : false">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
@@ -20,6 +20,7 @@
         :id="id ? id : ''"
         class="input-text"
         type="text"
+        v-model="isValue"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -113,10 +114,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
+    const isValue = ref('');
+    const changeValue = function (e) {
+      proxy.$emit("update:modelValue", proxy.isValue);
+    };
     return {};
   },
 });
 </script>
 <style lang="scss" scope="">
 @import "./../../assets/scss/components/MsInput.scss";
+
 </style>
