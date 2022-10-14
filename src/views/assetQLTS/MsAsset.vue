@@ -9,21 +9,21 @@
         placeholder="Tìm kiếm tài sản"
         :disabledMessage="false"
       ></ms-input>
-      <ms-drop-down
-        leftIcon="ic-fillter"
-        valueField="fixed_asset_category_id"
-        displayField="fixed_asset_category_name"
-        rightIcon="ic-angle-downs"
-        placeholder="Loại tài sản"
-        :datax="comboData.value"
-      ></ms-drop-down>
       <ms-combobox
         leftIcon="ic-fillter"
         valueField="fixed_asset_category_id"
         displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
+        placeholder="Loại tài sản"
+        :dataCombo="DataAssetCategory.value"
+      ></ms-combobox>
+      <ms-combobox
+        leftIcon="ic-fillter"
+        valueField="department_id"
+        displayField="department_name"
+        rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
-        :datax="comboData.value"
+        :dataCombo="DataDepartment.value"
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
@@ -49,7 +49,11 @@
         <ms-button leftIcon="ic-delete__toolbar" id="btn-delete" :radius="true">
         </ms-button>
       </ms-tooltip>
-      <ms-popup-asset titlePopup="Thêm mới" v-if="isShowPopup"></ms-popup-asset>
+      <ms-popup-asset
+        titlePopup="Thêm mới"
+        v-if="isShowPopup"
+        :formModel="pram"
+      ></ms-popup-asset>
     </div>
   </div>
   <ms-message
@@ -86,10 +90,11 @@ import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 import MsLoading from "@/components/loading/MsLoading.vue";
 import MsMessage from "@/components/toast/MSToastMessage.vue";
-import MsDropDown from "@/components/dropdown/MsDropDown.vue";
-import { getCurrentInstance, onMounted, ref, watch } from "vue";
+
+import { getCurrentInstance, onMounted, reactive, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
+import Enum from "@/resource/dictionary/enum.js";
 import Resource from "@/resource/dictionary/resource.js";
 import { switchCase } from "@babel/types";
 export default {
@@ -99,7 +104,6 @@ export default {
     MsInput,
     MsGrid,
     MsPopupAsset,
-    MsDropDown,
     MsLoading,
     MsCombobox,
     MsTooltip,
@@ -119,33 +123,50 @@ export default {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
     const allData = ref([]);
+    const dataAssets = ref([]);
     const isLoading = ref(false);
     const isToastMessageBox = ref(false);
     const isShowMessage = ref(false);
-    const comboData = ref([]);
+    const DataAssetCategory = ref([]);
+    const DataDepartment = ref([]);
     const Loading = ref(true);
-    const fixed_asset_id = ref('');
-    const assetData = ref({
-
-      fixed_asset_id: '',
-      fixed_asset_code:''
-
+    let pram = reactive({
+      mode: 0,
+      fixed_asset_id: "",
     });
-    onMounted(async () => {
+
+    async function loadDataAsset() {
       try {
         proxy.isLoading = true;
-        // setTimeout(() => {
-        // }, 1000);
         let res = await assetAPI.get("AssetGetAll", {});
         proxy.isLoading = false;
         let data = res?.Data;
         data.forEach((x, i) => (x.STT = i + 1));
         proxy.allData.value = data;
-        let rusult = await assetAPI.get("AssetGetNameAD", {});
-        proxy.comboData.value = rusult?.Data;
       } catch (error) {
         console.log(error);
       }
+    }
+    async function loadDataCombotCategory() {
+      try {
+        let res = await assetAPI.get("CategoryGetAll", {});
+        proxy.DataAssetCategory.value = res?.Data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    async function loadDataComboDepartment() {
+      try {
+        let res = await assetAPI.get("DepartmentGetAll", {});
+        proxy.DataDepartment.value = res?.Data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    onMounted(() => {
+      proxy.loadDataAsset();
+      proxy.loadDataCombotCategory();
+      proxy.loadDataComboDepartment();
     });
 
     // methods(() => {
@@ -155,10 +176,9 @@ export default {
     const clickMenu = async (action, val) => {
       switch (action) {
         case 0: {
-          console.log(val);
-          let resultAssetID = await assetAPI.get("AssetSelectID", { fixed_asset_id : val });
-     
-          console.log(resultAssetID?.Data)
+          proxy.pram.mode = Enum.Mode.Update;
+          proxy.pram.fixed_asset_id = val;
+          proxy.handleClickAdd();
           break;
         }
         case 1: {
@@ -277,7 +297,8 @@ export default {
     return {
       columns,
       allData,
-      comboData,
+      DataAssetCategory,
+      DataDepartment,
       isLoading,
       Loading,
       ResourceTable,
@@ -285,7 +306,12 @@ export default {
       isToastMessageBox,
       clickMenu,
       isShowMessage,
-      handleShowMessage,fixed_asset_id
+      handleShowMessage,
+      dataAssets,
+      pram,
+      loadDataAsset,
+      loadDataCombotCategory,
+      loadDataComboDepartment,
     };
   },
 

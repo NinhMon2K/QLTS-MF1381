@@ -8,27 +8,24 @@ export default class BaseAPI {
   }
 
   async get(action, payload) {
-    
     let request = {
       url: this.getBaseURL() + "/" + action,
-      Data:payload
+      data: payload,
     };
-    console.log(request)
     return httpclient.getAsync(request);
   }
   async push(action, payload) {
     let request = {
       url: this.getBaseURL() + "/" + action,
-      Data:payload
+      data: payload,
     };
     return httpclient.pushAsync(request);
   }
   async post(action, payload) {
     let request = {
       url: this.getBaseURL() + "/" + action,
-      Data:payload
+      data: payload,
     };
     return httpclient.postAsync(request);
   }
-  
 }

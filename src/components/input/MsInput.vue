@@ -1,10 +1,16 @@
 <template>
-  <div class="input-field" :class="disabledMessage ? 'mg-12' : false">
+  <div class="input-field" :class="disabledMessage ? 'mg-8' : false">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
+    <div
+      class="flex-row"
+      :class="[
+        leftIcon ? 'has-icon' : '',
+        disabledMessage ? 'input__error' : '',
+      ]"
+    >
       <div class="icon-filter">
         <span
           :class="[
@@ -24,6 +30,7 @@
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
+        @change="changeValue"
       />
       <div
         :class="[
@@ -47,6 +54,7 @@ import {
   getCurrentInstance,
   reactive,
   onMounted,
+  watch,
 } from "vue";
 
 export default defineComponent({
@@ -98,7 +106,7 @@ export default defineComponent({
       default: false,
       type: Boolean,
     },
-    hasReadonly:{
+    hasReadonly: {
       default: false,
       type: Boolean,
     },
@@ -114,15 +122,21 @@ export default defineComponent({
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
-    const isValue = ref('');
+    const isValue = ref("");
+
+    watch(
+      () => proxy.modelValue,
+      (newVal) => {
+        proxy.isValue = newVal;
+      }
+    );
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
     };
-    return {};
+    return { isValue, changeValue };
   },
 });
 </script>
 <style lang="scss" scope="">
 @import "./../../assets/scss/components/MsInput.scss";
-
 </style>

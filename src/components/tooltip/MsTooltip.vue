@@ -9,16 +9,15 @@
       @mouseleave="hide"
     >
       <slot></slot>
-      <teleport to="body">
-        <div
-          :class="['tooltip', top, left, right, bottom]"
-          ref="floatingRef"
-          :style="style"
-          v-if="isHidden"
-        >
-          {{ content }}
-        </div>
-      </teleport>
+
+      <div
+        :class="['tooltip', top, left, right, bottom]"
+        ref="floatingRef"
+        :style="style"
+        v-show="isHidden"
+      >
+        {{ content }}
+      </div>
     </div>
   </div>
 </template>
@@ -107,12 +106,16 @@ export default {
       proxy.isHidden = false;
     }
     function show() {
-      proxy.isHidden = true;
+      if (props.content.length == 0) {
+        proxy.isHidden = false;
+      } else {
+        proxy.isHidden = true;
+      }
     }
 
     function setPosition() {
       let offset = proxy.$refs.referenceRef.getBoundingClientRect();
-      let lengthContent = props.content;
+      let lengthContent = props.content || "";
       let valueOffset = 0;
       if (lengthContent.length < 5) {
         valueOffset = offset.width / 3.5;
@@ -151,6 +154,7 @@ export default {
 .tooltip {
   margin-top: 8px;
   border: none;
+  position: fixed !important;
   background-color: #fff;
   color: #fff;
   position: absolute;

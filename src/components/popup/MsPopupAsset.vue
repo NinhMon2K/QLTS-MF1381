@@ -10,13 +10,13 @@
             <div class="form-group">
               <div class="form-group__left">
                 <ms-input
+                  ref="ab"
                   label="Mã tài sản"
                   hasLabel
                   hasInput
+                  v-model="dataForm.fixed_asset_code"
                   :radius="false"
                   placeholder="Mã tài sản"
-                  disabledMessage="true"
-                  message="dd"
                 ></ms-input>
               </div>
               <div class="form-group__right">
@@ -24,6 +24,7 @@
                   label="Tên tài sản"
                   hasLabel
                   hasInput
+                  v-model="dataForm.fixed_asset_name"
                   :radius="true"
                   placeholder="Nhập tên tài sản"
                 ></ms-input>
@@ -35,9 +36,12 @@
                   label="Mã bộ phận sử dụng"
                   hasLabel
                   hasInput
-                  valueField="fixed_asset_category_id"
-                  displayField="fixed_asset_category_name"
+                  :heightCb="32"
+                  v-model="dataForm.fixed_asset_name"
+                  valueField="department_id"
+                  displayField="department_code"
                   rightIcon="ic-angle-downs"
+                  :dataCombo="DataDepartment.value"
                   placeholder="Chọn mã bộ phận sử dụng"
                 ></ms-combobox>
               </div>
@@ -57,10 +61,12 @@
                   label="Mã loại tài sản"
                   hasLabel
                   hasInput
+                  :heightCb="32"
                   valueField="fixed_asset_category_id"
-                  displayField="fixed_asset_category_name"
+                  displayField="fixed_asset_category_code"
                   rightIcon="ic-angle-downs"
                   placeholder="Chọn mã loại tài sản"
+                  :dataCombo="DataAssetCategory.value"
                 ></ms-combobox>
               </div>
               <div class="form-group__right">
@@ -184,7 +190,9 @@ import {
   computed,
   resolveComponent as _resolveComponent,
   mergeProps as _mergeProps,
+  onBeforeMount,
 } from "vue";
+
 import {
   ssrRenderComponent as _ssrRenderComponent,
   ssrRenderAttrs as _ssrRenderAttrs,
@@ -195,6 +203,9 @@ import MsInputDate from "@/components/date/MsInputDate.vue";
 import MsInputNumber from "@/components/number/MsInputNumber.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
+import ResourceTable from "@/resource/dictionary/resourceTable.js";
+import Enum from "@/resource/dictionary/enum.js";
+import assetAPI from "@/apis/api/assetAPI.js";
 export default {
   name: "MsPopupAsset",
   components: {
@@ -215,6 +226,12 @@ export default {
     titlePopup: {
       default: null,
     },
+    formModel: {
+      default: {},
+    },
+    allData: {
+      default: [],
+    },
   },
   methods: {
     close() {
@@ -226,8 +243,49 @@ export default {
     // function show() {
     //   props.statePopup = true;
     // }
+    const dataForm = ref({});
+
+    const DataAssetCategory = ref([]);
+    const DataDepartment = ref([]);
+    async function loadDataCombotCategory() {
+      try {
+        let res = await assetAPI.get("CategoryGetAll", {});
+        proxy.DataAssetCategory.value = res?.Data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    async function loadDataComboDepartment() {
+      try {
+        let res = await assetAPI.get("DepartmentGetAll", {});
+        proxy.DataDepartment.value = res?.Data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    onBeforeMount(async () => {
+      try {
+        if (proxy.formModel.mode == Enum.Mode.Update) {
+          let result = await assetAPI.get("AssetSelectID", {
+            fixed_asset_id: proxy.formModel.fixed_asset_id,
+          });
+          proxy.dataForm = result?.Data && result?.Data[0];
+          console.log(proxy.dataForm.modified_by);
+        } else if (proxy.formModel.mode == Enum.Mode.Add) {
+          console.log("Them");
+        } else {
+          console.log("Delete");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    onMounted(() => {
+      proxy.loadDataCombotCategory();
+      proxy.loadDataComboDepartment();
+    });
+
     const valueDate = ref("");
-    const value3 = ref("");
     const showTitle = () => {
       let rs = props.titlePopup ? props.titlePopup : "";
       return rs;
@@ -255,6 +313,12 @@ export default {
       styles,
       title,
       valueDate,
+      ResourceTable,
+      dataForm,
+      DataAssetCategory,
+      DataDepartment,
+      loadDataCombotCategory,
+      loadDataComboDepartment,
     };
   },
 };

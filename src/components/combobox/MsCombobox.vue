@@ -4,37 +4,47 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <button
-      class="combobox-menu-toggle"
-      ref="input"
-      @click="isShowMenu = !isShowMenu"
-    >
-      <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="leftIcon"
-      ></div>
-      <input type="text" :value="display" :placeholder="placeholder" :id="id" />
-      <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="rightIcon"
-      ></div>
-    </button>
+    <ms-tooltip :content="display" placement="top" right="top">
+      <button
+        class="combobox-menu-toggle"
+        ref="input"
+        @click="isShowMenu = !isShowMenu"
+      >
+        <div
+          :class="[
+            'app-icon icon--left',
+            leftIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          v-if="leftIcon"
+        ></div>
+
+        <input
+          type="text"
+          :value="display"
+          :placeholder="placeholder"
+          :id="id"
+        />
+
+        <div
+          :class="[
+            'app-icon icon--right',
+            rightIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          v-if="rightIcon"
+        ></div>
+      </button>
+    </ms-tooltip>
     <teleport to="body">
       <div class="combobox-menu" :style="style" v-if="isShowMenu">
         <div class="combobox-content">
           <ul class="list-item--combobox">
             <ms-combobox-detail
-              v-for="item in datax"
+              v-for="item in dataCombo"
               :key="item"
               :dataItem="item"
+              :displayField="displayField"
               :class="[selected == item ? 'selected' : '']"
               @change-value="changeValue"
             >
@@ -55,12 +65,17 @@ import {
   watch,
 } from "@vue/runtime-core";
 import MsComboboxDetail from "./MsComboboxDetail.vue";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
   name: "MsCombobox",
   components: {
     MsComboboxDetail,
+    MsTooltip,
   },
   props: {
+    modelValue: {
+      default: null,
+    },
     texts: {
       default: null,
       type: String,
@@ -69,7 +84,7 @@ export default {
       default: null,
       type: String,
     },
-    datax: {
+    dataCombo: {
       default: [],
     },
     id: {
@@ -122,11 +137,11 @@ export default {
     window.ab = proxy;
 
     const display = computed(() =>
-      proxy.selected.map((x) => x[props.displayField]).join(";")
+      proxy.selected.map((x) => x[props.displayField]).join("; ")
     );
 
     const objSelected = computed(() =>
-      proxy.datax.reduce(
+      proxy.dataCombo.reduce(
         (o, x) => ({
           ...o,
           [x[proxy.valueField]]: proxy.selected.includes(x),
@@ -183,8 +198,8 @@ export default {
       offsetDropdown.width = offset.width;
       offsetDropdown.height = 200.5 - this.heightCb;
     }
-
     const changeValue = function (item, select) {
+      proxy.$emit("update:modelValue", proxy.selected);
       if (select) {
         proxy.selected.push(item);
       } else {

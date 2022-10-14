@@ -8,8 +8,16 @@
       <template v-else-if="config.type == ColumnType.Action">
         <div class="action-group">
           <div v-for="btn in config.action" :key="btn">
-            <ms-tooltip :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'" placement="top" right="top">
-              <div class="app-icon icon" :class="btn.icon" @click="btn.click && btn.click(btn.command, value)"></div>
+            <ms-tooltip
+              :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
+              placement="top"
+              right="top"
+            >
+              <div
+                class="app-icon icon"
+                :class="btn.icon"
+                @click="btn.click && btn.click(btn.command, value)"
+              ></div>
             </ms-tooltip>
           </div>
         </div>
@@ -48,7 +56,8 @@ export default {
     value: {
       default: null,
     },
-  }, methods: {
+  },
+  methods: {
     emitClick(e) {
       this.$emit("menu-item-click", this.dataItem, this.select);
     },
@@ -62,7 +71,6 @@ export default {
     watch(
       () => select.value,
       () => {
-        console.log(proxy.select);
         proxy.$emit("change-value", proxy.value, proxy.select);
       }
     );
@@ -117,7 +125,8 @@ export default {
       ColumnType,
       styles,
       cls,
-      Resource, select
+      Resource,
+      select,
     };
   },
 };

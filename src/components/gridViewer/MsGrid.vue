@@ -122,6 +122,7 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+
     const handleCost = (allData) => {
       let a = 0;
       a = allData.columns;

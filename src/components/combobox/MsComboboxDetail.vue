@@ -1,8 +1,9 @@
 <template>
-  <ms-tooltip :content="dataItem.fixed_asset_category_name" placement="right">
+  <ms-tooltip :content="dataItem[displayField]" placement="right">
     <li
       class="item-combobox"
       tabindex="-1"
+      :class="select ? 'active' : ''"
       @click="emitClick"
       @keyup.enter="emitClick"
       @keyup.space="emitClick"
@@ -11,7 +12,7 @@
         <ms-checkbox class="ic-checked" v-model="select"></ms-checkbox>
       </div>
 
-      <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
+      <div class="text-item">{{ dataItem[displayField] }}</div>
     </li>
   </ms-tooltip>
 </template>
@@ -41,6 +42,14 @@ export default {
     dataItem: {
       default: {},
     },
+    valueField: {
+      default: null,
+      type: String,
+    },
+    displayField: {
+      default: null,
+      type: String,
+    },
     selected: {
       type: Boolean,
       default: false,
@@ -55,6 +64,8 @@ export default {
     const { proxy } = getCurrentInstance();
 
     const select = ref(false);
+
+    !window.ac && (window.ac = proxy);
 
     onMounted(() => {
       proxy.select = proxy.selected;
@@ -91,11 +102,8 @@ export default {
   &:focus,
   &:focus-within {
     transition: 0.5s;
-    background-color: #c7e0f5;
+    /* background-color: #c7e0f5; */
     cursor: pointer;
-    .icon_left-combobox {
-      background-image: url("./../../assets/images/icons/icons8-v-24.png");
-    }
   }
   &:hover {
     transition: 0.2s;
@@ -124,4 +132,7 @@ export default {
   &::after {
   }
 } */
+.active {
+  background-color: #c7e0f5;
+}
 </style>
