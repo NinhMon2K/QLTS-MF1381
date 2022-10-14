@@ -1,19 +1,19 @@
 <template>
-   <ms-tooltip :content="dataItem.fixed_asset_category_name" placement="right">
-  <li
-    class="item-combobox"
-    tabindex="-1"
-    @click="emitClick"
-    @keyup.enter="emitClick"
-    @keyup.space="emitClick"
-  >
-    <div class="app-icon">
-      <input type="checkbox" v-model="select" @change="changeValue" />
-    </div>
-   
-    <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
-  </li>
-</ms-tooltip>
+  <ms-tooltip :content="dataItem.fixed_asset_category_name" placement="right">
+    <li
+      class="item-combobox"
+      tabindex="-1"
+      @click="emitClick"
+      @keyup.enter="emitClick"
+      @keyup.space="emitClick"
+    >
+      <div class="app-icon">
+        <ms-checkbox class="ic-checked" v-model="select"></ms-checkbox>
+      </div>
+
+      <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
+    </li>
+  </ms-tooltip>
 </template>
 <script>
 import {
@@ -26,8 +26,9 @@ import {
   watch,
 } from "@vue/runtime-core";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
+import MsCheckbox from "@/components/input/MsCheckbox.vue";
 export default {
-  components:{MsTooltip},
+  components: { MsTooltip, MsCheckbox },
   props: {
     icon: {
       type: [Array, String],
@@ -47,7 +48,7 @@ export default {
   },
   methods: {
     emitClick(e) {
-      this.$emit("menu-item-click", this.dataItem, this.selected);
+      this.$emit("menu-item-click", this.dataItem, this.select);
     },
   },
   setup(props, { emit }) {
@@ -55,11 +56,20 @@ export default {
 
     const select = ref(false);
 
-    const changeValue = function (e) {
-      proxy.$emit("change-value", proxy.dataItem, proxy.select);
-    };
+    onMounted(() => {
+      proxy.select = proxy.selected;
+    });
 
-    return { changeValue, select };
+    watch(
+      () => select.value,
+      () => {
+        nextTick(() => {
+          proxy.$emit("change-value", proxy.dataItem, proxy.select);
+        });
+      }
+    );
+
+    return { select };
   },
 };
 </script>
@@ -103,4 +113,15 @@ export default {
     padding-left: 18px;
   }
 }
+/* input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  background-color: #d5d5d5;
+  border-radius: 4px;
+  cursor: pointer;
+  &::after {
+  }
+} */
 </style>

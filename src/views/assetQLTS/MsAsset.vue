@@ -52,6 +52,11 @@
       <ms-popup-asset titlePopup="Thêm mới" v-if="isShowPopup"></ms-popup-asset>
     </div>
   </div>
+  <ms-message
+    v-if="isShowMessage"
+    textMessage="ddddsadas"
+    iconMessage="ic-success"
+  ></ms-message>
   <teleport to="body">
     <ms-message-box
       leftIcon="ic-warning"
@@ -65,6 +70,7 @@
       <ms-button text="Xóa" radius></ms-button>
     </ms-message-box>
   </teleport>
+
   <teleport to="body">
     <ms-loading v-if="isLoading"></ms-loading>
   </teleport>
@@ -79,11 +85,13 @@ import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 import MsLoading from "@/components/loading/MsLoading.vue";
+import MsMessage from "@/components/toast/MSToastMessage.vue";
 import MsDropDown from "@/components/dropdown/MsDropDown.vue";
 import { getCurrentInstance, onMounted, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
 import Resource from "@/resource/dictionary/resource.js";
+import { switchCase } from "@babel/types";
 export default {
   name: "MsAsset",
   components: {
@@ -96,6 +104,7 @@ export default {
     MsCombobox,
     MsTooltip,
     MsMessageBox,
+    MsMessage,
   },
   methods: {
     handleClickAdd() {
@@ -112,6 +121,7 @@ export default {
     const allData = ref([]);
     const isLoading = ref(false);
     const isToastMessageBox = ref(false);
+    const isShowMessage = ref(false);
     const comboData = ref([]);
     const Loading = ref(true);
     onMounted(async () => {
@@ -135,10 +145,36 @@ export default {
     //   proxy.Loading = true;
     // });
 
+    const clickMenu = (action, val) => {
+      switch (action) {
+        case 0: {
+          console.log(val);
+          break;
+        }
+        case 1: {
+          console.log(val);
+          break;
+        }
+      }
+    };
+    watch(
+      () => isShowMessage.value,
+      () => {
+        proxy.handleShowMessage();
+      }
+    );
+
+    function handleShowMessage() {
+      proxy.isShowMessage = true;
+      setTimeout(() => {
+        proxy.isShowMessage = false;
+      }, 2000);
+      return proxy.isShowMessage;
+    }
     const columns = ref([
       {
-        field: "selected",
-        title: "abc",
+        field: ResourceTable.FieldAsset.fixedAssetId,
+        title: "checkbox",
         type: "Checkbox",
         width: 50,
       },
@@ -197,18 +233,20 @@ export default {
         width: 110,
       },
       {
-        field: "c",
+        field: ResourceTable.FieldAsset.fixedAssetId,
         title: ResourceTable.Controls.FunctionControl,
         type: "Action",
         width: 100,
         action: [
           {
-            command: "edit",
+            command: 0,
             icon: "ic-edit",
+            click: clickMenu,
           },
           {
-            command: "replication",
+            command: 1,
             icon: "ic-replication",
+            click: clickMenu,
           },
         ],
       },
@@ -223,6 +261,9 @@ export default {
       ResourceTable,
       Resource,
       isToastMessageBox,
+      clickMenu,
+      isShowMessage,
+      handleShowMessage,
     };
   },
 

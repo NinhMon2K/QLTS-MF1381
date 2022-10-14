@@ -27,15 +27,19 @@
     </div>
 
     <div class="wrap-bottom-menu">
-      <ms-tooltip :content="collapsed ? 'Mở ra' : 'Thu vào'" placement="top" right="top">
-      <div
-        class="menu-resize"
-        :class="{ 'rotate-180': collapsed }"
-        @click="toggleSideBar"
+      <ms-tooltip
+        :content="collapsed ? 'Mở ra' : 'Thu vào'"
+        placement="top"
+        right="top"
       >
-        <div class="resize-icon app-icon ic-back"></div>
-      </div>
-    </ms-tooltip>
+        <div
+          class="menu-resize"
+          :class="{ 'rotate-180': collapsed }"
+          @click="toggleSideBar"
+        >
+          <div class="resize-icon app-icon ic-back"></div>
+        </div>
+      </ms-tooltip>
     </div>
   </div>
 </template>
@@ -55,7 +59,7 @@ import {
 
 export default {
   name: "LeftMenu",
-  components: {MsTooltip},
+  components: { MsTooltip },
   data() {
     return {};
   },
@@ -92,8 +96,7 @@ export default {
     function activeMenu() {
       let pathName = location.pathname.toLowerCase();
       let item = proxy.menuItems.find((x) => x.path == pathName);
-       proxy.activeItem = item;
-      // proxy.activeItem = item || proxy.menuItems[1];
+      proxy.activeItem = item || proxy.menuItems[1];
     }
 
     const cancelEvent = (e) => {

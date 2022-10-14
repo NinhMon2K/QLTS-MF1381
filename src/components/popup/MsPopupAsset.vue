@@ -43,8 +43,8 @@
                 <ms-input
                   label="Tên bộ phận sử dụng"
                   hasLabel
-                  hasReadonly="true"
-                  disabled="true" 
+                  :hasReadonly="true"
+                  :disabled="true"
                   :radius="true"
                 ></ms-input>
               </div>
@@ -64,9 +64,9 @@
               <div class="form-group__right">
                 <ms-input
                   label="Tên loại tài sản"
-                  hasReadonly="true"
+                  :hasReadonly="true"
                   hasLabel
-                  disabled="true" 
+                  :disabled="true"
                   :radius="true"
                 ></ms-input>
               </div>

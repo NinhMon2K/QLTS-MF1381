@@ -2,7 +2,7 @@
   <th :style="styles">
     <div class="th-inner">
       <template v-if="config.type == ColumnType.Checkbox">
-        <input type="checkbox" />
+        <ms-checkbox></ms-checkbox>
       </template>
 
       <template v-else>
@@ -15,9 +15,12 @@
 <script>
 import ColumnType from "@/commons/constant/ColumnType";
 import { computed } from "@vue/runtime-core";
-
+import MsCheckbox from "@/components/input/MsCheckbox.vue";
 export default {
   name: "MsTh",
+  components: {
+    MsCheckbox,
+  },
   props: {
     config: {
       default: {},

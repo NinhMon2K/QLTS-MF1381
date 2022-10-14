@@ -2,14 +2,22 @@
   <td :style="styles" :class="cls">
     <div class="td-inner">
       <template v-if="config.type == ColumnType.Checkbox">
-        <input type="checkbox" :value="value" />
+        <ms-checkbox></ms-checkbox>
       </template>
 
       <template v-else-if="config.type == ColumnType.Action">
         <div class="action-group">
           <div v-for="btn in config.action" :key="btn">
-            <ms-tooltip :content="btn.icon == 'ic-edit' ? 'Sửa' : 'Nhân bản'" placement="top" right="top">
-              <div class="app-icon icon" :class="btn.icon"></div>
+            <ms-tooltip
+              :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
+              placement="top"
+              right="top"
+            >
+              <div
+                class="app-icon icon"
+                :class="btn.icon"
+                @click="btn.click && btn.click(btn.command, value)"
+              ></div>
             </ms-tooltip>
           </div>
         </div>
@@ -24,12 +32,14 @@
 import ColumnType from "@/commons/constant/ColumnType";
 import { computed } from "@vue/runtime-core";
 import commonFunction from "@/commons/commonFunction";
-import Resource from "@/resource/dictionary/resource.js"
+import Resource from "@/resource/dictionary/resource.js";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
+import MsCheckbox from "@/components/input/MsCheckbox.vue";
 export default {
   name: "MsTd",
   components: {
-    MsTooltip
+    MsTooltip,
+    MsCheckbox,
   },
   props: {
     config: {
@@ -91,7 +101,7 @@ export default {
       ColumnType,
       styles,
       cls,
-      Resource
+      Resource,
     };
   },
 };

@@ -17,7 +17,7 @@
         ]"
         v-if="leftIcon"
       ></div>
-      <input type="text" :value="display" :placeholder="placeholder" />
+      <input type="text" :value="display" :placeholder="placeholder" :id="id" />
       <div
         :class="[
           'app-icon icon--right',
@@ -72,6 +72,10 @@ export default {
     datax: {
       default: [],
     },
+    id: {
+      default: null,
+      type: String,
+    },
     rightIcon: {
       default: null,
       type: String,
@@ -112,12 +116,23 @@ export default {
     const { proxy } = getCurrentInstance();
 
     const selected = ref([]);
+    // const objSelected = ref({});
     window.c = proxy;
 
     window.ab = proxy;
 
     const display = computed(() =>
       proxy.selected.map((x) => x[props.displayField]).join(";")
+    );
+
+    const objSelected = computed(() =>
+      proxy.datax.reduce(
+        (o, x) => ({
+          ...o,
+          [x[proxy.valueField]]: proxy.selected.includes(x),
+        }),
+        {}
+      )
     );
 
     const offsetPosi = reactive({
@@ -177,7 +192,7 @@ export default {
           (x) => x[proxy.valueField] == item[proxy.valueField]
         );
 
-        proxy.selected.slice(i, 1);
+        proxy.selected.splice(i, 1);
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
     };
@@ -191,6 +206,7 @@ export default {
       display,
       selected,
       changeValue,
+      objSelected,
     };
   },
 };

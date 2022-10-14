@@ -14,7 +14,7 @@
           :class="['tooltip', top, left, right, bottom]"
           ref="floatingRef"
           :style="style"
-          v-show="isHidden"
+          v-if="isHidden"
         >
           {{ content }}
         </div>
@@ -80,15 +80,16 @@ export default {
       if (props.placement == "bottom") {
         arr.push(`top: ${offsetPosi.top}px`);
         arr.push(`left: ${offsetPosi.left}px`);
-      } 
-       if (props.placement == "top") {
+      }
+      if (props.placement == "top") {
         arr.push(`top: ${offsetPosi.top}px`);
         arr.push(`left: ${offsetPosi.left}px`);
-      } 
-       if (props.placement == "left") {
+      }
+      if (props.placement == "left") {
         arr.push(`left: ${offsetPosi.left}px`);
         arr.push(`top: ${offsetPosi.top}px`);
-      } if(props.placement == "right") {
+      }
+      if (props.placement == "right") {
         arr.push(`left: ${offsetPosi.right}px`);
         arr.push(`top: ${offsetPosi.top}px`);
       }
@@ -121,18 +122,18 @@ export default {
       if (this.placement == "bottom") {
         offsetPosi.top = offset.bottom;
         offsetPosi.left = offset.left + valueOffset - 5;
-      } 
-       if (this.placement == "top") {
+      }
+      if (this.placement == "top") {
         offsetPosi.top = offset.top - offset.height - 6;
         offsetPosi.left = offset.left + valueOffset;
-      } 
-       if (this.placement == "left") {
+      }
+      if (this.placement == "left") {
         offsetPosi.top = offset.top;
         offsetPosi.left = offset.left - offset.width + 5;
-      } 
-      if(this.placement == "right") {
+      }
+      if (this.placement == "right") {
         offsetPosi.top = offset.top;
-        offsetPosi.right = offset.left + offset.width+15;
+        offsetPosi.right = offset.left + offset.width + 15;
       }
     }
     return {
