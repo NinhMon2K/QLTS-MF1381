@@ -56,25 +56,74 @@
       ></ms-popup-asset>
     </div>
   </div>
-  <ms-message
-    v-if="isShowMessage"
-    textMessage="ddddsadas"
-    iconMessage="ic-success"
-  ></ms-message>
+
+  <!-- Dialog xóa nhiều dòng -->
   <teleport to="body">
     <ms-message-box
       leftIcon="ic-warning"
       valueMessageBox="09"
       :textMessageBox="Resource.TitleDialogMessage.DeleteMultiple.VI"
-      :disabledValueLeft="false"
+      :disabledValueLeft="true"
       :disabledValueRight="false"
-      v-if="isToastMessageBox"
+      v-if="isDialogMessDeleMultiple"
     >
-      <ms-button text="Không" type="secodary" radius></ms-button>
-      <ms-button text="Xóa" radius></ms-button>
+      <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
     </ms-message-box>
   </teleport>
 
+  <!-- Dialog xóa 1 dòng -->
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      valueMessageBox="09"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteOneAsset.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="true"
+      v-if="isDialogMessDelete"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
+    </ms-message-box>
+  </teleport>
+
+  <!-- Dialog cancel xóa -->
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      valueMessageBox="09"
+      :textMessageBox="Resource.TitleDialogMessage.CancelDelete.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelDelete"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Close.VI" radius></ms-button>
+    </ms-message-box>
+  </teleport>
+
+  <!-- Dialog cancel xóa nhiều dòng -->
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      valueMessageBox="09"
+      :textMessageBox="Resource.TitleDialogMessage.CancelDeleteMultiple.VI"
+      :disabledValueLeft="true"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelDeleMultiple"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Agree.VI" radius></ms-button>
+    </ms-message-box>
+  </teleport>
+
+  <!-- Loading form -->
   <teleport to="body">
     <ms-loading v-if="isLoading"></ms-loading>
   </teleport>
@@ -89,8 +138,6 @@ import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 import MsLoading from "@/components/loading/MsLoading.vue";
-import MsMessage from "@/components/toast/MSToastMessage.vue";
-
 import { getCurrentInstance, onMounted, reactive, ref, watch } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
@@ -108,7 +155,6 @@ export default {
     MsCombobox,
     MsTooltip,
     MsMessageBox,
-    MsMessage,
   },
   methods: {
     handleClickAdd() {
@@ -122,11 +168,19 @@ export default {
   async setup() {
     const { proxy } = getCurrentInstance();
     window.a = proxy;
+    //Loading form
+    const isLoading = ref(false);
+
+    //Show Dialog MessageBox xóa nhiều dòng
+    const isDialogMessDeleMultiple = ref(false);
+    //Show Dialog MessageBox xóa 1 dòng
+    const isDialogMessDelete = ref(false);
+    //Show Dialog MessageBox không thể xóa 1 dòng
+    const isDialogMessCancelDelete = ref(false);
+    //Show Dialog MessageBox không thể xóa nhiều dòng
+    const isDialogMessCancelDeleMultiple = ref(false);
     const allData = ref([]);
     const dataAssets = ref([]);
-    const isLoading = ref(false);
-    const isToastMessageBox = ref(false);
-    const isShowMessage = ref(false);
     const DataAssetCategory = ref([]);
     const DataDepartment = ref([]);
     const Loading = ref(true);
@@ -187,12 +241,7 @@ export default {
         }
       }
     };
-    watch(
-      () => isShowMessage.value,
-      () => {
-        proxy.handleShowMessage();
-      }
-    );
+
     const changeValue = function (item, select) {
       if (select) {
         proxy.selected.push(item);
@@ -205,14 +254,6 @@ export default {
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
     };
-
-    function handleShowMessage() {
-      proxy.isShowMessage = true;
-      setTimeout(() => {
-        proxy.isShowMessage = false;
-      }, 2000);
-      return proxy.isShowMessage;
-    }
     const columns = ref([
       {
         field: ResourceTable.FieldAsset.fixedAssetId,
@@ -303,10 +344,11 @@ export default {
       Loading,
       ResourceTable,
       Resource,
-      isToastMessageBox,
+      isDialogMessDeleMultiple,
+      isDialogMessDelete,
+      isDialogMessCancelDelete,
+      isDialogMessCancelDeleMultiple,
       clickMenu,
-      isShowMessage,
-      handleShowMessage,
       dataAssets,
       pram,
       loadDataAsset,

@@ -20,6 +20,7 @@
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>
             {{ textMessageBox }}
             <span v-if="disabledValueRight">{{ valueMessageBox }}</span>
+            <span v-if="disabledValueRight" class="span__right">?</span>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="toast-wrapper">
+  <div class="toast-wrapper" v-if="displayToast">
     <div class="toast-content">
       <div
         class="icon-message"
@@ -14,6 +14,15 @@
   </div>
 </template>
 <script>
+import {
+  defineComponent,
+  computed,
+  ref,
+  getCurrentInstance,
+  reactive,
+  onMounted,
+  watch,
+} from "vue";
 export default {
   name: "MsMessage",
   props: {
@@ -30,7 +39,19 @@ export default {
       type: Boolean,
     },
   },
-  setup() {},
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
+    const displayToast = ref(false);
+    onMounted(() => {
+      proxy.displayToast = true;
+      setTimeout(() => {
+        proxy.displayToast = false;
+      }, 3000);
+    });
+    return {
+      displayToast,
+    };
+  },
 };
 </script>
 <style lang="scss" scoped>

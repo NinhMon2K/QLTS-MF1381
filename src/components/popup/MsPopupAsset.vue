@@ -180,6 +180,54 @@
       </div>
     </div>
   </teleport>
+
+  <!-- Toast message thêm mới thành công -->
+  <ms-message
+    v-if="isShowMessage"
+    textMessage="Thêm mới dữ liệu thành công"
+    iconMessage="ic-success"
+  ></ms-message>
+
+  <!-- Dialog messagebox hủy bỏ khai báo -->
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.AddAsset.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelAdd"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Cancel.VI" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
+    </ms-message-box>
+  </teleport>
+
+  <!-- Dialog messagebox cập nhật -->
+  <teleport to="body">
+    <ms-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessUpdate"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Save.VI" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoSave.VI"
+        type="abort"
+        radius
+      ></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
+    </ms-message-box>
+  </teleport>
 </template>
 <script>
 import {
@@ -192,7 +240,6 @@ import {
   mergeProps as _mergeProps,
   onBeforeMount,
 } from "vue";
-
 import {
   ssrRenderComponent as _ssrRenderComponent,
   ssrRenderAttrs as _ssrRenderAttrs,
@@ -203,6 +250,9 @@ import MsInputDate from "@/components/date/MsInputDate.vue";
 import MsInputNumber from "@/components/number/MsInputNumber.vue";
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
+import MsMessage from "@/components/toast/MSToastMessage.vue";
+import MsMessageBox from "@/components/toast/MsMessageBox.vue";
+import Resource from "@/resource/dictionary/resource.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
 import Enum from "@/resource/dictionary/enum.js";
 import assetAPI from "@/apis/api/assetAPI.js";
@@ -215,6 +265,8 @@ export default {
     MsInputNumber,
     MsInputDate,
     MsTooltip,
+    MsMessage,
+    MsMessageBox,
   },
   props: {
     configStyle: {
@@ -243,6 +295,14 @@ export default {
     // function show() {
     //   props.statePopup = true;
     // }
+
+    //Show toastMessage
+    const isShowMessage = ref(false);
+
+    const isDialogMessCancelAdd = ref(false);
+
+    //Show dialog cập nhật
+    const isDialogMessUpdate = ref(false);
     const dataForm = ref({});
 
     const DataAssetCategory = ref([]);
@@ -312,7 +372,11 @@ export default {
     return {
       styles,
       title,
+      isShowMessage,
+      isDialogMessCancelAdd,
+      isDialogMessUpdate,
       valueDate,
+      Resource,
       ResourceTable,
       dataForm,
       DataAssetCategory,

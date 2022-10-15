@@ -72,4 +72,24 @@
       }
     }
   }
+  &.abort {
+    background-color: #fff;
+    border: 1px solid #29a9cb;
+    color: #29a9cb;
+    .btn-text {
+      color: #29a9cb;
+    }
+    &:hover {
+      background-color: #1aa4c8;
+      .btn-text {
+        color: #fff;
+      }
+    }
+    &:active {
+      background-color: #26b9df;
+      .btn-text {
+        color: #fff;
+      }
+    }
+  }
 }

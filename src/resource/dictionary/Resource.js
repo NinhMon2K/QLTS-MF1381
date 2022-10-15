@@ -67,6 +67,9 @@ export default {
     Delete: {
       VI: "Xóa",
     },
+    Agree:{
+      VI:"Đồng ý"
+    }
   },
   TitleFormPopup: {
     FormAddAsset: {
@@ -104,6 +107,12 @@ export default {
     },
     SaveUpdate: {
       VI: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này?",
+    },
+    CancelDelete: {
+      VI: "Không thể xóa tài sản này vì đã có chứng từ phát sinh.",
+    },
+    CancelDeleteMultiple: {
+      VI: "tài sản được chọn không thể xóa. Vui lòng kiểm tra lại tài sản trước khi thực hiện xóa.",
     },
   },
   Method: {
