@@ -41,7 +41,7 @@
         <div class="combobox-content">
           <ul class="list-item--combobox">
             <ms-combobox-detail
-              v-for="item in dataCombo"
+              v-for="item in dataAll"
               :key="item"
               :dataItem="item"
               :displayField="displayField"
@@ -84,7 +84,7 @@ export default {
       default: null,
       type: String,
     },
-    dataCombo: {
+    dataAll: {
       default: [],
     },
     id: {
@@ -141,7 +141,7 @@ export default {
     );
 
     const objSelected = computed(() =>
-      proxy.dataCombo.reduce(
+      proxy.dataAll.reduce(
         (o, x) => ({
           ...o,
           [x[proxy.valueField]]: proxy.selected.includes(x),
@@ -187,6 +187,7 @@ export default {
     onMounted(() => {
       proxy.setPosition();
       proxy.setDropdown();
+      proxy.initEvent();
     });
     function setPosition() {
       let offset = proxy.$refs.input.getBoundingClientRect();
@@ -211,8 +212,22 @@ export default {
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
     };
+    function initEvent() {
+      document.addEventListener("click", (e) => {
+        if (proxy.isShowMenu) {
+          let target = e.target;
+          let cbo =
+            target.closest(".combobox-menu") ||
+            target.closest(".combobox-menu-toggle");
+          if (!cbo) {
+            proxy.isShowMenu = false;
+          }
+        }
+      });
+    }
 
     return {
+      initEvent,
       itemClick,
       setPosition,
       setDropdown,

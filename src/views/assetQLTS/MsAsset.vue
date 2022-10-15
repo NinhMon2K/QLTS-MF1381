@@ -15,7 +15,7 @@
         displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
-        :dataCombo="DataAssetCategory.value"
+        :dataAll="DataAssetCategory.value"
       ></ms-combobox>
       <ms-combobox
         leftIcon="ic-fillter"
@@ -23,7 +23,7 @@
         displayField="department_name"
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
-        :dataCombo="DataDepartment.value"
+        :dataAll="DataDepartment.value"
       ></ms-combobox>
     </div>
     <div class="toolbar-right">
@@ -49,11 +49,7 @@
         <ms-button leftIcon="ic-delete__toolbar" id="btn-delete" :radius="true">
         </ms-button>
       </ms-tooltip>
-      <ms-popup-asset
-        titlePopup="Thêm mới"
-        v-if="isShowPopup"
-        :formModel="pram"
-      ></ms-popup-asset>
+      <ms-popup-asset v-if="isShowPopup" :formModel="pram"></ms-popup-asset>
     </div>
   </div>
 
@@ -134,6 +130,7 @@ import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import MsMessageBox from "@/components/toast/MsMessageBox.vue";
+
 import MsCombobox from "@/components/combobox/MsCombobox.vue";
 import MsGrid from "@/components/gridViewer/MsGrid.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
@@ -157,9 +154,6 @@ export default {
     MsMessageBox,
   },
   methods: {
-    handleClickAdd() {
-      this.isShowPopup = true;
-    },
     close() {
       this.isShowPopup = false;
     },
@@ -179,6 +173,8 @@ export default {
     const isDialogMessCancelDelete = ref(false);
     //Show Dialog MessageBox không thể xóa nhiều dòng
     const isDialogMessCancelDeleMultiple = ref(false);
+
+    const isShowMessage = ref(false);
     const allData = ref([]);
     const dataAssets = ref([]);
     const DataAssetCategory = ref([]);
@@ -227,16 +223,22 @@ export default {
     //   proxy.Loading = true;
     // });
 
+    const handleClickAdd = () => {
+      proxy.pram.mode = Enum.Mode.Add;
+      proxy.isShowPopup = true;
+    };
     const clickMenu = async (action, val) => {
       switch (action) {
         case 0: {
           proxy.pram.mode = Enum.Mode.Update;
           proxy.pram.fixed_asset_id = val;
-          proxy.handleClickAdd();
+          proxy.isShowPopup = true;
           break;
         }
         case 1: {
-          console.log(val);
+          proxy.pram.mode = Enum.Mode.Duplicate;
+          proxy.pram.fixed_asset_id = val;
+          proxy.isShowPopup = true;
           break;
         }
       }
@@ -354,6 +356,8 @@ export default {
       loadDataAsset,
       loadDataCombotCategory,
       loadDataComboDepartment,
+      isShowMessage,
+      handleClickAdd,
     };
   },
 

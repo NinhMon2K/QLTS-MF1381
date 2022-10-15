@@ -32,23 +32,26 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-combobox
+                <ms-drop-down
                   label="Mã bộ phận sử dụng"
+                  ref="cb"
                   hasLabel
                   hasInput
                   :heightCb="32"
-                  v-model="dataForm.fixed_asset_name"
+                  v-model="dataForm.department_id"
                   valueField="department_id"
                   displayField="department_code"
                   rightIcon="ic-angle-downs"
-                  :dataCombo="DataDepartment.value"
+                  :dataAll="DataDepartment.value"
                   placeholder="Chọn mã bộ phận sử dụng"
-                ></ms-combobox>
+                  @item-click="clickDataDepartment"
+                ></ms-drop-down>
               </div>
               <div class="form-group__right">
                 <ms-input
                   label="Tên bộ phận sử dụng"
                   hasLabel
+                  v-model="dataForm.department_name"
                   :hasReadonly="true"
                   :disabled="true"
                   :radius="true"
@@ -57,23 +60,26 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-combobox
+                <ms-drop-down
                   label="Mã loại tài sản"
                   hasLabel
                   hasInput
                   :heightCb="32"
+                  v-model="dataForm.fixed_asset_category_id"
                   valueField="fixed_asset_category_id"
                   displayField="fixed_asset_category_code"
                   rightIcon="ic-angle-downs"
                   placeholder="Chọn mã loại tài sản"
-                  :dataCombo="DataAssetCategory.value"
-                ></ms-combobox>
+                  :dataAll="DataAssetCategory.value"
+                  @item-click="clickDataAssetCategory"
+                ></ms-drop-down>
               </div>
               <div class="form-group__right">
                 <ms-input
                   label="Tên loại tài sản"
                   :hasReadonly="true"
                   hasLabel
+                  v-model="dataForm.fixed_asset_category_name"
                   :disabled="true"
                   :radius="true"
                 ></ms-input>
@@ -248,7 +254,7 @@ import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsInputDate from "@/components/date/MsInputDate.vue";
 import MsInputNumber from "@/components/number/MsInputNumber.vue";
-import MsCombobox from "@/components/combobox/MsCombobox.vue";
+import MsDropDown from "@/components/dropdown/MsDropDown.vue";
 import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 import MsMessage from "@/components/toast/MSToastMessage.vue";
 import MsMessageBox from "@/components/toast/MsMessageBox.vue";
@@ -256,12 +262,13 @@ import Resource from "@/resource/dictionary/resource.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
 import Enum from "@/resource/dictionary/enum.js";
 import assetAPI from "@/apis/api/assetAPI.js";
+import { hide } from "@floating-ui/core";
 export default {
   name: "MsPopupAsset",
   components: {
     MsButton,
     MsInput,
-    MsCombobox,
+    MsDropDown,
     MsInputNumber,
     MsInputDate,
     MsTooltip,
@@ -274,9 +281,6 @@ export default {
     },
     statePopup: {
       default: false,
-    },
-    titlePopup: {
-      default: null,
     },
     formModel: {
       default: {},
@@ -297,6 +301,7 @@ export default {
     // }
 
     //Show toastMessage
+    window.u = proxy;
     const isShowMessage = ref(false);
 
     const isDialogMessCancelAdd = ref(false);
@@ -307,6 +312,9 @@ export default {
 
     const DataAssetCategory = ref([]);
     const DataDepartment = ref([]);
+
+    const title = ref("");
+
     async function loadDataCombotCategory() {
       try {
         let res = await assetAPI.get("CategoryGetAll", {});
@@ -325,16 +333,28 @@ export default {
     }
     onBeforeMount(async () => {
       try {
-        if (proxy.formModel.mode == Enum.Mode.Update) {
-          let result = await assetAPI.get("AssetSelectID", {
-            fixed_asset_id: proxy.formModel.fixed_asset_id,
-          });
-          proxy.dataForm = result?.Data && result?.Data[0];
-          console.log(proxy.dataForm.modified_by);
-        } else if (proxy.formModel.mode == Enum.Mode.Add) {
-          console.log("Them");
-        } else {
-          console.log("Delete");
+        console.log(proxy.formModel.mode);
+        switch (proxy.formModel.mode) {
+          case Enum.Mode.Update: {
+            proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
+            let result = await assetAPI.get("AssetSelectID", {
+              fixed_asset_id: proxy.formModel.fixed_asset_id,
+            });
+            proxy.dataForm = result?.Data && result?.Data[0];
+            break;
+          }
+          case Enum.Mode.Add: {
+            proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
+
+            break;
+          }
+          case Enum.Mode.Duplicate: {
+            proxy.title = Resource.TitleFormPopup.FormDuplicateAsset.VI;
+
+            break;
+          }
+          default:
+            break;
         }
       } catch (error) {
         console.log(error);
@@ -346,19 +366,12 @@ export default {
     });
 
     const valueDate = ref("");
-    const showTitle = () => {
-      let rs = props.titlePopup ? props.titlePopup : "";
-      return rs;
-    };
-
-    const title = computed(() => showTitle());
     const styles = computed(() => {
       let arr = [];
       if (props.configStyle.width) {
         arr.push("width: " + props.configStyle.width + "px;");
         arr.push("min-width: " + props.configStyle.width + "px;");
       }
-
       if (props.configStyle.minWidth) {
         arr.push("min-width: " + props.configStyle.minWidth + "px;");
       }
@@ -368,6 +381,13 @@ export default {
       }
       return arr.join("; ");
     });
+
+    const clickDataDepartment = (item) => {
+      proxy.dataForm.department_name = item.department_name;
+    };
+    const clickDataAssetCategory = (item) => {
+      proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
+    };
 
     return {
       styles,
@@ -383,6 +403,8 @@ export default {
       DataDepartment,
       loadDataCombotCategory,
       loadDataComboDepartment,
+      clickDataDepartment,
+      clickDataAssetCategory,
     };
   },
 };

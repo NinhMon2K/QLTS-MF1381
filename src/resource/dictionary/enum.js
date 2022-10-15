@@ -1,8 +1,8 @@
 export default {
   Mode: {
     Add: 1,
-    Replication: 2,
-    Update: 1,
+    Duplicate: 3,
+    Update: 2,
     Delete: 0,
   },
 };

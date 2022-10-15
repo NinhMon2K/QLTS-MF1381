@@ -1,18 +1,25 @@
 <template>
-  <li
-    class="item-dropdown"
-    tabindex="-1"
-    @click="emitClick"
-    @keyup.enter="emitClick"
-    @keyup.space="emitClick"
-  >
-    <div class="app-icon icon_left-dropdown"></div>
-    <div class="text-item">{{ dataItem.fixed_asset_category_name }}</div>
-  </li>
+  <ms-tooltip :content="dataItem[displayField]" placement="right">
+    <li
+      class="item-dropdown"
+      tabindex="-1"
+      @click="emitClick"
+      @keyup.enter="emitClick"
+      @keyup.space="emitClick"
+    >
+      <div class="app-icon icon_left-dropdown"></div>
+      <div class="text-item">{{ dataItem[displayField] }}</div>
+    </li>
+  </ms-tooltip>
 </template>
 <script>
 import { computed, onMounted, reactive, ref, watch } from "@vue/runtime-core";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default {
+  name: "MsItem",
+  components: {
+    MsTooltip,
+  },
   props: {
     icon: {
       type: [Array, String],
@@ -22,6 +29,11 @@ export default {
       default: false,
       type: Boolean,
     },
+    displayField: {
+      default: null,
+      type: String,
+    },
+
     dataItem: {
       default: {},
     },
@@ -44,6 +56,8 @@ export default {
   overflow: hidden;
   padding: 4px 0;
   outline: none;
+  display: flex;
+  align-items: center;
   &:active,
   &:focus,
   &:focus-within {

@@ -46,7 +46,7 @@ export default {
       proxy.displayToast = true;
       setTimeout(() => {
         proxy.displayToast = false;
-      }, 3000);
+      }, 10000);
     });
     return {
       displayToast,

@@ -1,6 +1,6 @@
 <template>
   <div class="filter-dropdown">
-    <label class="text-label" v-if="hasLabel" :for="id">
+    <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
@@ -37,10 +37,13 @@
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
             <dropdown-item
-              v-for="item in datax"
+              v-for="item in dataAll"
               :key="item"
               :dataItem="item"
-              :class="[selected == item ? 'selected' : '']"
+              :displayField="displayField"
+              :class="[
+                modelValue && modelValue == item[valueField] ? 'selected' : '',
+              ]"
               @menu-item-click="itemClick"
             >
             </dropdown-item>
@@ -54,6 +57,7 @@
 import {
   computed,
   getCurrentInstance,
+  nextTick,
   onMounted,
   reactive,
   ref,
@@ -66,6 +70,9 @@ export default {
     DropdownItem,
   },
   props: {
+    modelValue: {
+      default: null,
+    },
     texts: {
       default: null,
       type: String,
@@ -74,7 +81,7 @@ export default {
       default: null,
       type: String,
     },
-    datax: {
+    dataAll: {
       default: [],
     },
     rightIcon: {
@@ -116,17 +123,21 @@ export default {
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
-    const selected = ref(null);
+    window.cb = proxy;
 
-    window.ab = proxy;
-
-    const display = computed(() => {
-      if (selected.value) {
-        return selected.value[props.displayField];
+    const selected = computed(() => {
+      if (proxy.modelValue) {
+        return proxy.dataAll.find(
+          (x) => x[proxy.valueField] == proxy.modelValue
+        );
       } else {
         return null;
       }
     });
+
+    const display = computed(
+      () => proxy.selected && proxy.selected[proxy.displayField]
+    );
 
     const offsetPosi = reactive({
       top: 0,
@@ -156,16 +167,20 @@ export default {
         }
       }
     );
-    
+
     const itemClick = (item) => {
-      selected.value = item;
-      emit("item-click", item);
+      emit("update:modelValue", item[proxy.valueField]);
+      nextTick(() => {
+        emit("item-click", item);
+      });
     };
 
     onMounted(() => {
       proxy.setPosition();
       proxy.setDropdown();
+      proxy.initEvent();
     });
+
     function setPosition() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetPosi.top = offset.bottom;
@@ -177,6 +192,20 @@ export default {
       offsetDropdown.height = 200.5 - this.heightCb;
     }
 
+    function initEvent() {
+      document.addEventListener("click", (e) => {
+        if (proxy.isShowMenu) {
+          let target = e.target;
+          let cbo =
+            target.closest(".dropdown-menu") ||
+            target.closest(".dropdown-menu-toggle");
+          if (!cbo) {
+            proxy.isShowMenu = false;
+          }
+        }
+      });
+    }
+
     return {
       itemClick,
       setPosition,
@@ -185,6 +214,7 @@ export default {
       isShowMenu,
       display,
       selected,
+      initEvent,
     };
   },
 };

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   border: none;
-  width: 219px;
+  width: 100%;
   height: auto;
   .text-label {
     display: flex;
@@ -26,7 +26,7 @@
     border: 1px solid #afafaf;
     overflow: hidden;
     outline: none;
-    width: 219px;
+    width: 100%;
     height: 36px;
     &:hover,
     &:active,
@@ -84,6 +84,7 @@
       .item-dropdown {
         display: flex;
         align-items: center;
+
         &.selected {
           transition: 0.2s;
           background-color: #c7e0f5;
