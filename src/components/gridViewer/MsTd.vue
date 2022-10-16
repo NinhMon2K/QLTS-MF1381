@@ -56,22 +56,24 @@ export default {
     value: {
       default: null,
     },
+    selected:{
+      default:false,
+      type:Boolean
+    }
   },
   methods: {
-    emitClick(e) {
-      this.$emit("menu-item-click", this.dataItem, this.select);
-    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     const select = ref(false);
     onMounted(() => {
       proxy.select = proxy.selected;
+      
     });
     watch(
       () => select.value,
       () => {
-        proxy.$emit("change-value", proxy.value, proxy.select);
+        proxy.$emit("change-value", proxy.value, proxy.select, proxy.config);
       }
     );
 

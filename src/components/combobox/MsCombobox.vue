@@ -203,6 +203,7 @@ export default {
       proxy.$emit("update:modelValue", proxy.selected);
       if (select) {
         proxy.selected.push(item);
+        console.log(proxy.selected)
       } else {
         let i = proxy.selected.findIndex(
           (x) => x[proxy.valueField] == item[proxy.valueField]

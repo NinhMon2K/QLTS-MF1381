@@ -16,6 +16,7 @@
               :key="col"
               :config="col"
               :value="item[col.field]"
+              @change-value="changeValue"
             >
             </ms-td>
           </tr>
@@ -102,6 +103,9 @@ export default defineComponent({
     allData: {
       default: [],
     },
+    idField: {
+      default: '',
+    }
     // data: {
     //   default: [],
     //   type: Array,
@@ -122,10 +126,18 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+    const selected = ref([]);
 
-    const handleCost = (allData) => {
-      let a = 0;
-      a = allData.columns;
+    const changeValue = function (value, select, config) {
+      if (select) {
+        let item = proxy.allData.find(x=> x[config.field] == value);
+         proxy.selected.push(item);
+      } else {
+        let i = proxy.selected.findIndex(x=> x[config.field] == value);
+
+        proxy.selected.splice(i, 1);
+      }
+      proxy.$emit("change-value", proxy.selected);
     };
     onMounted(() => {
       proxy.handleSum();
@@ -140,7 +152,8 @@ export default defineComponent({
       }).format(sumA);
     }
     return {
-      handleSum,
+      selected,
+      handleSum,changeValue
     };
   },
 });
