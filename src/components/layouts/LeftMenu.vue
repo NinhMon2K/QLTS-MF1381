@@ -17,7 +17,7 @@
           :href="item.path"
           :title="collapsed ? item.text : ''"
           :class="[item.path == activeItem?.path ? 'active' : '']"
-          @click.prevent="() => clickMenu(item)"
+          @click="() => clickMenu(item)"
         >
           <div :class="['app-icon', item.icon]"></div>
           <span class="text-menu">{{ item.text }}</span>
@@ -52,6 +52,7 @@ import {
   computed,
   getCurrentInstance,
   onMounted,
+  onUpdated,
   reactive,
   ref,
   watch,
@@ -79,16 +80,15 @@ export default {
     function setActive() {
       proxy.isActive = true;
     }
-
     onMounted(() => {
       proxy.activeMenu();
     });
 
     watch(
-      () => isActive.value,
+      () => activeItem.value,
       (newVal) => {
         if (newVal) {
-          // console.log(isActive.value);
+          proxy.activeMenu();
         }
       }
     );

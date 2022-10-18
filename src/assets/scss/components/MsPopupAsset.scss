@@ -38,7 +38,7 @@
           display: flex;
           padding-bottom: 12px;
           .form-group__left {
-            flex: 1;
+            width: 262px;
             .input-field {
               margin-bottom: 0;
             }
@@ -53,9 +53,20 @@
             display: flex;
             justify-content: center;
             padding-left: 16px;
-            flex: 2;
+            flex: 1;
+            .form-group__right__1 {
+              flex: 1;
+            }
+            .right-center {
+              width: 16px;
+            }
+            .form-group__right__2 {
+              flex: 1;
+            }
             .ms-number:first-child {
               margin-right: 16px;
+            }
+            .input-date__field {
             }
             .ms-number {
               .flex-row {
@@ -168,6 +179,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     }
     & + .btn {
       margin-right: 8px;
+    }
+  }
+}
+.form-group__right__1 {
+  .input-date__field {
+    .flex-row {
+      .el-input {
+        .el-input__wrapper {
+          background: #fff url("@/assets/images/icons/datepicker-icon.png")
+            no-repeat 200px 8px !important;
+        }
+      }
     }
   }
 }

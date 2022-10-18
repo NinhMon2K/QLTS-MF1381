@@ -135,3 +135,33 @@
     }
   }
 }
+.menu-group {
+  .active {
+    & .ic-menu__search {
+      background-position: -240px -196px;
+    }
+    & .ic-car {
+      background-position: -65px -197px;
+    }
+    //Danh mục
+    & .ic-dictionary {
+      background-position: -196px -196px;
+    }
+    //Công cụ
+    & .ic-tools {
+      background-position: -153px -197px;
+    }
+    //Tổng quan
+    & .ic-overview {
+      background-position: -20px -196px;
+    }
+    //Tài sản
+    & .ic-asset {
+      background-position: -108px -196px;
+    }
+    //Báo cáo
+    & .ic-report {
+      background-position: -328px -196px;
+    }
+  }
+}

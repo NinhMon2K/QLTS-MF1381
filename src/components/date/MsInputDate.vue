@@ -1,23 +1,16 @@
 <template>
-  <div class="input-field">
+  <div class="input-date__field">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
     <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
-      <div class="icon-filter">
-        <span
-          :class="[
-            'app-icon icon--left',
-            leftIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
-          v-if="leftIcon"
-        ></span>
-      </div>
-      <input
+      <el-date-picker
         :id="id ? id : ''"
+        tabindex="108"
         class="input-text"
+        format="DD/MM/YYYY"
+        value-format="YYYY-MM-DDTHH:mm:ss"
         type="date"
         :placeholder="placeholder"
         :disabled="disabled || false"

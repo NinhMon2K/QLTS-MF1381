@@ -134,6 +134,7 @@
                   hasLabel
                   hasInput
                   :radius="true"
+                  :disabled="true"
                 ></ms-input-number>
               </div>
             </div>
@@ -144,30 +145,23 @@
                   hasLabel
                   hasInput
                   rightIcon="ic-date"
-                  topIcon="ic-angle_up"
-                  bottomIcon="ic-angle_down"
                   :radius="true"
                 ></ms-input-date>
               </div>
               <div class="form-group__right">
-                <ms-input-date
-                  label="Ngày bắt đầu sử dụng"
-                  hasLabel
-                  hasInput
-                  rightIcon="ic-date"
-                  topIcon="ic-angle_up"
-                  bottomIcon="ic-angle_down"
-                  :radius="true"
-                ></ms-input-date>
-                <ms-input-date
-                  label="Ngày bắt đầu sử dụng"
-                  hasLabel
-                  hasInput
-                  rightIcon="ic-date"
-                  topIcon="ic-angle_up"
-                  bottomIcon="ic-angle_down"
-                  :radius="true"
-                ></ms-input-date>
+                <div class="form-group__right__1">
+                  <ms-input-date
+                    label="Ngày bắt đầu sử dụng"
+                    hasLabel
+                    hasInput
+                    rightIcon="ic-date"
+                    topIcon="ic-angle_up"
+                    bottomIcon="ic-angle_down"
+                    :radius="true"
+                  ></ms-input-date>
+                </div>
+                <div class="right-center"></div>
+                <div class="form-group__right__2"></div>
               </div>
             </div>
           </div>
@@ -341,6 +335,7 @@ export default {
               fixed_asset_id: proxy.formModel.fixed_asset_id,
             });
             proxy.dataForm = result?.Data && result?.Data[0];
+            console.log(proxy.dataForm);
             break;
           }
           case Enum.Mode.Add: {
@@ -364,6 +359,16 @@ export default {
       proxy.loadDataCombotCategory();
       proxy.loadDataComboDepartment();
     });
+
+    //  /**
+    //      * Chọn ngày mặc định là ngày hiện tại nếu không có sẵn ngày
+    //      */
+    //      defaultValue() {
+    //         if (this.asset.purchase_date == null) this.asset.purchase_date = new Date()
+    //         if (this.asset.production_date == null) this.asset.production_date = new Date()
+    //         if (this.asset.tracked_year == null) this.asset.tracked_year = new Date().getFullYear()
+    //         if (this.asset.cost == null) this.asset.cost = 0
+    //     }
 
     const valueDate = ref("");
     const styles = computed(() => {

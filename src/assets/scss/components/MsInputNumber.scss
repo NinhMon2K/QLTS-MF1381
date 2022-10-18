@@ -131,3 +131,9 @@ input[type="number"] {
     }
   }
 }
+input:disabled {
+  background-color: #f5f5f5 !important;
+  &:hover {
+    border-color: #afafaf !important;
+  }
+}

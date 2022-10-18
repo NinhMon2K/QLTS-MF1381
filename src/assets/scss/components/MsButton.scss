@@ -66,7 +66,14 @@
       }
     }
     &:active {
-      background-color: #26b9df;
+      background-color: #1aa4c8;
+      .btn-text {
+        color: #fff;
+      }
+    }
+    &:focus {
+      background-color: #1aa4c8;
+      border: solid 1px #d1edf4;
       .btn-text {
         color: #fff;
       }
@@ -74,21 +81,30 @@
   }
   &.abort {
     background-color: #fff;
-    border: 1px solid #29a9cb;
+    border: 1px solid #3ab1d0;
     color: #29a9cb;
     .btn-text {
       color: #29a9cb;
     }
     &:hover {
-      background-color: #1aa4c8;
+      background-color: #d1edf4;
+      border: 1px solid #1aa4c8;
       .btn-text {
-        color: #fff;
+        color: #18a3c7;
       }
     }
     &:active {
-      background-color: #26b9df;
+      background-color: #fff;
+      border: 1px solid #1aa4c8;
       .btn-text {
-        color: #fff;
+        color: #1aa4c8;
+      }
+    }
+    &:focus {
+      background-color: #fff;
+      border: 1px solid #1aa4c8;
+      .btn-text {
+        color: #1aa4c8;
       }
     }
   }

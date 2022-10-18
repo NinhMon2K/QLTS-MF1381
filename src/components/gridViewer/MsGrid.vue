@@ -16,7 +16,7 @@
               :key="col"
               :config="col"
               :value="item[col.field]"
-              @change-value="changeValue"
+              @change-value="changeSelected"
             >
             </ms-td>
           </tr>
@@ -104,17 +104,20 @@ export default defineComponent({
       default: [],
     },
     idField: {
-      default: '',
-    }
+      default: "",
+    },
+    modelValue: {
+      default: [],
+    },
+    // selected: {
+    //   default: [],
+    //   type: Array,
+    // },
     // data: {
     //   default: [],
     //   type: Array,
     // },
     // filters: {
-    //   default: [],
-    //   type: Array,
-    // },
-    // selected: {
     //   default: [],
     //   type: Array,
     // },
@@ -128,20 +131,34 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     const selected = ref([]);
 
+    const dataSelected = ref([]);
     const changeValue = function (value, select, config) {
       if (select) {
-        let item = proxy.allData.find(x=> x[config.field] == value);
-         proxy.selected.push(item);
+        let item = proxy.allData.find((x) => x[config.field] == value);
+        proxy.selected.push(item);
       } else {
-        let i = proxy.selected.findIndex(x=> x[config.field] == value);
+        let i = proxy.selected.findIndex((x) => x[config.field] == value);
 
         proxy.selected.splice(i, 1);
       }
+      console.log(proxy.selected);
       proxy.$emit("change-value", proxy.selected);
     };
     onMounted(() => {
       proxy.handleSum();
     });
+    const changeSelected = function (value, select, config) {
+      if (select) {
+        let item = proxy.allData.find((x) => x[config.field] == value);
+        proxy.dataSelected.push(item);
+      } else {
+        let i = proxy.dataSelected.findIndex((x) => x[config.field] == value);
+
+        proxy.dataSelected.splice(i, 1);
+      }
+      proxy.$emit("update:modelValue", proxy.dataSelected);
+      proxy.$emit("change-value", proxy.dataSelected);
+    };
     function handleSum(value) {
       let sumA = 0;
       this.allData.forEach((data) => {
@@ -153,7 +170,10 @@ export default defineComponent({
     }
     return {
       selected,
-      handleSum,changeValue
+      handleSum,
+      changeValue,
+      changeSelected,
+      dataSelected,
     };
   },
 });

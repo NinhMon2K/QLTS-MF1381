@@ -154,11 +154,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
    
-  const modelValue = ref(0);
-  onMounted(()=>{
-    proxy.modelValue = props.valueField;
-  });
-    return {modelValue};
+ 
+  
+    return {};
   },
 });
 </script>
