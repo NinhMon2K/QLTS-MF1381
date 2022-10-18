@@ -91,6 +91,7 @@
                   label="Số lượng"
                   hasLabel
                   hasInput
+                  v-model="dataForm.quantity"
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -101,12 +102,16 @@
                   label="Nguyên giá"
                   hasLabel
                   hasInput
+                  typeValue= "money"
+                  v-model="dataForm.cost"
                   :radius="true"
                 ></ms-input-number>
                 <ms-input-number
                   label="Số năm sử dụng"
                   hasLabel
                   hasInput
+                   typeValue= "number"
+                  v-model="dataForm.life_time"
                   :radius="true"
                 ></ms-input-number>
               </div>
@@ -117,6 +122,7 @@
                   label="Tỉ lệ hao mòn(%)"
                   hasLabel
                   hasInput
+                  v-model="dataForm.depreciation_rate"
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -133,6 +139,7 @@
                   label="Năm theo dõi"
                   hasLabel
                   hasInput
+                  v-model="dataForm.tracked_year"
                   :radius="true"
                   :disabled="true"
                 ></ms-input-number>
@@ -144,6 +151,7 @@
                   label="Ngày mua"
                   hasLabel
                   hasInput
+                  v-model="dataForm.purchase_date"
                   rightIcon="ic-date"
                   :radius="true"
                 ></ms-input-date>
@@ -154,6 +162,7 @@
                     label="Ngày bắt đầu sử dụng"
                     hasLabel
                     hasInput
+                    v-model="dataForm.production_date"
                     rightIcon="ic-date"
                     topIcon="ic-angle_up"
                     bottomIcon="ic-angle_down"
@@ -327,7 +336,6 @@ export default {
     }
     onBeforeMount(async () => {
       try {
-        console.log(proxy.formModel.mode);
         switch (proxy.formModel.mode) {
           case Enum.Mode.Update: {
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
@@ -335,7 +343,7 @@ export default {
               fixed_asset_id: proxy.formModel.fixed_asset_id,
             });
             proxy.dataForm = result?.Data && result?.Data[0];
-            console.log(proxy.dataForm);
+           proxy.setValueDate();  
             break;
           }
           case Enum.Mode.Add: {
@@ -386,12 +394,17 @@ export default {
       }
       return arr.join("; ");
     });
-
+    function setValueDate (){
+      proxy.dataForm.tracked_year = new Date().getFullYear();     
+    }
     const clickDataDepartment = (item) => {
       proxy.dataForm.department_name = item.department_name;
     };
     const clickDataAssetCategory = (item) => {
       proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
+      proxy.dataForm.life_time = item.life_time;
+      proxy.dataForm.depreciation_rate = item.depreciation_rate;
+      
     };
 
     return {
@@ -409,7 +422,7 @@ export default {
       loadDataCombotCategory,
       loadDataComboDepartment,
       clickDataDepartment,
-      clickDataAssetCategory,
+      clickDataAssetCategory,setValueDate
     };
   },
 };

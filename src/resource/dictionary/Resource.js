@@ -67,8 +67,8 @@ export default {
     Delete: {
       VI: "Xóa",
     },
-    Agree:{
-      VI:"Đồng ý"
+    Agree: {
+      VI: "Đồng ý"
     }
   },
   TitleFormPopup: {
@@ -114,6 +114,12 @@ export default {
     CancelDeleteMultiple: {
       VI: "tài sản được chọn không thể xóa. Vui lòng kiểm tra lại tài sản trước khi thực hiện xóa.",
     },
+  },
+  LanguageCode: {
+    // Việt Nam
+    VN: 'vi-VN',
+    // Hoa kỳ
+    US: 'en-US',
   },
   Method: {
     GET: "GET",

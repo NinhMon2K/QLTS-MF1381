@@ -12,6 +12,7 @@
         format="DD/MM/YYYY"
         value-format="YYYY-MM-DDTHH:mm:ss"
         type="date"
+        v-model="isValue"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -35,6 +36,7 @@ import {
   defineComponent,
   computed,
   ref,
+  watch,
   getCurrentInstance,
   reactive,
   onMounted,
@@ -104,8 +106,23 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-
-    return {};
+    const isValue = ref("");
+    watch(
+      () => proxy.modelValue,
+      (newVal) => {
+        proxy.isValue = newVal;
+      }
+    );
+    onMounted(()=>{
+      if(proxy.isValue == ""){
+        proxy.isValue = "sadsa";
+      }
+    })
+    const changeValue = function (e) {
+      proxy.$emit("update:modelValue", proxy.isValue);
+     
+    };
+    return {isValue,changeValue};
   },
 });
 </script>

@@ -11,13 +11,8 @@
         </thead>
         <tbody>
           <tr v-for="item in allData" :key="item">
-            <ms-td
-              v-for="col in columns"
-              :key="col"
-              :config="col"
-              :value="item[col.field]"
-              @change-value="changeSelected"
-            >
+            <ms-td v-for="col in columns" :key="col" :config="col" :value="item[col.field]"
+              @change-value="changeSelected">
             </ms-td>
           </tr>
         </tbody>
@@ -25,15 +20,9 @@
           <tr>
             <td colspan="3">
               <div>
-                <div
-                  class="tfooter--left"
-                  style="font-size: 11px; margin-left: 4px"
-                >
+                <div class="tfooter--left" style="font-size: 11px; margin-left: 4px">
                   Tổng số:
-                  <span
-                    style="font-size: 11px; font-weight: 700; margin: 0 4px"
-                    >{{ allData.length }}</span
-                  >
+                  <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{ allData.length }}</span>
                   bản ghi
                 </div>
                 <div class="tfooter--right"></div>
@@ -45,10 +34,7 @@
                   <div class="app-icon ic-angle-left"></div>
                 </div>
                 <div class="page--content">
-                  <div
-                    style="font-size: 11px; font-weight: 700"
-                    class="item-page"
-                  >
+                  <div style="font-size: 11px; font-weight: 700" class="item-page">
                     1
                   </div>
                   <div style="font-size: 11px" class="item-page">2</div>
@@ -93,6 +79,7 @@ import ColumnType from "@/commons/constant/ColumnType";
 import MsTh from "./MsTh.vue";
 import MsTd from "./MsTd.vue";
 import CommonFunction from "@/commons/commonFunction.js";
+import Resource from "@/resource/dictionary/resource.js"
 export default defineComponent({
   name: "MsGrid",
   components: { MsTh, MsTd },
@@ -159,19 +146,30 @@ export default defineComponent({
       proxy.$emit("update:modelValue", proxy.dataSelected);
       proxy.$emit("change-value", proxy.dataSelected);
     };
+    function formatPrice(value) {
+      try {
+        let val = (value / 1).toFixed(0).replace('.', '.')
+        return val.toString().replace(/\B(?=(\d{0})+(?!\d))/g, ".")
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    function formatMoney(money) {
+        money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money)
+        return money
+    }
     function handleSum(value) {
       let sumA = 0;
       this.allData.forEach((data) => {
         sumA += data[value];
       });
-      return new Intl.NumberFormat("en-IN", {
-        maximumSignificantDigits: 3,
-      }).format(sumA);
+      return formatMoney(sumA);
     }
     return {
       selected,
       handleSum,
       changeValue,
+      formatPrice,
       changeSelected,
       dataSelected,
     };
