@@ -53,6 +53,7 @@ export default {
 <style lang="scss" scoped>
 .item-dropdown {
   width: 100%;
+  height: 36px;
   overflow: hidden;
   padding: 4px 0;
   outline: none;
@@ -62,16 +63,29 @@ export default {
   &:focus,
   &:focus-within {
     transition: 0.5s;
-    background-color: #c7e0f5;
+   
     cursor: pointer;
     .icon_left-dropdown {
+      background-color: #c7e0f5;
+      
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
       background-image: url("./../../assets/images/icons/icons8-v-24.png");
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
-  &:hover {
+  &:hover {               
     transition: 0.2s;
     background-color: #c7e0f5;
     cursor: pointer;
+    border-radius: 4px;
+    .icon_left-dropdown {
+      background-image: url("./../../assets/images/icons/icons8-v-24.png") !important;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
   }
   .selected {
     .icon_left-dropdown {
@@ -79,22 +93,33 @@ export default {
     }
   }
   .icon_left-dropdown {
-    margin: 0 18px 0 10px;
+    width: 36px;
+      height: 36px;
+      min-width: 36px;
+      background-image: none;
   }
   .text-item {
     font-size: 14px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    margin-left: 16px;
   }
 }
 .selected {
   transition: 0.2s;
-  background-color: #c7e0f5;
+ 
   .inline-block {
     .item-dropdown {
       .icon_left-dropdown {
+        background-color: #c7e0f5;
+        width: 36px;
+      height: 36px;
+      min-width: 36px;
         background-image: url("@/assets/images/icons/icons8-v-24.png") !important;
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 4px;
       }
     }
   }

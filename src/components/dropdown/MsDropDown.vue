@@ -179,7 +179,6 @@ export default {
       proxy.setPosition();
       proxy.setDropdown();
       proxy.initEvent();
-      console.log(proxy.selected);
     });
 
      /**

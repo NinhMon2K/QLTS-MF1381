@@ -348,14 +348,17 @@ export default {
             break;
           }
           case Enum.Mode.Add: {
-            proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
-
+            proxy.title = Resource.TitleFormPopup.FormAddAsset.VI;
             proxy.defaultValueDate();
             break;
           }
           case Enum.Mode.Duplicate: {
             proxy.title = Resource.TitleFormPopup.FormDuplicateAsset.VI;
-
+            let result = await assetAPI.get("AssetSelectID", {
+              fixed_asset_id: proxy.formModel.fixed_asset_id,
+            });
+            proxy.dataForm = result?.Data && result?.Data[0];
+            proxy.setValueDateYear();
             break;
           }
           default:
@@ -369,17 +372,6 @@ export default {
       proxy.loadDataCombotCategory();
       proxy.loadDataComboDepartment();
     });
-
-    //  /**
-    //      * Chọn ngày mặc định là ngày hiện tại nếu không có sẵn ngày
-    //      */
-    //      defaultValue() {
-    //         if (this.asset.purchase_date == null) this.asset.purchase_date = new Date()
-    //         if (this.asset.production_date == null) this.asset.production_date = new Date()
-    //         if (this.asset.tracked_year == null) this.asset.tracked_year = new Date().getFullYear()
-    //         if (this.asset.cost == null) this.asset.cost = 0
-    //     }
-
     const valueDate = ref("");
     const styles = computed(() => {
       let arr = [];
@@ -401,7 +393,6 @@ export default {
     }
     function defaultValueDate() {
       if (proxy.dataForm.purchase_date == null) {
-        console.log(proxy.dataForm.purchase_date);
         proxy.dataForm.purchase_date = new Date();
       }
       if (proxy.dataForm.production_date == null) {

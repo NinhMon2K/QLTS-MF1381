@@ -80,10 +80,12 @@
       -webkit-animation: fadeIn linear 0.5s;
       overflow: auto;
       height: 100%;
-      padding: 3px 4px;
+      padding: 3px 8px;
       .item-dropdown {
         display: flex;
         align-items: center;
+        height: 36px;
+        width: 100%;
         &:focus-within,
         &:focus,
         &:active {
