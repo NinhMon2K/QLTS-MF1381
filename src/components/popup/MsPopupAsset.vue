@@ -62,6 +62,7 @@
               <div class="form-group__left">
                 <ms-drop-down
                   label="Mã loại tài sản"
+                  ref="hu"
                   hasLabel
                   hasInput
                   :heightCb="32"
@@ -102,7 +103,6 @@
                   label="Nguyên giá"
                   hasLabel
                   hasInput
-                  typeValue= "money"
                   v-model="dataForm.cost"
                   :radius="true"
                 ></ms-input-number>
@@ -110,7 +110,6 @@
                   label="Số năm sử dụng"
                   hasLabel
                   hasInput
-                   typeValue= "number"
                   v-model="dataForm.life_time"
                   :radius="true"
                 ></ms-input-number>
@@ -133,6 +132,8 @@
                   label="Giá trị hao mòn năm"
                   hasLabel
                   hasInput
+                  typeValue="money"
+                  v-model="dataForm.depreciation_year"
                   :radius="true"
                 ></ms-input-number>
                 <ms-input-number
@@ -343,12 +344,13 @@ export default {
               fixed_asset_id: proxy.formModel.fixed_asset_id,
             });
             proxy.dataForm = result?.Data && result?.Data[0];
-           proxy.setValueDate();  
+            proxy.setValueDateYear();
             break;
           }
           case Enum.Mode.Add: {
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
 
+            proxy.defaultValueDate();
             break;
           }
           case Enum.Mode.Duplicate: {
@@ -394,8 +396,17 @@ export default {
       }
       return arr.join("; ");
     });
-    function setValueDate (){
-      proxy.dataForm.tracked_year = new Date().getFullYear();     
+    function setValueDateYear() {
+      proxy.dataForm.tracked_year = new Date().getFullYear();
+    }
+    function defaultValueDate() {
+      if (proxy.dataForm.purchase_date == null) {
+        console.log(proxy.dataForm.purchase_date);
+        proxy.dataForm.purchase_date = new Date();
+      }
+      if (proxy.dataForm.production_date == null) {
+        proxy.dataForm.production_date = new Date();
+      }
     }
     const clickDataDepartment = (item) => {
       proxy.dataForm.department_name = item.department_name;
@@ -404,7 +415,6 @@ export default {
       proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
       proxy.dataForm.life_time = item.life_time;
       proxy.dataForm.depreciation_rate = item.depreciation_rate;
-      
     };
 
     return {
@@ -422,7 +432,9 @@ export default {
       loadDataCombotCategory,
       loadDataComboDepartment,
       clickDataDepartment,
-      clickDataAssetCategory,setValueDate
+      clickDataAssetCategory,
+      setValueDateYear,
+      defaultValueDate,
     };
   },
 };

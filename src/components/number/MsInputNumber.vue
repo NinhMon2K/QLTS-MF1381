@@ -6,30 +6,54 @@
     </label>
     <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
       <div class="icon-filter">
-        <span :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]" v-if="leftIcon"></span>
+        <span
+          :class="[
+            'app-icon icon--left',
+            leftIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          v-if="leftIcon"
+        ></span>
       </div>
 
-      <input :id="id ? id : ''" class="input-text" type="number" v-model="isValue" :placeholder="placeholder"
-        :disabled="disabled || false" :readonly="hasReadonly || false" />
+      <input
+        :id="id ? id : ''"
+        class="input-text"
+        type="number"
+        v-model="display"
+        :placeholder="placeholder"
+        :disabled="disabled || false"
+        :readonly="hasReadonly || false"
+        max="9999999999999"
+      />
       <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']">
-        <div :class="[
-          'app-icon icon--top',
-          topIcon,
-          disabledIconTop ? 'disabled-icon' : '',
-        ]" v-if="topIcon"></div>
-        <div :class="[
-          'app-icon icon--bottom',
-          bottomIcon,
-          disabledIconBottom ? 'disabled-icon' : '',
-        ]" v-if="bottomIcon"></div>
+        <ms-tooltip content="Lên" placement="bottom">
+          <div
+            :class="[
+              'app-icon icon--top',
+              topIcon,
+              disabledIconTop ? 'disabled-icon' : '',
+            ]"
+            v-if="topIcon"
+            @click="plus"
+          ></div>
+        </ms-tooltip>
+
+        <ms-tooltip content="Xuống" placement="bottom">
+          <div
+            :class="[
+              'app-icon icon--bottom',
+              bottomIcon,
+              disabledIconBottom ? 'disabled-icon' : '',
+            ]"
+            v-if="bottomIcon"
+            @click="less"
+          ></div>
+        </ms-tooltip>
       </div>
     </div>
     <span v-if="disabledMessage" class="error-message">{{
-    message ? message : ""
+      message ? message : ""
     }}</span>
   </div>
 </template>
@@ -43,20 +67,25 @@ import {
   reactive,
   onMounted,
 } from "vue";
-import Resource from "@/resource/dictionary/resource.js"
+import Resource from "@/resource/dictionary/resource.js";
+import CommonFunction from "@/commons/commonFunction.js";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
 export default defineComponent({
   name: "MsInput",
+  components: {
+    MsTooltip,
+  },
   props: {
     modelValue: {
       default: 0,
-      type: [Number, String]
+      type: [Number, String],
     },
     configStyle: {
       default: {},
     },
     typeValue: {
-      default: null,
-      type: String
+      default: "number",
+      type: String,
     },
     placeholder: {
       default: null,
@@ -129,16 +158,16 @@ export default defineComponent({
 
     min: {
       default: -99999999999999,
-      type: [Number, String]
+      type: [Number, String],
     },
     max: {
       default: 99999999999999,
-      type: [Number, String]
+      type: [Number, String],
     },
     step: {
       default: 1,
-      type: [Number, String]
-    }
+      type: [Number, String],
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -149,34 +178,52 @@ export default defineComponent({
         proxy.isValue = newVal;
       }
     );
+
     onMounted(() => {
       proxy.changeValue();
-    })
+    });
     function formatMoney(money) {
-      money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money)
-      return money
+      money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
+      return money;
     }
-    const display = ()=> {
-      if (proxy.typeValue == 'number') {
-        if (proxy.isValue < 10) {
+    const display = computed(() => {
+      if (proxy.typeValue == "money") {
+        return CommonFunction.formatNumber(proxy.isValue);
+      } else {
+        if (proxy.isValue < 10 && proxy.isValue > 0) {
           return `0${proxy.isValue}`;
-        }
-        else {
+        } else {
           return proxy.isValue;
         }
+      }
+    });
 
+    const plus = () => {
+      if (proxy.isValue > proxy.max) {
+        proxy.disabledMessage = true;
+        proxy.message = "Bạn đã nhập số quá mức quy định!";
+      } else {
+        console.log("Lên");
+        proxy.isValue = proxy.isValue + proxy.step;
+        return proxy.isValue;
       }
-      else if (proxy.typeValue == 'money') {
-        return formatMoney(proxy.isValue)
+    };
+    const less = () => {
+      if (proxy.isValue < 0) {
+        proxy.disabledMessage = true;
+        console.log(proxy.disabledMessage);
+        proxy.message = "Bạn phải nhập số không được âm!";
+      } else {
+        console.log("X");
+        proxy.isValue = proxy.isValue - proxy.step;
+        return proxy.isValue;
       }
-      else {
-        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(proxy.isValue)
-      }
-    }
+    };
+
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
     };
-    return { isValue, changeValue, formatMoney, display };
+    return { isValue, changeValue, formatMoney, display, plus, less };
   },
 });
 </script>

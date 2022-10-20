@@ -84,14 +84,6 @@
       .item-dropdown {
         display: flex;
         align-items: center;
-
-        &.selected {
-          transition: 0.2s;
-          background-color: #c7e0f5;
-          .icon_left-dropdown {
-            background-image: url("@/assets/images/icons/icons8-v-24.png");
-          }
-        }
         &:focus-within,
         &:focus,
         &:active {
@@ -103,6 +95,7 @@
     }
   }
 }
+
 ::-webkit-scrollbar {
   width: 5px;
   position: fixed;

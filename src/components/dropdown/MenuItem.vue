@@ -88,4 +88,15 @@ export default {
     overflow: hidden;
   }
 }
+.selected {
+  transition: 0.2s;
+  background-color: #c7e0f5;
+  .inline-block {
+    .item-dropdown {
+      .icon_left-dropdown {
+        background-image: url("@/assets/images/icons/icons8-v-24.png") !important;
+      }
+    }
+  }
+}
 </style>

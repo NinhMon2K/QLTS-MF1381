@@ -38,6 +38,7 @@ import {
   ref,
   watch,
   getCurrentInstance,
+  onBeforeMount,
   reactive,
   onMounted,
 } from "vue";
@@ -106,6 +107,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+    window.a = proxy;
     const isValue = ref("");
     watch(
       () => proxy.modelValue,
@@ -113,16 +115,13 @@ export default defineComponent({
         proxy.isValue = newVal;
       }
     );
-    onMounted(()=>{
-      if(proxy.isValue == ""){
-        proxy.isValue = "sadsa";
-      }
-    })
+    onMounted(() => {
+      proxy.changeValue();
+    });
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
-     
     };
-    return {isValue,changeValue};
+    return { isValue, changeValue };
   },
 });
 </script>

@@ -25,7 +25,6 @@
           :placeholder="placeholder"
           :id="id"
         />
-
         <div
           :class="[
             'app-icon icon--right',

@@ -92,31 +92,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-    // window.pro = proxy;
-    // const abc = ref(null);
-
-    // abc.value = "abc";
-
-    // const obj = reactive({});
-
-    // obj.abc = "xyz";
-
-    // obj.compu = computed(() => {
-    //   if (obj.abc == "xyz") {
-    //     return "la xyz";
-    //   } else {
-    //     return "Ko xyz";
-    //   }
-    // });
-
-    // const listeners = computed(() => ({
-    //   click: (e) => {
-    //     console.log("a");
-
-    //     emit("e-click", "abc", 1);
-    //   },
-    // }));
-    // return { abc, obj, listeners };
     return {};
   },
 });

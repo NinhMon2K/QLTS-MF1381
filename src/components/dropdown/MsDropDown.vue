@@ -4,26 +4,48 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <button class="dropdown-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
-      <div :class="[
-        'app-icon icon--left',
-        leftIcon,
-        disabled ? 'disabled-icon' : '',
-      ]" v-if="leftIcon"></div>
-      <input type="text" :value="display" :placeholder="placeholder" readonly="false" />
-      <div :class="[
-        'app-icon icon--right',
-        rightIcon,
-        disabled ? 'disabled-icon' : '',
-      ]" v-if="rightIcon"></div>
+    <button
+      class="dropdown-menu-toggle"
+      ref="input"
+      @click="isShowMenu = !isShowMenu"
+    >
+      <div
+        :class="[
+          'app-icon icon--left',
+          leftIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="leftIcon"
+      ></div>
+      <input
+        type="text"
+        :value="display"
+        :placeholder="placeholder"
+        readonly="false"
+      />
+      <div
+        :class="[
+          'app-icon icon--right',
+          rightIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="rightIcon"
+      ></div>
     </button>
     <teleport to="body">
       <div class="dropdown-menu" :style="style" v-if="isShowMenu">
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
-            <dropdown-item v-for="item in dataAll" :key="item" :dataItem="item" :displayField="displayField" :class="[
-              modelValue && modelValue == item[valueField] ? 'selected' : '',
-            ]" @menu-item-click="itemClick">
+            <dropdown-item
+              v-for="item in dataAll"
+              :key="item"
+              :dataItem="item"
+              :displayField="displayField"
+              :class="[
+                modelValue && modelValue == item[valueField] ? 'selected' : '',
+              ]"
+              @menu-item-click="itemClick"
+            >
             </dropdown-item>
           </ul>
         </div>
@@ -157,13 +179,23 @@ export default {
       proxy.setPosition();
       proxy.setDropdown();
       proxy.initEvent();
+      console.log(proxy.selected);
     });
 
+     /**
+     * Set vị trí cho dropdown
+     * Author: NNNinh (16/10/2022)
+     */
     function setPosition() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetPosi.top = offset.bottom;
       offsetPosi.left = offset.left;
     }
+
+     /**
+     * Set width,height cho dropdown
+     * Author: NNNinh (16/10/2022)
+     */
     function setDropdown() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetDropdown.width = offset.width;
@@ -171,9 +203,9 @@ export default {
     }
 
     /**
-        *Đóng menu dropdown khi windown click
-        * Author: NNNinh (15/10/2022)
-        */
+     *Đóng menu dropdown khi windown click
+     * Author: NNNinh (15/10/2022)
+     */
     function initEvent() {
       document.addEventListener("click", (e) => {
         if (proxy.isShowMenu) {
@@ -203,4 +235,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/MsDropdown.scss";
+
 </style>
