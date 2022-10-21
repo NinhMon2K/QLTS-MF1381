@@ -31,6 +31,7 @@
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
         @change="changeValue"
+        @blur="changeValue"
       />
       <div
         :class="[
@@ -54,6 +55,7 @@ import {
   getCurrentInstance,
   reactive,
   onMounted,
+  nextTick,
   watch,
 } from "vue";
 
@@ -118,6 +120,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    valueField: {
+      default: null,
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -132,6 +138,9 @@ export default defineComponent({
     );
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
+      nextTick(() => {
+        emit("changeValue", proxy.isValue, proxy.valueField);
+      });
     };
     return { isValue, changeValue };
   },

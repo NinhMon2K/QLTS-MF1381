@@ -20,11 +20,13 @@
         :id="id ? id : ''"
         class="input-text"
         type="number"
-        v-model="display"
+        v-model="isValue"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
         max="9999999999999"
+        @change="changeValue"
+        @blur="changeValue"
       />
       <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']">
         <ms-tooltip content="Lên" placement="bottom">
@@ -35,6 +37,8 @@
               disabledIconTop ? 'disabled-icon' : '',
             ]"
             v-if="topIcon"
+            @change="changeValue"
+            @blur="changeValue"
             @click="plus"
           ></div>
         </ms-tooltip>
@@ -48,6 +52,8 @@
             ]"
             v-if="bottomIcon"
             @click="less"
+            @change="changeValue"
+            @blur="changeValue"
           ></div>
         </ms-tooltip>
       </div>
@@ -64,6 +70,7 @@ import {
   ref,
   watch,
   getCurrentInstance,
+  nextTick,
   reactive,
   onMounted,
 } from "vue";
@@ -78,7 +85,6 @@ export default defineComponent({
   props: {
     modelValue: {
       default: 0,
-      type: [Number, String],
     },
     configStyle: {
       default: {},
@@ -168,20 +174,39 @@ export default defineComponent({
       default: 1,
       type: [Number, String],
     },
+    valueField: {
+      default: null,
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+    window.iNumber = proxy;
     const isValue = ref(0);
-    watch(
-      () => proxy.modelValue,
-      (newVal) => {
-        proxy.isValue = newVal;
-      }
-    );
-
     onMounted(() => {
-      proxy.changeValue();
+      proxy.isValue = proxy.modelValue;
+      proxy.less;
+      proxy.plus;
+      watch(
+        () => proxy.modelValue,
+        (newVal, old) => {
+          proxy.isValue = newVal;
+          proxy.less;
+          proxy.plus;
+        },
+        () => proxy.plus,
+        (newVal, old) => {
+          proxy.isValue = newVal;
+          proxy.plus;
+        },
+        () => proxy.less,
+        (newVal, old) => {
+          proxy.isValue = newVal;
+          proxy.less;
+        }
+      );
     });
+
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
@@ -203,7 +228,6 @@ export default defineComponent({
         proxy.disabledMessage = true;
         proxy.message = "Bạn đã nhập số quá mức quy định!";
       } else {
-        console.log("Lên");
         proxy.isValue = proxy.isValue + proxy.step;
         return proxy.isValue;
       }
@@ -214,14 +238,16 @@ export default defineComponent({
         console.log(proxy.disabledMessage);
         proxy.message = "Bạn phải nhập số không được âm!";
       } else {
-        console.log("X");
         proxy.isValue = proxy.isValue - proxy.step;
         return proxy.isValue;
       }
     };
 
-    const changeValue = function (e) {
+    const changeValue = function (val) {
       proxy.$emit("update:modelValue", proxy.isValue);
+      nextTick(() => {
+        emit("changeValue", proxy.isValue, proxy.valueField);
+      });
     };
     return { isValue, changeValue, formatMoney, display, plus, less };
   },

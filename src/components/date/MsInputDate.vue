@@ -13,6 +13,8 @@
         value-format="YYYY-MM-DDTHH:mm:ss"
         type="date"
         v-model="isValue"
+        @change="changeValue"
+        @blur="changeValue"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -37,6 +39,7 @@ import {
   computed,
   ref,
   watch,
+  nextTick,
   getCurrentInstance,
   onBeforeMount,
   reactive,
@@ -104,6 +107,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    valueField: {
+      default: null,
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -120,6 +127,9 @@ export default defineComponent({
     });
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
+      nextTick(() => {
+        emit("changeValue", proxy.isValue, proxy.valueField);
+      });
     };
     return { isValue, changeValue };
   },

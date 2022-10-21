@@ -21,7 +21,7 @@
         type="text"
         :value="display"
         :placeholder="placeholder"
-        readonly="false"
+        :readonly="readonly"
       />
       <div
         :class="[
@@ -119,6 +119,10 @@ export default {
     heightCb: {
       default: 0,
     },
+    readonly:{
+      default:false,
+      type:Boolean
+    }
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
