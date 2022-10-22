@@ -1,5 +1,6 @@
 export default {
   LeftMenu: {
+    TitleLogo :"MISA QLTC",
     Control: "Control",
     Dashboard: "Tổng quan",
     FA: "Tài sản",

@@ -4,7 +4,7 @@
       <table>
         <thead>
           <tr>
-            <ms-th ref="th" v-for="col in columns" :key="col" :config="col">
+            <ms-th ref="th" v-for="col in columns" :key="col" :config="col" :allData="allData">
               {{ col.title }}
             </ms-th>
           </tr>

@@ -193,11 +193,18 @@ export default {
       offsetPosi.top = offset.bottom;
       offsetPosi.left = offset.left;
     }
+
+    /**
+     *Xet width, height cho combobox
+     * Author: NNNinh (15/10/2022)
+     */
     function setDropdown() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetDropdown.width = offset.width;
       offsetDropdown.height = 200.5 - this.heightCb;
     }
+
+    
     const changeValue = function (item, select) {
       proxy.$emit("update:modelValue", proxy.selected);
       if (select) {

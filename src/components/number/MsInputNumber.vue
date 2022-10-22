@@ -21,6 +21,7 @@
         class="input-text"
         type="number"
         v-model="isValue"
+        :tabindex="tabindex"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -37,8 +38,6 @@
               disabledIconTop ? 'disabled-icon' : '',
             ]"
             v-if="topIcon"
-            @change="changeValue"
-            @blur="changeValue"
             @click="plus"
           ></div>
         </ms-tooltip>
@@ -51,9 +50,7 @@
               disabledIconBottom ? 'disabled-icon' : '',
             ]"
             v-if="bottomIcon"
-            @click="less"
-            @change="changeValue"
-            @blur="changeValue"
+            @click="less"       
           ></div>
         </ms-tooltip>
       </div>
@@ -178,6 +175,11 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    tabindex:{
+      default: null,
+      type: String,
+    }
+    
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -193,16 +195,28 @@ export default defineComponent({
           proxy.isValue = newVal;
           proxy.less;
           proxy.plus;
+          emit("changeValue", proxy.isValue, proxy.valueField);
+        },
+        () => proxy.isValue,
+        (newVal, old) => {
+          proxy.isValue = newVal;
+          proxy.less;
+          proxy.plus;
+          
+          emit("changeValue", proxy.isValue, proxy.valueField);
         },
         () => proxy.plus,
         (newVal, old) => {
-          proxy.isValue = newVal;
-          proxy.plus;
+          nextTick(() => {
+            proxy.isValue = newVal;
+            emit("changeValue", proxy.isValue, proxy.valueField);
+      });
         },
         () => proxy.less,
         (newVal, old) => {
           proxy.isValue = newVal;
           proxy.less;
+          emit("changeValue", proxy.isValue, proxy.valueField);
         }
       );
     });
@@ -223,15 +237,25 @@ export default defineComponent({
       }
     });
 
+      /**
+     * Xử lý sự kiện click lên 
+     *  @author NNNinh(16/10/2021)
+     */
     const plus = () => {
       if (proxy.isValue > proxy.max) {
         proxy.disabledMessage = true;
         proxy.message = "Bạn đã nhập số quá mức quy định!";
       } else {
         proxy.isValue = proxy.isValue + proxy.step;
+        emit("changeValue", proxy.isValue, proxy.valueField);
         return proxy.isValue;
       }
     };
+    
+      /**
+     * Xử lý sự kiện click xuống
+     *  @author NNNinh(16/10/2021)
+     */
     const less = () => {
       if (proxy.isValue < 0) {
         proxy.disabledMessage = true;
@@ -239,12 +263,20 @@ export default defineComponent({
         proxy.message = "Bạn phải nhập số không được âm!";
       } else {
         proxy.isValue = proxy.isValue - proxy.step;
+        emit("changeValue", proxy.isValue, proxy.valueField);
         return proxy.isValue;
       }
     };
 
+     
+      /**
+     * Xử lý cập nhật modelValue cho isValue
+     *  @author NNNinh(18/10/2021)
+     */
     const changeValue = function (val) {
       proxy.$emit("update:modelValue", proxy.isValue);
+
+      // Chờ thay đổi trạng thái thì cập lại giá trị
       nextTick(() => {
         emit("changeValue", proxy.isValue, proxy.valueField);
       });

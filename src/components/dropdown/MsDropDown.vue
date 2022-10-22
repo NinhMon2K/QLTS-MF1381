@@ -4,48 +4,26 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <button
-      class="dropdown-menu-toggle"
-      ref="input"
-      @click="isShowMenu = !isShowMenu"
-    >
-      <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="leftIcon"
-      ></div>
-      <input
-        type="text"
-        :value="display"
-        :placeholder="placeholder"
-        :readonly="readonly"
-      />
-      <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="rightIcon"
-      ></div>
+    <button class="dropdown-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
+      <div :class="[
+        'app-icon icon--left',
+        leftIcon,
+        disabled ? 'disabled-icon' : '',
+      ]" v-if="leftIcon"></div>
+      <input type="text" :tabindex="tabindex" :value="display" :placeholder="placeholder" :readonly="readonly" />
+      <div :class="[
+        'app-icon icon--right',
+        rightIcon,
+        disabled ? 'disabled-icon' : '',
+      ]" v-if="rightIcon"></div>
     </button>
     <teleport to="body">
       <div class="dropdown-menu" :style="style" v-if="isShowMenu">
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
-            <dropdown-item
-              v-for="item in dataAll"
-              :key="item"
-              :dataItem="item"
-              :displayField="displayField"
-              :class="[
-                modelValue && modelValue == item[valueField] ? 'selected' : '',
-              ]"
-              @menu-item-click="itemClick"
-            >
+            <dropdown-item v-for="item in dataAll" :key="item" :dataItem="item" :displayField="displayField" :class="[
+              modelValue && modelValue == item[valueField] ? 'selected' : '',
+            ]" @menu-item-click="itemClick">
             </dropdown-item>
           </ul>
         </div>
@@ -119,9 +97,13 @@ export default {
     heightCb: {
       default: 0,
     },
-    readonly:{
-      default:false,
-      type:Boolean
+    readonly: {
+      default: false,
+      type: Boolean
+    },
+    tabindex:{
+      default: null,
+      type: String,
     }
   },
   setup(props, { emit }) {
@@ -139,6 +121,7 @@ export default {
       }
     });
 
+
     const display = computed(
       () => proxy.selected && proxy.selected[proxy.displayField]
     );
@@ -154,6 +137,10 @@ export default {
 
     const isShowMenu = ref(false);
 
+    /**
+     * Xet style cho dropdown
+     * Author: NNNinh (14/10/2022)
+     */
     const style = computed(() => {
       let arr = [];
       arr.push(`top: ${offsetPosi.top}px`);
@@ -163,6 +150,10 @@ export default {
       return arr.join("; ");
     });
 
+    /**
+     * Theo dõi biến isShowMenu là true hay false
+     * Author: NNNinh (14/10/2022)
+     */
     watch(
       () => isShowMenu.value,
       (newVal) => {
@@ -172,6 +163,10 @@ export default {
       }
     );
 
+    /**
+     * Xự kiện click itemdropdown 
+     * Author: NNNinh (16/10/2022)
+     */
     const itemClick = (item) => {
       emit("update:modelValue", item[proxy.valueField]);
       nextTick(() => {
@@ -185,20 +180,20 @@ export default {
       proxy.initEvent();
     });
 
-     /**
-     * Set vị trí cho dropdown
-     * Author: NNNinh (16/10/2022)
-     */
+    /**
+    * Set vị trí cho dropdown
+    * Author: NNNinh (16/10/2022)
+    */
     function setPosition() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetPosi.top = offset.bottom;
       offsetPosi.left = offset.left;
     }
 
-     /**
-     * Set width,height cho dropdown
-     * Author: NNNinh (16/10/2022)
-     */
+    /**
+    * Set width,height cho dropdown
+    * Author: NNNinh (16/10/2022)
+    */
     function setDropdown() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetDropdown.width = offset.width;
@@ -228,15 +223,15 @@ export default {
       setPosition,
       setDropdown,
       style,
-      isShowMenu,
+      isShowMenu //Show menu dropdown
+      ,
       display,
       selected,
-      initEvent,
+      initEvent //Đóng menu dropdown khi windown click,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/MsDropdown.scss";
-
 </style>

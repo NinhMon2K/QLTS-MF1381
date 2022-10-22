@@ -6,7 +6,7 @@
   >
     <div class="wrap-logo">
       <div class="logo app-icon ic-home"></div>
-      <span class="abc">MISA QLTC</span>
+      <span class="title--logo">{{Resource.LeftMenu.TitleLogo}}</span>
     </div>
     <div class="menu">
       <div class="menu-group">
@@ -199,6 +199,7 @@ export default {
       clickMenu,
       activeItem,
       activeMenu,
+      Resource
     };
   },
 };

@@ -27,6 +27,7 @@
         class="input-text"
         type="text"
         v-model="isValue"
+        :tabindex="tabindex"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -124,6 +125,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    tabindex:{
+      default:null,
+      type:String
+    }
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();

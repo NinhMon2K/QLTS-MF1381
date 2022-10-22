@@ -189,6 +189,10 @@
     @include commonAppIcToastSuccess();
     @include setSquare(20);
   }
+  &.ic-close {
+    @include setSquare(18);
+    background-position: -375px -287px;
+  }
 }
 .menu-group {
   .menu-item:hover,
