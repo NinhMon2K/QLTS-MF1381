@@ -10,74 +10,187 @@
           <div class="form-asset__body">
             <div class="form-group">
               <div class="form-group__left">
-                <ms-input ref="ab" label="Mã tài sản" tabindex="101"  hasLabel hasInput v-model="dataForm.fixed_asset_code"
-                  :radius="false" placeholder="Mã tài sản"></ms-input>
+                <ms-input
+                  ref="ab"
+                  label="Mã tài sản"
+                  tabindex="101"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.fixed_asset_code"
+                  :radius="false"
+                  placeholder="Mã tài sản"
+                ></ms-input>
               </div>
               <div class="form-group__right">
-                <ms-input label="Tên tài sản" tabindex="102" hasLabel hasInput v-model="dataForm.fixed_asset_name"
-                  valueField="fixed_asset_name" :radius="true" placeholder="Nhập tên tài sản"></ms-input>
+                <ms-input
+                  label="Tên tài sản"
+                  tabindex="102"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.fixed_asset_name"
+                  valueField="fixed_asset_name"
+                  :radius="true"
+                  placeholder="Nhập tên tài sản"
+                ></ms-input>
               </div>
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-drop-down label="Mã bộ phận sử dụng" tabindex="103" ref="cb" hasLabel hasInput :heightCb="47"
-                  v-model="dataForm.department_id" valueField="department_id" displayField="department_code"
-                  rightIcon="ic-angle-downs" :dataAll="DataDepartment.value" placeholder="Chọn mã bộ phận sử dụng"
-                  @item-click="clickDataDepartment"></ms-drop-down>
+                <ms-drop-down
+                  label="Mã bộ phận sử dụng"
+                  tabindex="103"
+                  ref="cb"
+                  hasLabel
+                  hasInput
+                  :heightCb="47"
+                  v-model="dataForm.department_id"
+                  valueField="department_id"
+                  displayField="department_code"
+                  rightIcon="ic-angle-downs"
+                  :dataAll="DataDepartment.value"
+                  placeholder="Chọn mã bộ phận sử dụng"
+                  @item-click="clickDataDepartment"
+                ></ms-drop-down>
               </div>
               <div class="form-group__right">
-                <ms-input label="Tên bộ phận sử dụng" hasLabel v-model="dataForm.department_name" :hasReadonly="true"
-                  :disabled="true" :radius="true" @changeValue="changeValueInput"></ms-input>
+                <ms-input
+                  label="Tên bộ phận sử dụng"
+                  hasLabel
+                  v-model="dataForm.department_name"
+                  :hasReadonly="true"
+                  :disabled="true"
+                  :radius="true"
+                  @changeValue="changeValueInput"
+                ></ms-input>
               </div>
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-drop-down label="Mã loại tài sản" ref="hu" tabindex="104" hasLabel hasInput :heightCb="47"
-                  v-model="dataForm.fixed_asset_category_id" valueField="fixed_asset_category_id"
-                  displayField="fixed_asset_category_code" rightIcon="ic-angle-downs" placeholder="Chọn mã loại tài sản"
-                  :dataAll="DataAssetCategory.value" @item-click="clickDataAssetCategory"></ms-drop-down>
+                <ms-drop-down
+                  label="Mã loại tài sản"
+                  ref="hu"
+                  tabindex="104"
+                  hasLabel
+                  hasInput
+                  :heightCb="47"
+                  v-model="dataForm.fixed_asset_category_id"
+                  valueField="fixed_asset_category_id"
+                  displayField="fixed_asset_category_code"
+                  rightIcon="ic-angle-downs"
+                  placeholder="Chọn mã loại tài sản"
+                  :dataAll="DataAssetCategory.value"
+                  @item-click="clickDataAssetCategory"
+                ></ms-drop-down>
               </div>
               <div class="form-group__right">
-                <ms-input label="Tên loại tài sản" :hasReadonly="true" hasLabel
-                  v-model="dataForm.fixed_asset_category_name" :disabled="true" :radius="true"></ms-input>
+                <ms-input
+                  label="Tên loại tài sản"
+                  :hasReadonly="true"
+                  hasLabel
+                  v-model="dataForm.fixed_asset_category_name"
+                  :disabled="true"
+                  :radius="true"
+                ></ms-input>
               </div>
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-input-number label="Số lượng" tabindex="105" hasLabel hasInput v-model="dataForm.quantity" valueField="quantity"
-                  topIcon="ic-angle_up" bottomIcon="ic-angle_down" :radius="true" @changeValue="changeValueInput">
+                <ms-input-number
+                  label="Số lượng"
+                  tabindex="105"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.quantity"
+                  valueField="quantity"
+                  topIcon="ic-angle_up"
+                  bottomIcon="ic-angle_down"
+                  :radius="true"
+                  @changeValue="changeValueInput"
+                >
                 </ms-input-number>
               </div>
               <div class="form-group__right">
-                <ms-input-number label="Nguyên giá" tabindex="106" hasLabel hasInput v-model="dataForm.cost" :radius="true">
+                <ms-input-number
+                  label="Nguyên giá"
+                  tabindex="106"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.cost"
+                  :radius="true"
+                >
                 </ms-input-number>
-                <ms-input-number label="Số năm sử dụng" tabindex="107" hasLabel hasInput v-model="dataForm.life_time"
-                  valueField="life_time" :radius="true"></ms-input-number>
+                <ms-input-number
+                  label="Số năm sử dụng"
+                  tabindex="107"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.life_time"
+                  valueField="life_time"
+                  :radius="true"
+                ></ms-input-number>
               </div>
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-input-number label="Tỉ lệ hao mòn(%)" tabindex="108" hasLabel hasInput v-model="dataForm.depreciation_rate"
-                  valueField="depreciation_rate" topIcon="ic-angle_up" bottomIcon="ic-angle_down" :radius="true">
+                <ms-input-number
+                  label="Tỉ lệ hao mòn(%)"
+                  tabindex="108"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.depreciation_rate"
+                  valueField="depreciation_rate"
+                  topIcon="ic-angle_up"
+                  bottomIcon="ic-angle_down"
+                  :radius="true"
+                >
                 </ms-input-number>
               </div>
               <div class="form-group__right">
-                <ms-input-number label="Giá trị hao mòn năm" tabindex="109" hasLabel hasInput typeValue="money"
-                  v-model="dataForm.depreciation_year" valueField="depreciation_year" :radius="true"></ms-input-number>
-                <ms-input-number label="Năm theo dõi" hasLabel v-model="dataForm.tracked_year" valueField="tracked_year"
-                  :radius="true" :disabled="true"></ms-input-number>
+                <ms-input-number
+                  label="Giá trị hao mòn năm"
+                  tabindex="109"
+                  hasLabel
+                  hasInput
+                  typeValue="money"
+                  v-model="dataForm.depreciation_year"
+                  valueField="depreciation_year"
+                  :radius="true"
+                ></ms-input-number>
+                <ms-input-number
+                  label="Năm theo dõi"
+                  hasLabel
+                  v-model="dataForm.tracked_year"
+                  valueField="tracked_year"
+                  :radius="true"
+                  :disabled="true"
+                ></ms-input-number>
               </div>
             </div>
             <div class="form-group">
               <div class="form-group__left">
-                <ms-input-date label="Ngày mua" hasLabel hasInput v-model="dataForm.purchase_date"
-                  valueField="purchase_date" rightIcon="ic-date" :radius="true"></ms-input-date>
+                <ms-input-date
+                  label="Ngày mua"
+                  hasLabel
+                  hasInput
+                  v-model="dataForm.purchase_date"
+                  valueField="purchase_date"
+                  rightIcon="ic-date"
+                  :radius="true"
+                ></ms-input-date>
               </div>
               <div class="form-group__right">
                 <div class="form-group__right__1">
-                  <ms-input-date label="Ngày bắt đầu sử dụng" hasLabel hasInput v-model="dataForm.production_date"
-                    valueField="production_date" rightIcon="ic-date" topIcon="ic-angle_up" bottomIcon="ic-angle_down"
-                    :radius="true"></ms-input-date>
+                  <ms-input-date
+                    label="Ngày bắt đầu sử dụng"
+                    hasLabel
+                    hasInput
+                    v-model="dataForm.production_date"
+                    valueField="production_date"
+                    rightIcon="ic-date"
+                    topIcon="ic-angle_up"
+                    bottomIcon="ic-angle_down"
+                    :radius="true"
+                  ></ms-input-date>
                 </div>
                 <div class="right-center"></div>
                 <div class="form-group__right__2"></div>
@@ -101,24 +214,50 @@
   </teleport>
 
   <!-- Toast message thêm mới thành công -->
-  <ms-message v-if="isShowMessage" textMessage="Thêm mới dữ liệu thành công" iconMessage="ic-success"></ms-message>
+  <ms-message
+    v-if="isShowMessage"
+    textMessage="Thêm mới dữ liệu thành công"
+    iconMessage="ic-success"
+  ></ms-message>
 
   <!-- Dialog messagebox hủy bỏ khai báo -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :textMessageBox="Resource.TitleDialogMessage.AddAsset.VI"
-      :disabledValueLeft="false" :disabledValueRight="false" v-if="isDialogMessCancelAdd">
+    <ms-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.AddAsset.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelAdd"
+    >
       <ms-button :text="Resource.TitleBtnDialog.Cancel.VI" radius></ms-button>
-      <ms-button :text="Resource.TitleBtnDialog.NoCancel.VI" type="secodary" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
     </ms-message-box>
   </teleport>
 
   <!-- Dialog messagebox cập nhật -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
-      :disabledValueLeft="false" :disabledValueRight="false" v-if="isDialogMessUpdate">
+    <ms-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessUpdate"
+    >
       <ms-button :text="Resource.TitleBtnDialog.Save.VI" radius></ms-button>
-      <ms-button :text="Resource.TitleBtnDialog.NoSave.VI" type="abort" radius></ms-button>
-      <ms-button :text="Resource.TitleBtnDialog.Cancel.VI" type="secodary" radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoSave.VI"
+        type="abort"
+        radius
+      ></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        type="secodary"
+        radius
+      ></ms-button>
     </ms-message-box>
   </teleport>
 </template>
@@ -261,7 +400,7 @@ export default {
 
     watch(
       () => dataForm.value,
-      (newVal, old) => { },
+      (newVal, old) => {},
       () => proxy.dataForm.depreciation_rate,
       (newVal, old) => {
         proxy.updateValDepYear();
@@ -308,7 +447,7 @@ export default {
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
 
             // Lấy dữ liệu tài sản theo id tài sản
-            proxy.loadDataAssetID();      
+            proxy.loadDataAssetID();
             proxy.getAssetNextCode();
             proxy.dataForm.Mode = 2;
             proxy.setValueDateYear();
@@ -319,18 +458,18 @@ export default {
             proxy.title = Resource.TitleFormPopup.FormAddAsset.VI;
             // Lấy mã tài sản tự tăng
             let result = await assetAPI.get("AssetGetNextCode", {});
-        proxy.dataForm.fixed_asset_code =
-          result?.Data && result?.Data[0].fixed_asset_code;
+            proxy.dataForm.fixed_asset_code =
+              result?.Data && result?.Data[0].fixed_asset_code;
             proxy.defaultValueDate();
             proxy.dataForm.Mode = 1;
-            proxy.setValueDateYear();        
+            proxy.setValueDateYear();
             break;
           }
           //Kiểm tra giá trị mode là nhân bản
           case Enum.Mode.Duplicate: {
             proxy.title = Resource.TitleFormPopup.FormDuplicateAsset.VI;
             proxy.dataForm.Mode = 3;
-            proxy.loadDataAssetID();      
+            proxy.loadDataAssetID();
             proxy.getAssetNextCode();
             proxy.setValueDateYear();
             break;
@@ -347,7 +486,7 @@ export default {
       proxy.loadDataDepartment();
     });
 
-     /**
+    /**
      * Lấy dữ liệu tài sản thoe id tài sản
      * @pram {fixed_asset_id} Id tài sản
      *  @author NNNinh(21/10/2021)
@@ -363,7 +502,7 @@ export default {
       }
     }
 
-     /**
+    /**
      * Lấy mã tài sản tự động tăng
      *  @author NNNinh(21/10/2021)
      */
@@ -398,7 +537,7 @@ export default {
       return arr.join("; ");
     });
 
-     /**
+    /**
      * Cập nhật giá trị hao mòn năm
      *  @author NNNinh(21/10/2021)
      */
@@ -407,8 +546,7 @@ export default {
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
     }
 
-
-     // Xét giá trị năm theo dõi mặc định là năm hiện tại
+    // Xét giá trị năm theo dõi mặc định là năm hiện tại
     function setValueDateYear() {
       proxy.dataForm.tracked_year = new Date().getFullYear();
     }
@@ -490,7 +628,7 @@ export default {
       changeValueInput,
       updateValDepYear,
       loadDataAssetID,
-      getAssetNextCode
+      getAssetNextCode,
     };
   },
 };
