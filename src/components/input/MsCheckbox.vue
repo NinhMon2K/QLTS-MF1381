@@ -7,6 +7,7 @@
       @change="changeValue"
       :readonly="readonly"
       :disabled="disabled"
+      :id="id == null ? '' : id"
     />
   </label>
 </template>
@@ -34,6 +35,10 @@ export default {
     disabled: {
       default: false,
       type: Boolean,
+    },
+    id: {
+      default: null,
+      type: String,
     },
     checked: {
       type: [Boolean, Number],

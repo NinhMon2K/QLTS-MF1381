@@ -9,6 +9,7 @@ export default {
     Search: "Tra cứu",
     Dictionary: "Danh mục",
     HTDBAsset: "Tài sản HT-ĐB",
+    HTDBAssetTT: "Tài sản hạ tầng đường bộ",
   },
   ErrorValidate: {
     AssetName: {
@@ -23,7 +24,7 @@ export default {
       VI: "Cần phải nhập mã bộ phận sử dụng",
       EN: "Department code is not empty",
     },
-    AssetCategoryCOde: {
+    AssetCategoryCode: {
       VI: "Cần phải nhập mã loại tài sản",
       EN: "Asset category code number is not empty",
     },

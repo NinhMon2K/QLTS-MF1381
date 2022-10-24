@@ -1,24 +1,59 @@
 <template>
   <div class="contrainer-toolbar">
     <div class="toobar-left">
-      <ms-input :hasLabel="false" leftIcon="ic-search" id="txt-search" :radius="true" placeholder="Tìm kiếm tài sản"
-        :disabledMessage="false"></ms-input>
-      <ms-combobox leftIcon="ic-fillter" valueField="fixed_asset_category_id" displayField="fixed_asset_category_name"
-        rightIcon="ic-angle-downs" placeholder="Loại tài sản" :dataAll="DataAssetCategory.value"></ms-combobox>
-      <ms-combobox leftIcon="ic-fillter" valueField="department_id" displayField="department_name"
-        rightIcon="ic-angle-downs" placeholder="Bộ phận sử dụng" :dataAll="DataDepartment.value"></ms-combobox>
+      <ms-input
+        :hasLabel="false"
+        leftIcon="ic-search"
+        id="txt-search"
+        :radius="true"
+        placeholder="Tìm kiếm tài sản"
+        :disabledMessage="false"
+      ></ms-input>
+      <ms-combobox
+        leftIcon="ic-fillter"
+        valueField="fixed_asset_category_id"
+        displayField="fixed_asset_category_name"
+        rightIcon="ic-angle-downs"
+        placeholder="Loại tài sản"
+        :heightCb="13"
+        :dataAll="DataAssetCategory.value"
+      ></ms-combobox>
+      <ms-combobox
+        leftIcon="ic-fillter"
+        valueField="department_id"
+        :heightCb="13"
+        displayField="department_name"
+        rightIcon="ic-angle-downs"
+        placeholder="Bộ phận sử dụng"
+        :dataAll="DataDepartment.value"
+      ></ms-combobox>
     </div>
     <div class="toolbar-right">
       <ms-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
-        <ms-button ref="MsPopupAsset" text="Thêm tài sản" id="btn-add" leftIcon="ic-add" :radius="true"
-          @click="handleClickAdd">
+        <ms-button
+          ref="MsPopupAsset"
+          text="Thêm tài sản"
+          id="btn-add"
+          leftIcon="ic-add"
+          :radius="true"
+          @click="handleClickAdd"
+        >
         </ms-button>
       </ms-tooltip>
       <ms-tooltip content="Xuất Excel" placement="bottom">
-        <ms-button leftIcon="ic-export" id="btn-export" :radius="true"></ms-button>
+        <ms-button
+          leftIcon="ic-export"
+          id="btn-export"
+          :radius="true"
+        ></ms-button>
       </ms-tooltip>
       <ms-tooltip content="Xóa" placement="bottom">
-        <ms-button leftIcon="ic-delete__toolbar" id="btn-delete" :radius="true" @click="handleShowMessBox">
+        <ms-button
+          leftIcon="ic-delete__toolbar"
+          id="btn-delete"
+          :radius="true"
+          @click="handleShowMessBox"
+        >
         </ms-button>
       </ms-tooltip>
       <ms-popup-asset v-if="isShowPopup" :formModel="pram"></ms-popup-asset>
@@ -27,56 +62,104 @@
 
   <!-- Dialog xóa nhiều dòng -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :valueMessageBox="valueMessageBox"
-      :textMessageBox="Resource.TitleDialogMessage.DeleteMultiple.VI" :disabledValueLeft="true"
-      :disabledValueRight="false" v-if="isDialogMessDeleMultiple">
+    <ms-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :valueMessageBox="valueMessageBox"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteMultiple.VI"
+      :disabledValueLeft="true"
+      :disabledValueRight="false"
+      v-if="isDialogMessDeleMultiple"
+    >
       <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
-      <ms-button :text="Resource.TitleBtnDialog.NoCancel.VI" type="secodary" @click="isDialogMessDeleMultiple = false"
-        radius></ms-button>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        @click="isDialogMessDeleMultiple = false"
+        radius
+      ></ms-button>
     </ms-message-box>
   </teleport>
 
   <!-- Dialog xóa 1 dòng -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :valueMessageBox="valueMessageBox"
-      :textMessageBox="Resource.TitleDialogMessage.DeleteOneAsset.VI" :disabledValueLeft="false"
-      :disabledValueRight="true" v-if="isDialogMessDelete">
+    <ms-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :valueMessageBox="valueMessageBox"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteOneAsset.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="true"
+      v-if="isDialogMessDelete"
+    >
       <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
-      <ms-button :text="Resource.TitleBtnDialog.NoCancel.VI" type="secodary" @click="isDialogMessDelete = false" radius>
+      <ms-button
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        @click="isDialogMessDelete = false"
+        radius
+      >
       </ms-button>
     </ms-message-box>
   </teleport>
 
   <!-- Dialog cancel xóa -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :valueMessageBox="valueMessageBox"
-      :textMessageBox="Resource.TitleDialogMessage.CancelDelete.VI" :disabledValueLeft="false"
-      :disabledValueRight="false" v-if="isDialogMessCancelDelete">
+    <ms-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :valueMessageBox="valueMessageBox"
+      :textMessageBox="Resource.TitleDialogMessage.CancelDelete.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelDelete"
+    >
       <ms-button :text="Resource.TitleBtnDialog.Close.VI" radius></ms-button>
     </ms-message-box>
   </teleport>
 
   <!-- Dialog cancel xóa nhiều dòng -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :valueMessageBox="valueMessageBox"
-      :textMessageBox="Resource.TitleDialogMessage.CancelDeleteMultiple.VI" :disabledValueLeft="true"
-      :disabledValueRight="false" v-if="isDialogMessCancelDeleMultiple">
-      <ms-button :text="Resource.TitleBtnDialog.Agree.VI" radius ></ms-button>
+    <ms-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :valueMessageBox="valueMessageBox"
+      :textMessageBox="Resource.TitleDialogMessage.CancelDeleteMultiple.VI"
+      :disabledValueLeft="true"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelDeleMultiple"
+    >
+      <ms-button :text="Resource.TitleBtnDialog.Agree.VI" radius></ms-button>
     </ms-message-box>
   </teleport>
 
   <!-- Khi không chọn dữ để xóa cảnh báo  -->
   <teleport to="body">
-    <ms-message-box leftIcon="ic-warning" :textMessageBox="Resource.TitleDialogMessage.DeleteNoData.VI"
-      :disabledValueLeft="false" :disabledValueRight="false" v-if="isDialogMessDeleNoData">
-      <ms-button :text="Resource.TitleBtnDialog.Close.VI" radius @click="isDialogMessDeleNoData = false"></ms-button>
+    <ms-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteNoData.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessDeleNoData"
+    >
+      <ms-button
+        :text="Resource.TitleBtnDialog.Close.VI"
+        radius
+        @click="isDialogMessDeleNoData = false"
+      ></ms-button>
     </ms-message-box>
   </teleport>
   <!-- Loading form -->
   <teleport to="body">
     <ms-loading v-if="isLoading"></ms-loading>
   </teleport>
-  <ms-grid :columns="columns" :allData="allData.value" ref="abc" v-model="dataSelected">
+  <ms-grid
+    :columns="columns"
+    :allData="allData.value"
+    ref="abc"
+    v-model="dataSelected"
+  >
   </ms-grid>
 </template>
 <script>
@@ -118,7 +201,7 @@ export default {
     close() {
       this.isShowPopup = false;
     },
-    hanhdleAccumulated() { },
+    hanhdleAccumulated() {},
     // handleShowMessBox() {
     //   if (this.dataSelected.length == 1) {
     //     this.isDialogMessDelete = true;
@@ -189,7 +272,7 @@ export default {
       proxy.loadDataComboDepartment();
     });
 
-    const isShowMessageBox = () => { };
+    const isShowMessageBox = () => {};
     function customValueMessBox(val) {
       if (val == 1) {
         return `<<${proxy.dataSelected[0].fixed_asset_code} - ${proxy.dataSelected[0].fixed_asset_name}>>`;
@@ -198,10 +281,9 @@ export default {
       } else return val;
     }
     const handleShowMessBox = () => {
-      if (proxy.dataSelected.length == 0) { 
+      if (proxy.dataSelected.length == 0) {
         proxy.isDialogMessDeleNoData = true;
-      }
-      else {
+      } else {
         if (proxy.dataSelected.length == 1) {
           proxy.valueMessageBox = proxy.customValueMessBox(
             proxy.dataSelected.length

@@ -8,7 +8,7 @@
       @keyup.space="emitClick"
     >
       <div class="app-icon icon_left-dropdown"></div>
-      <div class="text-item">{{ dataItem[displayField] }}</div>
+      <label class="text-item">{{ dataItem[displayField] }}</label>
     </li>
   </ms-tooltip>
 </template>
@@ -53,7 +53,8 @@ export default {
 <style lang="scss" scoped>
 .item-dropdown {
   width: 100%;
-  height: 36px;
+  height: 36px !important;
+  min-height: 36px;
   overflow: hidden;
   padding: 4px 0;
   outline: none;
@@ -63,11 +64,11 @@ export default {
   &:focus,
   &:focus-within {
     transition: 0.5s;
-   
+
     cursor: pointer;
     .icon_left-dropdown {
       background-color: #c7e0f5;
-      
+
       width: 36px;
       height: 36px;
       min-width: 36px;
@@ -76,7 +77,7 @@ export default {
       background-position: center;
     }
   }
-  &:hover {               
+  &:hover {
     transition: 0.2s;
     background-color: #c7e0f5;
     cursor: pointer;
@@ -94,9 +95,9 @@ export default {
   }
   .icon_left-dropdown {
     width: 36px;
-      height: 36px;
-      min-width: 36px;
-      background-image: none;
+    height: 36px;
+    min-width: 36px;
+    background-image: none;
   }
   .text-item {
     font-size: 14px;
@@ -108,14 +109,14 @@ export default {
 }
 .selected {
   transition: 0.2s;
- 
+
   .inline-block {
     .item-dropdown {
       .icon_left-dropdown {
         background-color: #c7e0f5;
         width: 36px;
-      height: 36px;
-      min-width: 36px;
+        height: 36px;
+        min-width: 36px;
         background-image: url("@/assets/images/icons/icons8-v-24.png") !important;
         background-repeat: no-repeat;
         background-position: center;

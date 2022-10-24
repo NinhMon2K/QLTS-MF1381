@@ -6,23 +6,31 @@
   >
     <div class="wrap-logo">
       <div class="logo app-icon ic-home"></div>
-      <span class="title--logo">{{Resource.LeftMenu.TitleLogo}}</span>
+      <span class="title--logo">{{ Resource.LeftMenu.TitleLogo }}</span>
     </div>
     <div class="menu">
       <div class="menu-group">
-        <a
-          class="menu-item"
-          v-for="(item, index) in menuItems"
-          :key="index"
-          :href="item.path"
-          :title="collapsed ? item.text : ''"
-          :class="[item.path == activeItem?.path ? 'active' : '']"
-          @click="() => clickMenu(item)"
-        >
-          <div :class="['app-icon', item.icon]"></div>
-          <span class="text-menu">{{ item.text }}</span>
-          <div class="arrow-menu misa-icon app-icon" :class="item.arrow"></div>
-        </a>
+        <div v-for="(item, index) in menuItems" :key="index">
+          <ms-tooltip
+            :content="collapsed ? item.title : ''"
+            placement="right"
+            right="right"
+          >
+            <a
+              class="menu-item"
+              :href="item.path"
+              :class="[item.path == activeItem?.path ? 'active' : '']"
+              @click="() => clickMenu(item)"
+            >
+              <div :class="['app-icon', item.icon]"></div>
+              <span class="text-menu">{{ item.text }}</span>
+              <div
+                class="arrow-menu misa-icon app-icon"
+                :class="item.arrow"
+              ></div>
+            </a>
+          </ms-tooltip>
+        </div>
       </div>
     </div>
 
@@ -144,42 +152,49 @@ export default {
           icon: "ic-overview",
           text: Resource.LeftMenu.Dashboard,
           arrow: "",
+          title: Resource.LeftMenu.Dashboard,
         },
         {
           path: "/asset",
           icon: "ic-car",
           text: Resource.LeftMenu.FA,
           arrow: "ic-angle-down",
+          title: Resource.LeftMenu.FA,
         },
         {
           path: "",
           icon: "ic-asset",
           text: Resource.LeftMenu.HTDBAsset,
           arrow: "ic-angle-down",
+          title: Resource.LeftMenu.HTDBAssetTT,
         },
         {
           path: "",
           icon: "ic-tools",
           text: Resource.LeftMenu.SU,
           arrow: "ic-angle-down",
+          title: Resource.LeftMenu.SU,
         },
         {
           path: "",
           icon: "ic-dictionary",
           text: Resource.LeftMenu.Dictionary,
           arrow: "",
+          title: Resource.LeftMenu.Dictionary,
         },
         {
           path: "",
           icon: "ic-menu__search",
           text: Resource.LeftMenu.Search,
           arrow: "ic-angle-down",
+          title: Resource.LeftMenu.Search,
         },
         {
           path: "/report",
           icon: "ic-report ",
           text: Resource.LeftMenu.Report,
           arrow: "ic-angle-down",
+          title: Resource.LeftMenu.Report,
         },
       ];
       return menuItems;
@@ -199,7 +214,7 @@ export default {
       clickMenu,
       activeItem,
       activeMenu,
-      Resource
+      Resource,
     };
   },
 };

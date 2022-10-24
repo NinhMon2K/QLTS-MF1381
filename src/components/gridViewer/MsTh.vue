@@ -4,9 +4,21 @@
       <template v-if="config.type == ColumnType.Checkbox">
         <ms-checkbox v-model="allSelected"></ms-checkbox>
       </template>
-
+      <!--  -->
       <template v-else>
-        {{ config.title }}
+        <ms-tooltip
+          :content="
+            config.title == ResourceTable.lblTableAssets.lblAccumulated
+              ? 'Hao mòn khấu hao lũy kế'
+              : ''
+          "
+          placement="bottom"
+          right="bottom"
+        >
+          <td>
+            {{ config.title }}
+          </td>
+        </ms-tooltip>
       </template>
     </div>
   </th>
@@ -24,10 +36,14 @@ import {
 import ColumnType from "@/commons/constant/ColumnType";
 import { computed } from "@vue/runtime-core";
 import MsCheckbox from "@/components/input/MsCheckbox.vue";
+import ResourceTable from "@/resource/dictionary/resourceTable";
+import MsTooltip from "@/components/tooltip/MsTooltip.vue";
+
 export default {
   name: "MsTh",
   components: {
     MsCheckbox,
+    MsTooltip,
   },
   props: {
     config: {
@@ -35,7 +51,7 @@ export default {
     },
     selected: {
       default: false,
-      type: Boolean
+      type: Boolean,
     },
     allData: {
       default: [],
@@ -54,19 +70,17 @@ export default {
     watch(
       () => allSelected.value,
       () => {
-        if(proxy.allSelected){
-          proxy.allData.forEach((data,index)=>{
-         proxy.selectedData.push(data);
-        })
-        }
-        else {
-           proxy.allData.forEach((data,index)=>{
+        if (proxy.allSelected) {
+          proxy.allData.forEach((data, index) => {
+            proxy.selectedData.push(data);
+          });
+        } else {
+          proxy.allData.forEach((data, index) => {
             proxy.selectedData.splice(index, 1);
-        })
-        
+          });
         }
-        
-        console.log( proxy.selectedData)
+
+        console.log(proxy.selectedData);
         proxy.$emit("change-value", proxy.allSelected);
       }
     );
@@ -89,6 +103,7 @@ export default {
       styles,
       allSelected,
       selectedData,
+      ResourceTable,
     };
   },
 };

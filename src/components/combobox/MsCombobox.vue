@@ -44,6 +44,7 @@
               :key="item"
               :dataItem="item"
               :displayField="displayField"
+              :valueField="valueField"
               :class="[selected == item ? 'selected' : '']"
               @change-value="changeValue"
             >
@@ -204,12 +205,11 @@ export default {
       offsetDropdown.height = 200.5 - this.heightCb;
     }
 
-    
     const changeValue = function (item, select) {
       proxy.$emit("update:modelValue", proxy.selected);
       if (select) {
         proxy.selected.push(item);
-        console.log(proxy.selected)
+        console.log(proxy.selected);
       } else {
         let i = proxy.selected.findIndex(
           (x) => x[proxy.valueField] == item[proxy.valueField]

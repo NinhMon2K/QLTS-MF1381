@@ -1,30 +1,32 @@
 <template>
   <td :style="styles" :class="cls">
-    <div class="td-inner">
-      <template v-if="config.type == ColumnType.Checkbox">
-        <ms-checkbox v-model="select"></ms-checkbox>
-      </template>
+    <ms-tooltip content="setTooltipDisplay" placement="bottom" right="bottom">
+      <div class="td-inner" ref="td">
+        <template v-if="config.type == ColumnType.Checkbox">
+          <ms-checkbox v-model="select"></ms-checkbox>
+        </template>
 
-      <template v-else-if="config.type == ColumnType.Action">
-        <div class="action-group">
-          <div v-for="btn in config.action" :key="btn">
-            <ms-tooltip
-              :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
-              placement="top"
-              right="top"
-            >
-              <div
-                class="app-icon icon"
-                :class="btn.icon"
-                @click="btn.click && btn.click(btn.command, value)"
-              ></div>
-            </ms-tooltip>
+        <template v-else-if="config.type == ColumnType.Action">
+          <div class="action-group">
+            <div v-for="btn in config.action" :key="btn">
+              <ms-tooltip
+                :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
+                placement="top"
+                right="top"
+              >
+                <div
+                  class="app-icon icon"
+                  :class="btn.icon"
+                  @click="btn.click && btn.click(btn.command, value)"
+                ></div>
+              </ms-tooltip>
+            </div>
           </div>
-        </div>
-      </template>
+        </template>
 
-      <template v-else> {{ text }} </template>
-    </div>
+        <template v-else> {{ text }} </template>
+      </div>
+    </ms-tooltip>
   </td>
 </template>
 
@@ -56,19 +58,18 @@ export default {
     value: {
       default: null,
     },
-    selected:{
-      default:false,
-      type:Boolean
-    }
+
+    selected: {
+      default: false,
+      type: Boolean,
+    },
   },
-  methods: {
-  },
+  methods: {},
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     const select = ref(false);
     onMounted(() => {
       proxy.select = proxy.selected;
-      
     });
     watch(
       () => select.value,
@@ -77,6 +78,12 @@ export default {
       }
     );
 
+    const setTooltipDisplay = () => {
+      let offset = proxy.$refs.td.getBoundingClientRect();
+      if (proxy.text.length > offset.width) {
+        return proxy.text;
+      } else return "";
+    };
     const styles = computed(() => {
       let arr = [];
       if (props.config.width) {
@@ -129,6 +136,7 @@ export default {
       cls,
       Resource,
       select,
+      setTooltipDisplay,
     };
   },
 };
@@ -151,6 +159,10 @@ export default {
 
 .td-inner {
   font-size: 13px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 input[type="checkbox"] {

@@ -95,10 +95,10 @@ table {
       position: absolute;
       top: 0;
     }
-    .container-tfooter-left{
+    .container-tfooter-left {
       display: flex;
       align-items: center;
-      .tfooter--left{
+      .tfooter--left {
         width: 138px;
       }
     }
@@ -292,30 +292,30 @@ tbody {
     background-color: #d1edf4;
   }
 }
-.total-page{
+.total-page {
   width: 59px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #ffffff;
-border-radius: 2.625px;
-border: 1px solid #afafaf;
+  border-radius: 2.625px;
+  border: 1px solid #afafaf;
 
-margin-right: 20px;
-overflow: hidden;
-  select{
+  margin-right: 20px;
+  overflow: hidden;
+  select {
     width: 100%;
     height: 100%;
     outline: none;
     border: none;
     padding-left: 13px;
     -webkit-appearance: none;
-    .item-total{
+    .item-total {
       width: 59px;
     }
   }
-  .ic-angle_down{
+  .ic-angle_down {
     margin-right: 11px;
   }
 }

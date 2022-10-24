@@ -9,10 +9,16 @@
       @keyup.space="emitClick"
     >
       <div class="app-icon">
-        <ms-checkbox class="ic-checked" v-model="select"></ms-checkbox>
+        <ms-checkbox
+          class="ic-checked"
+          :id="dataItem[valueField]"
+          v-model="select"
+        ></ms-checkbox>
       </div>
 
-      <div class="text-item">{{ dataItem[displayField] }}</div>
+      <label :for="dataItem[valueField]" class="text-item">{{
+        dataItem[displayField]
+      }}</label>
     </li>
   </ms-tooltip>
 </template>
@@ -92,6 +98,7 @@ export default {
   outline: none;
   display: flex;
   align-items: center;
+  height: 36px;
   .app-icon {
     display: flex;
     justify-content: center;
@@ -121,17 +128,6 @@ export default {
     padding-left: 18px;
   }
 }
-/* input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  height: 24px;
-  width: 24px;
-  background-color: #d5d5d5;
-  border-radius: 4px;
-  cursor: pointer;
-  &::after {
-  }
-} */
 .active {
   background-color: #c7e0f5;
 }
