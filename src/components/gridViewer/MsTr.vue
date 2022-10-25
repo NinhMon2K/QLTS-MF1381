@@ -1,11 +1,13 @@
 <template>
-  <tr v-for="item in allData" :key="item">
+  <tr class="ms-tr">
+    <ms-td v-if="selectedCol" :config="configSelect" v-model:value="select">
+    </ms-td>
+
     <ms-td
       v-for="col in columns"
       :key="col"
       :config="col"
-      :value="item[col.field]"
-      @change-value="changeSelected"
+      :value="data[col.field]"
     >
     </ms-td>
   </tr>
@@ -15,19 +17,62 @@ import {
   getCurrentInstance,
   onMounted,
   ref,
+  reactive,
   watch,
   defineComponent,
 } from "vue";
 import MsTd from "@/components/gridViewer/MsTd.vue";
+
 export default {
   name: "MsTr",
-  props:{
+  props: {
+    selected: {
+      default: false,
+      type: Boolean,
+    },
+    selectedCol: {
+      default: false,
+      type: Boolean,
+    },
 
+    columns: {
+      default: [],
+    },
+
+    data: {
+      default: {},
+    },
   },
   components: {
-    MsTd
+    MsTd,
   },
-  setup() {},
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
+    !window.mk && (window.mk = proxy);
+
+    const select = ref(props.selected);
+
+    const configSelect = reactive({
+      field: "selected",
+      title: "checkbox",
+      type: "Checkbox",
+      width: 50,
+    });
+
+    onMounted(() => {
+      watch(
+        () => proxy.select,
+        (newVal) => {
+          emit("update:selected", newVal);
+        }
+      );
+    });
+
+    return {
+      configSelect,
+      select,
+    };
+  },
 };
 </script>
 <style lang="scss" scoped></style>

@@ -157,6 +157,7 @@
   <ms-grid
     :columns="columns"
     :allData="allData.value"
+    :selectedCol="true"
     ref="abc"
     v-model="dataSelected"
   >
@@ -320,16 +321,11 @@ export default {
 
     const columns = ref([
       {
-        field: ResourceTable.FieldAsset.fixedAssetId,
-        title: "checkbox",
-        type: "Checkbox",
-        width: 50,
-      },
-      {
         field: ResourceTable.FieldAsset.STT,
         title: ResourceTable.lblTableAssets.STT,
         type: "Number",
         width: 48,
+        align: "Center",
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetCode,

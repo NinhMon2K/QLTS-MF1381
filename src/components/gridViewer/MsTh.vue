@@ -15,7 +15,7 @@
           placement="bottom"
           right="bottom"
         >
-          <td>
+          <td class="th-text">
             {{ config.title }}
           </td>
         </ms-tooltip>
@@ -75,9 +75,7 @@ export default {
             proxy.selectedData.push(data);
           });
         } else {
-          proxy.allData.forEach((data, index) => {
-            proxy.selectedData.splice(index, 1);
-          });
+          proxy.selectedData = [];
         }
 
         console.log(proxy.selectedData);
@@ -108,3 +106,4 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped></style>

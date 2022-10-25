@@ -4,6 +4,12 @@
       <table>
         <thead>
           <tr>
+            <th v-if="selectedCol" style="width: 50px">
+              <div class="th-inner">
+                <ms-checkbox v-model="allSelected"></ms-checkbox>
+              </div>
+            </th>
+
             <ms-th
               ref="th"
               v-for="col in columns"
@@ -16,16 +22,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in allData" :key="item" @dblclick="handleClick(item)">
-            <ms-td
-              v-for="col in columns"
-              :key="col"
-              :config="col"
-              :value="item[col.field]"
-              @change-value="changeSelected"
-            >
-            </ms-td>
-          </tr>
+          <ms-tr
+            v-for="(item, i) in allData"
+            :key="item"
+            :data="item"
+            :columns="columns"
+            :selectedCol="selectedCol"
+            v-model:selected="selectedIndex[i]"
+            @dblclick="handleClick(item)"
+          >
+          </ms-tr>
         </tbody>
         <tfoot>
           <tr>
@@ -107,14 +113,22 @@ import {
 import ColumnType from "@/commons/constant/ColumnType";
 import MsTh from "./MsTh.vue";
 import MsTd from "./MsTd.vue";
+import MsTr from "./MsTr.vue";
 import CommonFunction from "@/commons/commonFunction.js";
 import Enum from "@/resource/dictionary/enum.js";
 import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
 import Resource from "@/resource/dictionary/resource.js";
+import MsCheckbox from "@/components/input/MsCheckbox.vue";
+
 export default defineComponent({
   name: "MsGrid",
-  components: { MsTh, MsTd, MsPopupAsset },
+  components: { MsTh, MsTr, MsPopupAsset, MsCheckbox },
   props: {
+    selectedCol: {
+      default: false,
+      type: Boolean,
+    },
+
     columns: {
       default: [],
     },
@@ -126,6 +140,9 @@ export default defineComponent({
     },
     modelValue: {
       default: [],
+    },
+    selectedField: {
+      default: "",
     },
     // selected: {
     //   default: [],
@@ -153,9 +170,13 @@ export default defineComponent({
       mode: 0,
       fixed_asset_id: "",
     });
+    const allSelected = ref(false);
+
+    const selectedIndex = ref([]);
+
     const dataPageging = ref([1, 2, 4, 3]);
     const dataSelected = ref([]);
-    const handleClick = (item) => {  
+    const handleClick = (item) => {
       proxy.pram.mode = Enum.Mode.Update;
       proxy.pram.fixed_asset_id = item.fixed_asset_id;
       proxy.isShowPopup = true;
@@ -216,6 +237,8 @@ export default defineComponent({
       dataPageging,
       pram,
       isShowPopup,
+      allSelected,
+      selectedIndex,
     };
   },
 });

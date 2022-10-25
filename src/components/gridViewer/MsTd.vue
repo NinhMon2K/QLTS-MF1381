@@ -1,32 +1,33 @@
 <template>
-  <td :style="styles" :class="cls">
-    <ms-tooltip content="setTooltipDisplay" placement="bottom" right="bottom">
-      <div class="td-inner" ref="td">
-        <template v-if="config.type == ColumnType.Checkbox">
-          <ms-checkbox v-model="select"></ms-checkbox>
-        </template>
+  <td :style="styles" :class="[cls, styleAlign]">
+    <div class="td-inner" ref="td">
+      <template v-if="config.type == ColumnType.Checkbox">
+        <ms-checkbox v-model="select"></ms-checkbox>
+      </template>
 
-        <template v-else-if="config.type == ColumnType.Action">
-          <div class="action-group">
-            <div v-for="btn in config.action" :key="btn">
-              <ms-tooltip
-                :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
-                placement="top"
-                right="top"
-              >
-                <div
-                  class="app-icon icon"
-                  :class="btn.icon"
-                  @click="btn.click && btn.click(btn.command, value)"
-                ></div>
-              </ms-tooltip>
-            </div>
+      <template v-else-if="config.type == ColumnType.Action">
+        <div class="action-group">
+          <div v-for="btn in config.action" :key="btn">
+            <ms-tooltip
+              :content="btn.command == 0 ? 'Sửa' : 'Nhân bản'"
+              placement="top"
+              right="top"
+            >
+              <div
+                class="app-icon icon"
+                :class="btn.icon"
+                @click="btn.click && btn.click(btn.command, value)"
+              ></div>
+            </ms-tooltip>
           </div>
-        </template>
+        </div>
+      </template>
 
-        <template v-else> {{ text }} </template>
-      </div>
-    </ms-tooltip>
+      <template v-else-if="config.align == ColumnType.AlignCenter">
+        {{ text }}
+      </template>
+      <template v-else> {{ text }} </template>
+    </div>
   </td>
 </template>
 
@@ -71,9 +72,11 @@ export default {
     onMounted(() => {
       proxy.select = proxy.selected;
     });
+
     watch(
       () => select.value,
-      () => {
+      (newVal) => {
+        proxy.$emit("update:value", newVal);
         proxy.$emit("change-value", proxy.value, proxy.select, proxy.config);
       }
     );
@@ -128,6 +131,23 @@ export default {
 
       return rs.join(" ");
     });
+    const styleAlign = computed(() => {
+      let rs = [];
+
+      switch (props.config.align) {
+        case ColumnType.AlignCenter:
+          rs.push("text-align__center");
+          break;
+        case ColumnType.AlignLeft:
+          rs.push("text-align__left");
+          break;
+        case ColumnType.AlignRight:
+          rs.push("text-align__right");
+          break;
+      }
+
+      return rs.join(" ");
+    });
 
     return {
       text,
@@ -137,6 +157,7 @@ export default {
       Resource,
       select,
       setTooltipDisplay,
+      styleAlign,
     };
   },
 };
@@ -168,5 +189,27 @@ export default {
 input[type="checkbox"] {
   width: 14px;
   height: 14px;
+}
+.ms-tr {
+  .text-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    &:first-child {
+      margin-left: -3px;
+    }
+  }
+  .text-right {
+    &:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+}
+.text-align__center {
+  text-align: center;
 }
 </style>
