@@ -337,7 +337,7 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetName,
         title: ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
-        minWidth: 159,
+        minWidth: 140,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetCategoryName,

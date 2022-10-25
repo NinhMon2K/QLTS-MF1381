@@ -166,6 +166,7 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     const selected = ref([]);
     const isShowPopup = ref(false);
+    window.tables = proxy;
     let pram = reactive({
       mode: 0,
       fixed_asset_id: "",

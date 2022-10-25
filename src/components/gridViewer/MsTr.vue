@@ -2,7 +2,6 @@
   <tr class="ms-tr">
     <ms-td v-if="selectedCol" :config="configSelect" v-model:value="select">
     </ms-td>
-
     <ms-td
       v-for="col in columns"
       :key="col"
@@ -50,6 +49,7 @@ export default {
     const { proxy } = getCurrentInstance();
     !window.mk && (window.mk = proxy);
 
+    window.tr = proxy;
     const select = ref(props.selected);
 
     const configSelect = reactive({

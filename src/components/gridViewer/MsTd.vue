@@ -180,7 +180,7 @@ export default {
 
 .td-inner {
   font-size: 13px;
-  max-width: 100%;
+  max-width: 248px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

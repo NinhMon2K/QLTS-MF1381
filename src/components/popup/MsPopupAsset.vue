@@ -19,6 +19,9 @@
                   v-model="dataForm.fixed_asset_code"
                   :radius="false"
                   placeholder="Mã tài sản"
+                  @blur="changeValueInput"
+                  @focus="changeValueInput"
+                  :message="Resource.ErrorInput.AssetCode.VI"
                 ></ms-input>
               </div>
               <div class="form-group__right">
@@ -30,9 +33,10 @@
                   v-model="dataForm.fixed_asset_name"
                   :valueField="ResourceTable.FieldAsset.fixedAssetName"
                   :radius="true"
-                  placeholder="Nhập tên tài sản"
-                  :disabledMessage="false"
-                  message="Bạn phải nhập giá trị"
+                  placeholder="Nhập tên tài sản"                
+                  :message="Resource.ErrorInput.AssetName.VI"
+                  @blur="changeValueInput"
+                  @focus="changeValueInput"
                 ></ms-input>
               </div>
             </div>

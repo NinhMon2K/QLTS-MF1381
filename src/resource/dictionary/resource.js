@@ -50,6 +50,47 @@ export default {
       VI: "Cần phải nhập giá trị hao mòn năm",
     },
   },
+  ErrorInput: {
+    AssetName: {
+      VI: "Tên tài sản không được để trống!",
+      EN: "Asset name is not empty",
+    },
+    AssetCode: {
+      VI: "Mã tài sản không được để trống!",
+      EN: "Asset code is not empty",
+    },
+    DepartmentCode: {
+      VI: "Mã bộ phận sử dụng không được để trống!",
+      EN: "Department code is not empty",
+    },
+    AssetCategoryCode: {
+      VI: "Mã loại tài sản không được để trống!",
+      EN: "Asset category code number is not empty",
+    },
+    Quantity: {
+      VI: "Số lượng không được để trống!",
+    },
+    Cost: {
+      VI: "Nguyên giá không được để trống!",
+    },
+    DepreciationRate: {
+      VI: "Tỷ lệ hao mòn không được để trống!",
+    },
+    PurchaseDate: {
+      VI: "Ngày mua không được để trống!",
+    },
+    ProductionDate: {
+      VI: "Ngày bắt đầu sử dụng không được để trống!",
+    },
+    LifeTime: {
+      VI: "Số năm sử dụng không được để trống!",
+    },
+    DepreciationYear: {
+      VI: "Giá trị hao mòn năm không được để trống!" ,
+    },
+
+
+  },
   TitleBtnDialog: {
     Cancel: {
       VI: "Hủy bỏ",
