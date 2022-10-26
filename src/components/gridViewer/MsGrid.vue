@@ -24,12 +24,14 @@
         <tbody>
           <ms-tr
             v-for="(item, i) in allData"
+            :class="selectedIndex[i] ? 'active-tr' : ''"
             :key="item"
             :data="item"
             :columns="columns"
             :selectedCol="selectedCol"
             v-model:selected="selectedIndex[i]"
-            @dblclick="handleClick(item)"
+            @click="handleClick(i)"
+            @dblclick="handleDoubleClick(item)"
           >
           </ms-tr>
         </tbody>
@@ -108,6 +110,9 @@ import {
   ref,
   watch,
   reactive,
+  nextTick,
+  computed,
+  onUpdated,
   defineComponent,
 } from "vue";
 import ColumnType from "@/commons/constant/ColumnType";
@@ -172,50 +177,63 @@ export default defineComponent({
       fixed_asset_id: "",
     });
     const allSelected = ref(false);
-
+    // Lấy ra những vị trí checked
     const selectedIndex = ref([]);
-
     const dataPageging = ref([1, 2, 4, 3]);
-    const dataSelected = ref([]);
-    const handleClick = (item) => {
+    const dataSelected = computed(() =>
+      selectedIndex.value.map((x, i) => x && proxy.allData[i]).filter((x) => x)
+    );
+    watch(
+      () => proxy.dataSelected,
+      (newVal) => {
+        emit("update:selected", newVal);
+      }
+    );
+
+    watch(
+      () => proxy.allSelected,
+      (newVal) => {
+        nextTick(() => {
+          proxy.allSelected = newVal;
+          proxy.handleAllSelected();
+        });
+      }
+    );
+    // onUpdated(() => {
+    //   nextTick(() => {
+    //     proxy.handleAllSelected();
+    //   });
+    // });
+
+    const handleAllSelected = () => {
+      if (proxy.allSelected) {
+        proxy.allData.forEach((data, i) => {
+          proxy.selectedIndex[i] = true;
+        });
+      } else {
+        proxy.allData.forEach((data, i) => {
+          proxy.selectedIndex[i] = false;
+        });
+      }
+    };
+
+    const handleDoubleClick = (item) => {
       proxy.pram.mode = Enum.Mode.Update;
       proxy.pram.fixed_asset_id = item.fixed_asset_id;
       proxy.isShowPopup = true;
     };
-    const changeValue = function (value, select, config) {
-      if (select) {
-        let item = proxy.allData.find((x) => x[config.field] == value);
-        proxy.selected.push(item);
+    const handleClick = (index) => {
+      if (proxy.selectedIndex[index]) {
+        proxy.selectedIndex[index] = false;
       } else {
-        let i = proxy.selected.findIndex((x) => x[config.field] == value);
-
-        proxy.selected.splice(i, 1);
+        proxy.selectedIndex[index] = true;
       }
-      proxy.$emit("change-value", proxy.selected);
     };
+
     onMounted(() => {
       proxy.handleSum();
     });
-    const changeSelected = function (value, select, config) {
-      if (select) {
-        let item = proxy.allData.find((x) => x[config.field] == value);
-        proxy.dataSelected.push(item);
-      } else {
-        let i = proxy.dataSelected.findIndex((x) => x[config.field] == value);
 
-        proxy.dataSelected.splice(i, 1);
-      }
-      proxy.$emit("update:modelValue", proxy.dataSelected);
-      proxy.$emit("change-value", proxy.dataSelected);
-    };
-    function formatPrice(value) {
-      try {
-        let val = (value / 1).toFixed(0).replace(".", ".");
-        return val.toString().replace(/\B(?=(\d{0})+(?!\d))/g, ".");
-      } catch (error) {
-        console.log(error);
-      }
-    }
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
@@ -230,20 +248,22 @@ export default defineComponent({
     return {
       selected,
       handleSum,
-      changeValue,
-      formatPrice,
-      changeSelected,
       dataSelected,
-      handleClick,
+      handleDoubleClick,
       dataPageging,
       pram,
       isShowPopup,
       allSelected,
       selectedIndex,
+      handleClick,
+      handleAllSelected,
     };
   },
 });
 </script>
 <style lang="scss" scoped>
 @import "../../assets/scss/components/MsGid.scss";
+.active-tr {
+  background-color: rgba(26, 164, 200, 0.2);
+}
 </style>

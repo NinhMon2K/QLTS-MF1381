@@ -2,7 +2,7 @@
   <td :style="styles" :class="[cls, styleAlign]">
     <div class="td-inner" ref="td">
       <template v-if="config.type == ColumnType.Checkbox">
-        <ms-checkbox v-model="select"></ms-checkbox>
+        <ms-checkbox v-model="data"></ms-checkbox>
       </template>
 
       <template v-else-if="config.type == ColumnType.Action">
@@ -16,7 +16,7 @@
               <div
                 class="app-icon icon"
                 :class="btn.icon"
-                @click="btn.click && btn.click(btn.command, value)"
+                @click="btn.click && btn.click(btn.command, data)"
               ></div>
             </ms-tooltip>
           </div>
@@ -38,6 +38,7 @@ import {
   onMounted,
   reactive,
   methods,
+  nextTick,
   ref,
   watch,
 } from "@vue/runtime-core";
@@ -59,27 +60,27 @@ export default {
     value: {
       default: null,
     },
-
-    selected: {
-      default: false,
-      type: Boolean,
-    },
   },
   methods: {},
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-    const select = ref(false);
-    onMounted(() => {
-      proxy.select = proxy.selected;
-    });
+    const data = ref(props.value);
 
-    watch(
-      () => select.value,
-      (newVal) => {
-        proxy.$emit("update:value", newVal);
-        proxy.$emit("change-value", proxy.value, proxy.select, proxy.config);
-      }
-    );
+    onMounted(() => {
+      watch(
+        () => data.value,
+        (newVal) => {
+          proxy.$emit("update:value", newVal);
+        }
+      );
+
+      watch(
+        () => proxy.value,
+        (newVal) => {
+          proxy.data = newVal;
+        }
+      );
+    });
 
     const setTooltipDisplay = () => {
       let offset = proxy.$refs.td.getBoundingClientRect();
@@ -155,7 +156,7 @@ export default {
       styles,
       cls,
       Resource,
-      select,
+      data,
       setTooltipDisplay,
       styleAlign,
     };

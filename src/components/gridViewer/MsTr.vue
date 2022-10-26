@@ -1,5 +1,5 @@
 <template>
-  <tr class="ms-tr">
+  <tr class="ms-tr" >
     <ms-td v-if="selectedCol" :config="configSelect" v-model:value="select">
     </ms-td>
     <ms-td
@@ -64,6 +64,13 @@ export default {
         () => proxy.select,
         (newVal) => {
           emit("update:selected", newVal);
+        }
+      );
+
+      watch(
+        () => proxy.selected,
+        (val) => {
+          proxy.select = val;
         }
       );
     });

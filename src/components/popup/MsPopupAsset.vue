@@ -33,7 +33,7 @@
                   v-model="dataForm.fixed_asset_name"
                   :valueField="ResourceTable.FieldAsset.fixedAssetName"
                   :radius="true"
-                  placeholder="Nhập tên tài sản"                
+                  placeholder="Nhập tên tài sản"
                   :message="Resource.ErrorInput.AssetName.VI"
                   @blur="changeValueInput"
                   @focus="changeValueInput"
@@ -309,7 +309,7 @@ import {
   ssrRenderComponent as _ssrRenderComponent,
   ssrRenderAttrs as _ssrRenderAttrs,
 } from "vue/server-renderer";
-import moment from "moment";
+import { required } from "@vuelidate/validators";
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsInputDate from "@/components/date/MsInputDate.vue";
@@ -486,8 +486,6 @@ export default {
 
             // Lấy dữ liệu tài sản theo id tài sản
             proxy.loadDataAssetID();
-            proxy.getAssetNextCode();
-
             proxy.setValueDateYear();
             proxy.dataForm.Mode = 2;
             break;

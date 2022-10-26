@@ -8,6 +8,7 @@
         :radius="true"
         placeholder="Tìm kiếm tài sản"
         :disabledMessage="false"
+        message=""
       ></ms-input>
       <ms-combobox
         leftIcon="ic-fillter"
@@ -203,13 +204,6 @@ export default {
       this.isShowPopup = false;
     },
     hanhdleAccumulated() {},
-    // handleShowMessBox() {
-    //   if (this.dataSelected.length == 1) {
-    //     this.isDialogMessDelete = true;
-    //   } else {
-    //     console.log("das");
-    //   }
-    // },
   },
   async setup() {
     const { proxy } = getCurrentInstance();

@@ -48,11 +48,18 @@ export default {
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
-    window.a = proxy;
     const isValue = ref(false);
     const changeValue = function (e) {
       proxy.$emit("update:modelValue", proxy.isValue);
     };
+
+    watch(
+      () => proxy.modelValue,
+      (val) => {
+        proxy.isValue = val;
+      }
+    );
+
     return {
       isValue,
       changeValue,
