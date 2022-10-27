@@ -20,7 +20,7 @@
         :id="id ? id : ''"
         class="input-text"
         type="number"
-        v-model="isValue"
+        v-model.trim="isValue"
         :tabindex="tabindex"
         :placeholder="placeholder"
         :disabled="disabled || false"
@@ -50,7 +50,7 @@
               disabledIconBottom ? 'disabled-icon' : '',
             ]"
             v-if="bottomIcon"
-            @click="less"       
+            @click="less"
           ></div>
         </ms-tooltip>
       </div>
@@ -175,11 +175,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
-    tabindex:{
+    tabindex: {
       default: null,
       type: String,
-    }
-    
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -202,7 +201,7 @@ export default defineComponent({
           proxy.isValue = newVal;
           proxy.less;
           proxy.plus;
-          
+
           emit("changeValue", proxy.isValue, proxy.valueField);
         },
         () => proxy.plus,
@@ -210,7 +209,7 @@ export default defineComponent({
           nextTick(() => {
             proxy.isValue = newVal;
             emit("changeValue", proxy.isValue, proxy.valueField);
-      });
+          });
         },
         () => proxy.less,
         (newVal, old) => {
@@ -237,8 +236,8 @@ export default defineComponent({
       }
     });
 
-      /**
-     * Xử lý sự kiện click lên 
+    /**
+     * Xử lý sự kiện click lên
      *  @author NNNinh(16/10/2021)
      */
     const plus = () => {
@@ -251,8 +250,8 @@ export default defineComponent({
         return proxy.isValue;
       }
     };
-    
-      /**
+
+    /**
      * Xử lý sự kiện click xuống
      *  @author NNNinh(16/10/2021)
      */
@@ -268,8 +267,7 @@ export default defineComponent({
       }
     };
 
-     
-      /**
+    /**
      * Xử lý cập nhật modelValue cho isValue
      *  @author NNNinh(18/10/2021)
      */

@@ -149,14 +149,9 @@ export default defineComponent({
     selectedField: {
       default: "",
     },
-    // selected: {
-    //   default: [],
-    //   type: Array,
-    // },
-    // data: {
-    //   default: [],
-    //   type: Array,
-    // },
+    selectedData: {
+      default: [],
+    },
     // filters: {
     //   default: [],
     //   type: Array,
@@ -183,39 +178,30 @@ export default defineComponent({
     const dataSelected = computed(() =>
       selectedIndex.value.map((x, i) => x && proxy.allData[i]).filter((x) => x)
     );
-    watch(
-      () => proxy.dataSelected,
-      (newVal) => {
-        emit("update:selected", newVal);
-      }
-    );
+
+    // Cập nhật dataSelected vào selectedData
+    onMounted(() => {
+      watch(
+        () => proxy.dataSelected,
+        (newVal) => {
+          emit("update:selected", newVal);
+          nextTick(() => {
+            emit("update:selectedData", proxy.dataSelected);
+          });
+        }
+      );
+    });
 
     watch(
-      () => proxy.allSelected,
+      () => allSelected.value,
       (newVal) => {
-        nextTick(() => {
-          proxy.allSelected = newVal;
-          proxy.handleAllSelected();
-        });
+        if (newVal) {
+          proxy.selectedIndex = proxy.allData.map((x) => true);
+        } else {
+          proxy.selectedIndex = [];
+        }
       }
     );
-    // onUpdated(() => {
-    //   nextTick(() => {
-    //     proxy.handleAllSelected();
-    //   });
-    // });
-
-    const handleAllSelected = () => {
-      if (proxy.allSelected) {
-        proxy.allData.forEach((data, i) => {
-          proxy.selectedIndex[i] = true;
-        });
-      } else {
-        proxy.allData.forEach((data, i) => {
-          proxy.selectedIndex[i] = false;
-        });
-      }
-    };
 
     const handleDoubleClick = (item) => {
       proxy.pram.mode = Enum.Mode.Update;
@@ -256,7 +242,6 @@ export default defineComponent({
       allSelected,
       selectedIndex,
       handleClick,
-      handleAllSelected,
     };
   },
 });

@@ -160,7 +160,7 @@
     :allData="allData.value"
     :selectedCol="true"
     ref="abc"
-    v-model="dataSelected"
+    v-model:selectedData="dataSelected"
   >
   </ms-grid>
 </template>
@@ -186,7 +186,6 @@ import assetAPI from "@/apis/api/assetAPI.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
 import Enum from "@/resource/dictionary/enum.js";
 import Resource from "@/resource/dictionary/resource.js";
-import { switchCase } from "@babel/types";
 export default {
   name: "MsAsset",
   components: {
@@ -207,7 +206,7 @@ export default {
   },
   async setup() {
     const { proxy } = getCurrentInstance();
-    window.an = proxy;
+    window.asset = proxy;
     //Loading form
     const isLoading = ref(false);
 
@@ -275,6 +274,11 @@ export default {
         return `0${val}`;
       } else return val;
     }
+
+    /**
+     * Sự kiện show mesagebox
+     *  @author NNNinh(20/10/2021)
+     */
     const handleShowMessBox = () => {
       if (proxy.dataSelected.length == 0) {
         proxy.isDialogMessDeleNoData = true;
@@ -292,6 +296,11 @@ export default {
         }
       }
     };
+
+    /**
+     * Xử lý sự kiện click thêm mới
+     *  @author NNNinh(20/10/2021)
+     */
     const handleClickAdd = () => {
       proxy.pram.mode = Enum.Mode.Add;
       proxy.isShowPopup = true;

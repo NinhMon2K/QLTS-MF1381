@@ -6,10 +6,7 @@
     </label>
     <div
       class="flex-row"
-      :class="[
-        leftIcon ? 'has-icon' : '',
-        disabledMess ? 'input__error' : '',
-      ]"
+      :class="[leftIcon ? 'has-icon' : '', disabledMess ? 'input__error' : '']"
     >
       <div class="icon-filter">
         <span
@@ -17,16 +14,16 @@
             'app-icon icon--left',
             leftIcon,
             disabled ? 'disabled-icon' : '',
-          ]"   
+          ]"
           v-if="leftIcon"
         ></span>
       </div>
 
-      <input  
+      <input
         id="input__text"
         class="input-text"
         type="text"
-        v-model="isValue"
+        v-model.trim="isValue"
         :tabindex="tabindex"
         :placeholder="placeholder"
         :disabled="disabled || false"
@@ -124,19 +121,19 @@ export default defineComponent({
       default: null,
       type: String,
     },
-    tabindex:{
-      default:null,
-      type:String
-    }
+    tabindex: {
+      default: null,
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
-    const forcused = ref(false)
+    const forcused = ref(false);
     const isValue = ref("");
 
     const disabledMess = ref(false);
-    onMounted(()=>{
+    onMounted(() => {
       proxy.$emit("update:disabledMessage", proxy.disabledMess);
     });
     const cancelEvent = (e) => {
@@ -152,28 +149,26 @@ export default defineComponent({
         }
       }
     };
-    const onFocus = (e)=>{
+    const onFocus = (e) => {
       proxy.forcused = true;
-      emit("focus", proxy.isValue,proxy.valueField, e);
-    }
-    const errorMessage= (e)=>{
-      if(proxy.isValue == ""){
+      emit("focus", proxy.isValue, proxy.valueField, e);
+    };
+    const errorMessage = (e) => {
+      if (proxy.isValue == "") {
         nextTick(() => {
-          proxy.disabledMess = true
-        emit("errorMessage", proxy.isValue, proxy.valueField);
-      });
-  
+          proxy.disabledMess = true;
+          emit("errorMessage", proxy.isValue, proxy.valueField);
+        });
+      } else {
+        proxy.disabledMess = false;
       }
-      else{
-        proxy.disabledMess = false
-      }
-    }
-    
-     const onBlur = (e)=>{
+    };
+
+    const onBlur = (e) => {
       proxy.forcused = false;
       proxy.errorMessage(e);
-      emit("blur", proxy.isValue,proxy.valueField, e);
-    }
+      emit("blur", proxy.isValue, proxy.valueField, e);
+    };
     const eventListsioner = computed(() => {
       const me = this;
       return {
@@ -189,11 +184,11 @@ export default defineComponent({
           cancelEvent(e);
           proxy.changeValue(e);
         },
-        keydown: (e) => {        
-          emit("keydown", proxy.isValue,proxy.valueField, e);
+        keydown: (e) => {
+          emit("keydown", proxy.isValue, proxy.valueField, e);
         },
-        keyup: (e) => {    
-          emit("keyup", proxy.isValue,proxy.valueField, e);
+        keyup: (e) => {
+          emit("keyup", proxy.isValue, proxy.valueField, e);
         },
       };
     });
@@ -209,7 +204,17 @@ export default defineComponent({
         emit("changeValue", proxy.isValue, proxy.valueField);
       });
     };
-    return { isValue, changeValue,forcused,eventListsioner,cancelEvent,onFocus,onBlur ,disabledMess,errorMessage};
+    return {
+      isValue,
+      changeValue,
+      forcused,
+      eventListsioner,
+      cancelEvent,
+      onFocus,
+      onBlur,
+      disabledMess,
+      errorMessage,
+    };
   },
 });
 </script>
