@@ -25,6 +25,7 @@
         type="text"
         v-model.trim="isValue"
         :tabindex="tabindex"
+        :maxlength="maxLength"
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
@@ -125,6 +126,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    maxLength:{
+      default:null,
+      type:[Number,String]
+    }
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();

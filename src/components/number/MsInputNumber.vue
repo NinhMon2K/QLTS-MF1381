@@ -25,7 +25,8 @@
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
-        max="9999999999999"
+        :max="max"
+        :min="min"
         @change="changeValue"
         @blur="changeValue"
       />

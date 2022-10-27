@@ -9,7 +9,6 @@
       @mouseleave="hide"
     >
       <slot></slot>
-
       <div
         :class="['tooltip', top, left, right, bottom]"
         ref="floatingRef"

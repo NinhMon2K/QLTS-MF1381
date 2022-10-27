@@ -4,18 +4,20 @@
       <div class="form-asset">
         <div class="header-popup">
           <div class="form-asset__title">{{ title }}</div>
+          <ms-tooltip content="Hủy" placement="bottom" right="bottom">
           <div class="form-asset__close app-icon ic-close"></div>
+        </ms-tooltip>
         </div>
         <div class="content-popup">
           <div class="form-asset__body">
             <div class="form-group">
               <div class="form-group__left">
                 <ms-input
-                  ref="ab"
                   label="Mã tài sản"
                   tabindex="101"
                   hasLabel
                   hasInput
+                  :maxLength="15"               
                   v-model="dataForm.fixed_asset_code"
                   :radius="false"
                   placeholder="Mã tài sản"
@@ -29,6 +31,7 @@
                   label="Tên tài sản"
                   tabindex="102"
                   hasLabel
+                  :maxLength="255"
                   hasInput
                   v-model="dataForm.fixed_asset_name"
                   :valueField="ResourceTable.FieldAsset.fixedAssetName"
@@ -309,7 +312,6 @@ import {
   ssrRenderComponent as _ssrRenderComponent,
   ssrRenderAttrs as _ssrRenderAttrs,
 } from "vue/server-renderer";
-import { required } from "@vuelidate/validators";
 import MsButton from "@/components/button/MsButton.vue";
 import MsInput from "@/components/input/MsInput.vue";
 import MsInputDate from "@/components/date/MsInputDate.vue";
@@ -322,7 +324,6 @@ import Resource from "@/resource/dictionary/resource.js";
 import ResourceTable from "@/resource/dictionary/resourceTable.js";
 import Enum from "@/resource/dictionary/enum.js";
 import assetAPI from "@/apis/api/assetAPI.js";
-import { hide } from "@floating-ui/core";
 export default {
   name: "MsPopupAsset",
   components: {
@@ -449,6 +450,9 @@ export default {
       }
     );
 
+    onMounted(()=>{
+     
+    })
     /**
      * Tự động cập nhật giá trị hao mòn năm
      *  @author NNNinh(21/10/2021)
@@ -475,6 +479,7 @@ export default {
     };
     onBeforeMount(() => {
       try {
+        proxy.defaultValueDate();
         /**
          * Kiểm tra giá trị mode là add hay cập nhật,nhân bản
          *  @author NNNinh(17/10/2021)
@@ -724,6 +729,7 @@ export default {
       getAssetNextCode,
       saveData,
       titleError,
+      
     };
   },
 };

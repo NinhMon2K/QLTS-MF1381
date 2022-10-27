@@ -131,11 +131,7 @@ export default {
     const { proxy } = getCurrentInstance();
 
     const selected = ref([]);
-    // const objSelected = ref({});
-    window.c = proxy;
-
-    window.ab = proxy;
-
+    window.cb = proxy;
     const display = computed(() =>
       proxy.selected.map((x) => x[props.displayField]).join("; ")
     );
