@@ -7,7 +7,7 @@
     <button
       class="dropdown-menu-toggle"
       ref="dropdown"
-      :class="disabledMess ? 'error__message' : ''"
+      :class="disabledMessage ? 'error__message' : ''"
     >
       <div
         :class="[
@@ -36,6 +36,7 @@
         ]"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
+        v-click-outside="hideDropdown"
       ></div>
     </button>
 
@@ -58,7 +59,7 @@
         </div>
       </div>
     </teleport>
-    <span v-if="disabledMess" class="error-message">{{
+    <span v-if="disabledMessage" class="error-message">{{
       message ? message : ""
     }}</span>
   </div>
@@ -161,11 +162,7 @@ export default {
         return null;
       }
     });
-
-    const disabledMess = ref(false);
     onMounted(() => {
-      proxy.$emit("update:disabledMessage", proxy.disabledMess);
-
       proxy.data = proxy.dataAll;
 
       watch(
@@ -272,16 +269,21 @@ export default {
         }
       }
     };
-    const handleErorMessage = () => {
-      if (proxy.display != null) {
-        proxy.disabledMess = false;
-      } else {
-        proxy.disabledMess = true;
-      }
+
+    const hideDropdown = (evt, el) => {
+      document.addEventListener("click", (e) => {
+        if (proxy.isShowMenu) {
+          let target = e.target;
+          let cbo =
+            target.closest(".dropdown-menu") ||
+            target.closest(".dropdown-menu-toggle");
+          if (!cbo) {
+            proxy.isShowMenu = false;
+          }
+        }
+      });
     };
-    const onBlur = (e) => {
-      proxy.handleErorMessage();
-    };
+    // const onBlur = (e) => {};
     const eventListsioner = computed(() => {
       const me = this;
       return {
@@ -291,7 +293,7 @@ export default {
         },
         blur: (e) => {
           proxy.cancelEvent(e);
-          proxy.onBlur(e);
+          // proxy.onBlur(e);
         },
         focus: (e) => {
           proxy.cancelEvent(e);
@@ -349,12 +351,10 @@ export default {
       display,
       selected,
       initEvent, //Đóng menu dropdown khi windown click,
-      handleErorMessage,
-      disabledMess,
       search,
       data,
       disp,
-      onBlur,
+      hideDropdown,
     };
   },
 };

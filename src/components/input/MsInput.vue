@@ -6,7 +6,10 @@
     </label>
     <div
       class="flex-row"
-      :class="[leftIcon ? 'has-icon' : '', disabledMess ? 'input__error' : '']"
+      :class="[
+        leftIcon ? 'has-icon' : '',
+        disabledMessage ? 'input__error' : '',
+      ]"
     >
       <div class="icon-filter">
         <span
@@ -40,7 +43,7 @@
         v-if="rightIcon"
       ></div>
     </div>
-    <span v-if="disabledMess" class="error-message">{{
+    <span v-if="disabledMessage" class="error-message">{{
       message ? message : ""
     }}</span>
   </div>
@@ -137,10 +140,6 @@ export default defineComponent({
     const forcused = ref(false);
     const isValue = ref("");
 
-    const disabledMess = ref(false);
-    onMounted(() => {
-      proxy.$emit("update:disabledMessage", proxy.disabledMess);
-    });
     const cancelEvent = (e) => {
       if (e) {
         if (typeof e.preventDefault === "function") {
@@ -158,20 +157,8 @@ export default defineComponent({
       proxy.forcused = true;
       emit("focus", proxy.isValue, proxy.valueField, e);
     };
-    const errorMessage = (e) => {
-      if (proxy.isValue == "") {
-        nextTick(() => {
-          proxy.disabledMess = true;
-          emit("errorMessage", proxy.isValue, proxy.valueField);
-        });
-      } else {
-        proxy.disabledMess = false;
-      }
-    };
-
     const onBlur = (e) => {
       proxy.forcused = false;
-      proxy.errorMessage(e);
       emit("blur", proxy.isValue, proxy.valueField, e);
     };
     const eventListsioner = computed(() => {
@@ -217,8 +204,6 @@ export default defineComponent({
       cancelEvent,
       onFocus,
       onBlur,
-      disabledMess,
-      errorMessage,
     };
   },
 });

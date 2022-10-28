@@ -3,7 +3,9 @@
     <div class="model">
       <div class="form-asset">
         <div class="header-popup">
-          <div class="form-asset__title">{{ title }}</div>
+          <div class="form-asset__title" >
+            {{ title }}
+          </div>
           <ms-tooltip content="Hủy" placement="bottom" right="bottom">
             <div
               class="form-asset__close app-icon ic-close"
