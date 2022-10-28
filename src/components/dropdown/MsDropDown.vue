@@ -1,34 +1,66 @@
 <template>
-  <div class="filter-dropdown">
+  <div class="filter-dropdown" :class="disabledMess ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <button class="dropdown-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
-      <div :class="[
-        'app-icon icon--left',
-        leftIcon,
-        disabled ? 'disabled-icon' : '',
-      ]" v-if="leftIcon"></div>
-      <input type="text" :tabindex="tabindex" :value="display" :placeholder="placeholder" :readonly="readonly" />
-      <div :class="[
-        'app-icon icon--right',
-        rightIcon,
-        disabled ? 'disabled-icon' : '',
-      ]" v-if="rightIcon"></div>
+    <button
+      class="dropdown-menu-toggle"
+      ref="dropdown"
+      :class="disabledMess ? 'error__message' : ''"
+    >
+      <div
+        :class="[
+          'app-icon icon--left',
+          leftIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="leftIcon"
+      ></div>
+      <input
+        type="text"
+        v-model="disp"
+        :tabindex="tabindex"
+        ref="input"
+        :placeholder="placeholder"
+        :readonly="readonly"
+        v-on="eventListsioner"
+        @keyup="search"
+        @click="isShowMenu = true"
+      />
+      <div
+        :class="[
+          'app-icon icon--right',
+          rightIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="rightIcon"
+        @click="isShowMenu = !isShowMenu"
+      ></div>
     </button>
+
     <teleport to="body">
       <div class="dropdown-menu" :style="style" v-if="isShowMenu">
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
-            <dropdown-item v-for="item in dataAll" :key="item" :dataItem="item" :displayField="displayField" :class="[
-              modelValue && modelValue == item[valueField] ? 'selected' : '',
-            ]" @menu-item-click="itemClick">
+            <dropdown-item
+              v-for="item in data"
+              :key="item"
+              :dataItem="item"
+              :displayField="displayField"
+              :class="[
+                modelValue && modelValue == item[valueField] ? 'selected' : '',
+              ]"
+              @menu-item-click="itemClick"
+            >
             </dropdown-item>
           </ul>
         </div>
       </div>
     </teleport>
+    <span v-if="disabledMess" class="error-message">{{
+      message ? message : ""
+    }}</span>
   </div>
 </template>
 <script>
@@ -99,28 +131,59 @@ export default {
     },
     readonly: {
       default: false,
-      type: Boolean
+      type: Boolean,
     },
-    tabindex:{
+    tabindex: {
       default: null,
       type: String,
-    }
+    },
+    message: {
+      default: null,
+      type: String,
+    },
+    disabledMessage: {
+      default: false,
+      type: Boolean,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+
+    const data = ref(props.dataAll);
+    const disp = ref("");
 
     window.cb = proxy;
 
     const selected = computed(() => {
       if (proxy.modelValue) {
-        return proxy.dataAll.find(
-          (x) => x[proxy.valueField] == proxy.modelValue
-        );
+        return proxy.data.find((x) => x[proxy.valueField] == proxy.modelValue);
       } else {
         return null;
       }
     });
 
+    const disabledMess = ref(false);
+    onMounted(() => {
+      proxy.$emit("update:disabledMessage", proxy.disabledMess);
+
+      proxy.data = proxy.dataAll;
+
+      watch(
+        () => proxy.dataAll,
+        () => {
+          search();
+        }
+      );
+    });
+
+    const search = function (e) {
+      setTimeout(() => {
+        let val = proxy.$refs.input.value;
+        proxy.data = proxy.dataAll.filter((x) =>
+          x[props.displayField]?.includes(val)
+        );
+      }, 100);
+    };
 
     const display = computed(
       () => proxy.selected && proxy.selected[proxy.displayField]
@@ -164,7 +227,7 @@ export default {
     );
 
     /**
-     * Xự kiện click itemdropdown 
+     * Xự kiện click itemdropdown
      * Author: NNNinh (16/10/2022)
      */
     const itemClick = (item) => {
@@ -174,6 +237,12 @@ export default {
       });
     };
 
+    watch(
+      () => proxy.modelValue,
+      (newVal) => {
+        disp.value = display.value;
+      }
+    );
     onMounted(() => {
       proxy.setPosition();
       proxy.setDropdown();
@@ -181,21 +250,72 @@ export default {
     });
 
     /**
-    * Set vị trí cho dropdown
-    * Author: NNNinh (16/10/2022)
-    */
+     * Set vị trí cho dropdown
+     * Author: NNNinh (16/10/2022)
+     */
     function setPosition() {
-      let offset = proxy.$refs.input.getBoundingClientRect();
+      let offset = proxy.$refs.dropdown.getBoundingClientRect();
       offsetPosi.top = offset.bottom;
       offsetPosi.left = offset.left;
     }
 
+    const cancelEvent = (e) => {
+      if (e) {
+        if (typeof e.preventDefault === "function") {
+          e.preventDefault();
+        }
+        if (typeof e.stopPropagation === "function") {
+          e.stopPropagation();
+        }
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
+      }
+    };
+    const handleErorMessage = () => {
+      if (proxy.display != null) {
+        proxy.disabledMess = false;
+      } else {
+        proxy.disabledMess = true;
+      }
+    };
+    const onBlur = (e) => {
+      proxy.handleErorMessage();
+    };
+    const eventListsioner = computed(() => {
+      const me = this;
+      return {
+        click: (e) => {
+          proxy.cancelEvent(e);
+          proxy.isShowMenu = !proxy.isShowMenu;
+        },
+        blur: (e) => {
+          proxy.cancelEvent(e);
+          proxy.onBlur(e);
+        },
+        focus: (e) => {
+          proxy.cancelEvent(e);
+          // proxy.onFocus(e);
+        },
+        change: (e) => {
+          proxy.cancelEvent(e);
+          // proxy.changeValue(e);
+        },
+        keydown: (e) => {
+          emit("keydown", e);
+        },
+        keyup: (e) => {
+          emit("keyup", e);
+        },
+      };
+    });
+
     /**
-    * Set width,height cho dropdown
-    * Author: NNNinh (16/10/2022)
-    */
+     * Set width,height cho dropdown
+     * Author: NNNinh (16/10/2022)
+     */
     function setDropdown() {
-      let offset = proxy.$refs.input.getBoundingClientRect();
+      let offset = proxy.$refs.dropdown.getBoundingClientRect();
       offsetDropdown.width = offset.width;
       offsetDropdown.height = 200.5 - this.heightCb;
     }
@@ -220,14 +340,21 @@ export default {
 
     return {
       itemClick,
+      cancelEvent,
+      eventListsioner,
       setPosition,
       setDropdown,
       style,
-      isShowMenu //Show menu dropdown
-      ,
+      isShowMenu, //Show menu dropdown
       display,
       selected,
-      initEvent //Đóng menu dropdown khi windown click,
+      initEvent, //Đóng menu dropdown khi windown click,
+      handleErorMessage,
+      disabledMess,
+      search,
+      data,
+      disp,
+      onBlur,
     };
   },
 };

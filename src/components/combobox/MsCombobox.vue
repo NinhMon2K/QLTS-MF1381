@@ -76,10 +76,7 @@ export default {
     modelValue: {
       default: null,
     },
-    texts: {
-      default: null,
-      type: String,
-    },
+    // Icon bên trái combobox
     leftIcon: {
       default: null,
       type: String,
@@ -91,38 +88,47 @@ export default {
       default: null,
       type: String,
     },
+    // Icon bên phải combobox
     rightIcon: {
       default: null,
       type: String,
     },
+    // trạng thái icon
     disabled: {
       default: false,
       type: Boolean,
     },
+    // chú giải
     placeholder: {
       default: null,
       type: [Number, String],
     },
+    // trường dữ liệu
     valueField: {
       default: null,
       type: String,
     },
+    // hiển thị dữ liệu nào
     displayField: {
       default: null,
       type: String,
     },
+    //lable combobox
     label: {
       default: null,
       type: String,
     },
+    // có bắt buộc nhập hay không
     hasInput: {
       default: false,
       type: Boolean,
     },
+    // trạng thái lable mặc định false
     hasLabel: {
       default: false,
       type: Boolean,
     },
+    // Giảm đi height list-item
     heightCb: {
       default: 0,
     },
@@ -146,17 +152,30 @@ export default {
       )
     );
 
+    /**
+     * Xet positon cho combobox
+     * @param {top,left} type top: vị trí top,left: vị trí left
+     * Author: NNNinh (16/10/2022)
+     */
     const offsetPosi = reactive({
       top: 0,
       left: 0,
     });
+
+    /**
+     * Xet positon cho combobox
+     * @param {width,height} type width: chiều dài list-item, height: chiều cao list-item
+     * Author: NNNinh (18/10/2022)
+     */
     const offsetDropdown = reactive({
       width: 0,
       height: 0,
     });
 
+    //Biến show list item
     const isShowMenu = ref(false);
 
+    //Xét style cho list
     const style = computed(() => {
       let arr = [];
       arr.push(`top: ${offsetPosi.top}px`);
@@ -166,6 +185,7 @@ export default {
       return arr.join("; ");
     });
 
+    //Theo dõi show list
     watch(
       () => isShowMenu.value,
       (newVal) => {
@@ -215,6 +235,11 @@ export default {
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
     };
+
+    /**
+     *Sự kiện event click windown ẩn list combobox
+     * Author: NNNinh (15/10/2022)
+     */
     function initEvent() {
       document.addEventListener("click", (e) => {
         if (proxy.isShowMenu) {

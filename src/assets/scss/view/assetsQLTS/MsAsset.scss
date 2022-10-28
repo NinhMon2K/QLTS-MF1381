@@ -65,3 +65,11 @@
 }
 .ic-add {
 }
+.toobar-left {
+  .mg-9 {
+    margin: 0 !important;
+    .error-message {
+      display: none !important;
+    }
+  }
+}

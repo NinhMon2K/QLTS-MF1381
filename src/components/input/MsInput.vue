@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field" :class="disabledMess ? 'mg-4' : false">
+  <div class="input-field" :class="disabledMess ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" for="input__text">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
@@ -126,10 +126,10 @@ export default defineComponent({
       default: null,
       type: String,
     },
-    maxLength:{
-      default:null,
-      type:[Number,String]
-    }
+    maxLength: {
+      default: null,
+      type: [Number, String],
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();

@@ -27,8 +27,7 @@
         :readonly="hasReadonly || false"
         :max="max"
         :min="min"
-        @change="changeValue"
-        @blur="changeValue"
+        v-on="eventListsioner"
       />
       <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']">
         <ms-tooltip content="Lên" placement="bottom">
@@ -50,14 +49,14 @@
               bottomIcon,
               disabledIconBottom ? 'disabled-icon' : '',
             ]"
-            v-if="bottomIcon"
+            v-if="bottomIcon || disabledIcon"
             @click="less"
           ></div>
         </ms-tooltip>
       </div>
     </div>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
+    <span v-if="disabledMess" class="error-message">{{
+      messageError ? messageError : ""
     }}</span>
   </div>
 </template>
@@ -123,10 +122,6 @@ export default defineComponent({
       default: false,
       type: Boolean,
     },
-    disabledIconBottom: {
-      default: false,
-      type: Boolean,
-    },
     disabledMessage: {
       default: false,
       type: Boolean,
@@ -185,6 +180,9 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     window.iNumber = proxy;
     const isValue = ref(0);
+    const disabledMess = ref(false);
+    const messageError = ref("");
+    const disabledIconBottom = ref(false);
     onMounted(() => {
       proxy.isValue = proxy.modelValue;
       proxy.less;
@@ -238,33 +236,91 @@ export default defineComponent({
     });
 
     /**
-     * Xử lý sự kiện click lên
+     * Xử lý sự kiện click xuống
      *  @author NNNinh(16/10/2021)
      */
-    const plus = () => {
-      if (proxy.isValue > proxy.max) {
-        proxy.disabledMessage = true;
-        proxy.message = "Bạn đã nhập số quá mức quy định!";
+    const less = () => {
+      if (proxy.isValue <= 0) {
+        proxy.disabledMess = true;
+        console.log(proxy.disabledMessage);
+        proxy.messageError = "Bạn phải nhập số không được âm!";
+        proxy.isValue = 1;
+        proxy.disabledIconBottom = true;
       } else {
-        proxy.isValue = proxy.isValue + proxy.step;
+        proxy.disabledMess = false;
+        proxy.isValue = proxy.isValue - proxy.step;
         emit("changeValue", proxy.isValue, proxy.valueField);
         return proxy.isValue;
       }
     };
 
     /**
-     * Xử lý sự kiện click xuống
+     * Xử lý sự kiện click lên
      *  @author NNNinh(16/10/2021)
      */
-    const less = () => {
-      if (proxy.isValue < 0) {
-        proxy.disabledMessage = true;
-        console.log(proxy.disabledMessage);
-        proxy.message = "Bạn phải nhập số không được âm!";
+    const plus = () => {
+      if (proxy.isValue > proxy.max) {
+        proxy.disabledMess = true;
+        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
       } else {
-        proxy.isValue = proxy.isValue - proxy.step;
+        proxy.disabledMess = false;
+        proxy.isValue = proxy.isValue + proxy.step;
         emit("changeValue", proxy.isValue, proxy.valueField);
         return proxy.isValue;
+      }
+    };
+
+    const onBlur = (e) => {
+      if (proxy.isValue > proxy.max) {
+        proxy.disabledMess = true;
+        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
+      } else if (proxy.isValue < proxy.min) {
+        proxy.disabledMess = true;
+        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
+      } else if (proxy.isValue < 0) {
+        proxy.disabledMess = true;
+        proxy.messageError = "Bạn đã nhập số không được âm!";
+      } else {
+        proxy.disabledMess = false;
+      }
+      return proxy.isValue;
+    };
+    const onFocus = (e) => {};
+
+    const eventListsioner = computed(() => {
+      const me = this;
+      return {
+        blur: (e) => {
+          cancelEvent(e);
+          proxy.onBlur(e);
+        },
+        focus: (e) => {
+          cancelEvent(e);
+          proxy.onFocus(e);
+        },
+        change: (e) => {
+          cancelEvent(e);
+          proxy.changeValue(e);
+        },
+        keydown: (e) => {
+          proxy.less();
+        },
+        keyup: (e) => {
+          proxy.plus();
+        },
+      };
+    });
+    const cancelEvent = (e) => {
+      if (e) {
+        if (typeof e.preventDefault === "function") {
+          e.preventDefault();
+        }
+        if (typeof e.stopPropagation === "function") {
+          e.stopPropagation();
+        }
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
       }
     };
 
@@ -280,7 +336,21 @@ export default defineComponent({
         emit("changeValue", proxy.isValue, proxy.valueField);
       });
     };
-    return { isValue, changeValue, formatMoney, display, plus, less };
+    return {
+      isValue,
+      disabledMess,
+      messageError,
+      disabledIconBottom,
+      changeValue,
+      formatMoney,
+      display,
+      plus,
+      less,
+      onBlur,
+      onFocus,
+      eventListsioner,
+      cancelEvent,
+    };
   },
 });
 </script>

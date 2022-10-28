@@ -2,6 +2,7 @@
   <button
     class="btn"
     :id="id ? id : ''"
+    :tabindex="tabindex"
     :class="[
       type,
       text ? '' : '',
@@ -88,6 +89,11 @@ export default defineComponent({
     id: {
       default: null,
       type: String,
+    },
+    //key tab cho buttom
+    tabindex: {
+      default: null,
+      type: [Number, String],
     },
   },
   setup(props, { emit }) {

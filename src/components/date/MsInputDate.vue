@@ -7,11 +7,12 @@
     <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
       <el-date-picker
         :id="id ? id : ''"
-        tabindex="108"
         class="input-text"
         format="DD/MM/YYYY"
         value-format="YYYY-MM-DDTHH:mm:ss"
         type="date"
+        ref="inputdate"
+        :tabindex="tabindex"
         v-model="isValue"
         @change="changeValue"
         @blur="changeValue"
@@ -19,14 +20,17 @@
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
       />
-      <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
-        v-if="rightIcon"
-      ></div>
+      <label :for="id">
+        <div
+          :class="[
+            'app-icon icon--right',
+            rightIcon,
+            disabled ? 'disabled-icon' : '',
+          ]"
+          @click="handleClick"
+          v-if="rightIcon"
+        ></div>
+      </label>
     </div>
     <span v-if="disabledMessage" class="error-message">{{
       message ? message : ""
@@ -111,11 +115,16 @@ export default defineComponent({
       default: null,
       type: String,
     },
+    tabindex: {
+      default: null,
+      type: [Number, String],
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-    window.a = proxy;
+    window.ipdate = proxy;
     const isValue = ref("");
+
     watch(
       () => proxy.modelValue,
       (newVal) => {

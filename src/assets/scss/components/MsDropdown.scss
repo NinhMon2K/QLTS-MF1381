@@ -97,7 +97,21 @@
     }
   }
 }
-
+.error__message {
+  border: 1px solid red !important;
+}
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+  // position: relative;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  // white-space: no;
+}
+.mg-9 {
+  margin-bottom: -9px !important;
+}
 ::-webkit-scrollbar {
   width: 5px;
   position: fixed;
