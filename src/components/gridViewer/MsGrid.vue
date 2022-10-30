@@ -100,7 +100,7 @@
         </tfoot>
       </table>
     </div>
-    <ms-popup-asset v-if="isShowPopup" :formModel="pram"></ms-popup-asset>
+    <ms-popup-asset v-if="isShowPopup" :formModel="pram" :dataPram="pramData"></ms-popup-asset>
   </div>
 </template>
 <script>
@@ -171,6 +171,8 @@ export default defineComponent({
       mode: 0,
       fixed_asset_id: "",
     });
+    let pramData = ref({  });
+
     const allSelected = ref(false);
     // Lấy ra những vị trí checked
     const selectedIndex = ref([]);
@@ -205,7 +207,7 @@ export default defineComponent({
 
     const handleDoubleClick = (item) => {
       proxy.pram.mode = Enum.Mode.Update;
-      proxy.pram.fixed_asset_id = item.fixed_asset_id;
+      proxy.pramData = item;
       proxy.isShowPopup = true;
     };
     const handleClick = (index) => {

@@ -4,7 +4,7 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
+    <div class="flex-row" :class="[leftIcon ? 'has-icon' : '', disabledMessage ? 'input__error' : '',]">
       <div class="icon-filter">
         <span
           :class="[
@@ -55,8 +55,8 @@
         </ms-tooltip>
       </div>
     </div>
-    <span v-if="disabledMess" class="error-message">{{
-      messageError ? messageError : ""
+    <span v-if="disabledMessage" class="error-message">{{
+      message ? message : ""
     }}</span>
   </div>
 </template>
@@ -180,13 +180,8 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     window.iNumber = proxy;
     const isValue = ref(0);
-    const disabledMess = ref(false);
-    const messageError = ref("");
-    const disabledIconBottom = ref(false);
     onMounted(() => {
       proxy.isValue = proxy.modelValue;
-      proxy.less;
-      proxy.plus;
       watch(
         () => proxy.modelValue,
         (newVal, old) => {
@@ -194,30 +189,19 @@ export default defineComponent({
           proxy.less;
           proxy.plus;
           emit("changeValue", proxy.isValue, proxy.valueField);
-        },
-        () => proxy.isValue,
+        }
+      );
+    });
+    onMounted(()=>{
+      () => proxy.isValue,
         (newVal, old) => {
           proxy.isValue = newVal;
           proxy.less;
           proxy.plus;
 
           emit("changeValue", proxy.isValue, proxy.valueField);
-        },
-        () => proxy.plus,
-        (newVal, old) => {
-          nextTick(() => {
-            proxy.isValue = newVal;
-            emit("changeValue", proxy.isValue, proxy.valueField);
-          });
-        },
-        () => proxy.less,
-        (newVal, old) => {
-          proxy.isValue = newVal;
-          proxy.less;
-          emit("changeValue", proxy.isValue, proxy.valueField);
         }
-      );
-    });
+    })
 
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
@@ -241,13 +225,9 @@ export default defineComponent({
      */
     const less = () => {
       if (proxy.isValue <= 0) {
-        proxy.disabledMess = true;
-        console.log(proxy.disabledMessage);
-        proxy.messageError = "Bạn phải nhập số không được âm!";
         proxy.isValue = 1;
-        proxy.disabledIconBottom = true;
+        emit("plus", proxy.isValue, proxy.valueField);
       } else {
-        proxy.disabledMess = false;
         proxy.isValue = proxy.isValue - proxy.step;
         emit("changeValue", proxy.isValue, proxy.valueField);
         return proxy.isValue;
@@ -260,8 +240,7 @@ export default defineComponent({
      */
     const plus = () => {
       if (proxy.isValue > proxy.max) {
-        proxy.disabledMess = true;
-        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
+        emit("plus", proxy.isValue, proxy.valueField);
       } else {
         proxy.disabledMess = false;
         proxy.isValue = proxy.isValue + proxy.step;
@@ -272,20 +251,17 @@ export default defineComponent({
 
     const onBlur = (e) => {
       if (proxy.isValue > proxy.max) {
-        proxy.disabledMess = true;
-        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
+        emit("blur", proxy.isValue, proxy.valueField);
       } else if (proxy.isValue < proxy.min) {
-        proxy.disabledMess = true;
-        proxy.messageError = "Bạn đã nhập số quá mức quy định!";
+        emit("blur", proxy.isValue, proxy.valueField);
       } else if (proxy.isValue < 0) {
-        proxy.disabledMess = true;
-        proxy.messageError = "Bạn đã nhập số không được âm!";
-      } else {
-        proxy.disabledMess = false;
-      }
+        emit("blur", proxy.isValue, proxy.valueField);
+      } 
       return proxy.isValue;
     };
-    const onFocus = (e) => {};
+    const onFocus = (e) => {
+
+    };
 
     const eventListsioner = computed(() => {
       const me = this;
@@ -338,9 +314,6 @@ export default defineComponent({
     };
     return {
       isValue,
-      disabledMess,
-      messageError,
-      disabledIconBottom,
       changeValue,
       formatMoney,
       display,

@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field" :class="disabledMess ? 'mg-9' : false">
+  <div class="input-field" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" for="input__text">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
@@ -159,7 +159,7 @@ export default defineComponent({
     };
     const onBlur = (e) => {
       proxy.forcused = false;
-      emit("blur", proxy.isValue, proxy.valueField, e);
+      emit("blur", proxy.isValue, proxy.valueField,e);
     };
     const eventListsioner = computed(() => {
       const me = this;

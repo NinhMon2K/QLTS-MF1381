@@ -58,6 +58,14 @@
     justify-content: center;
     font-size: 13px;
     position: relative;
+    &.input__error {
+      border-color: #e92e2e !important;
+      .input-text:hover,
+      .input-text:focus,
+      .input-text:focus-within {
+        border-color: #e92e2e !important;
+      }
+    }
     .icon-filter {
       .icon--left {
         margin-left: 7px;

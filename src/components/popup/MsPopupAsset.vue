@@ -29,6 +29,7 @@
                   placeholder="Mã tài sản"
                   @blur="changeValueInput"
                   @focus="changeValueInput"
+                  :disabledMessage="errorMessage.AssetCode"
                   :message="Resource.ErrorInput.AssetCode.VI"
                 ></ms-input>
               </div>
@@ -43,8 +44,9 @@
                   :valueField="ResourceTable.FieldAsset.fixedAssetName"
                   :radius="true"
                   placeholder="Nhập tên tài sản"
+                  :disabledMessage="errorMessage.AssetName"
                   :message="Resource.ErrorInput.AssetName.VI"
-                  @blur="changeValueInput"
+                  @blur="onBlurInput"
                   @focus="changeValueInput"
                 ></ms-input>
               </div>
@@ -63,6 +65,7 @@
                   displayField="department_code"
                   rightIcon="ic-angle-downs"
                   :dataAll="DataDepartment.value"
+                  :disabledMessage="errorMessage.DepartmentCode"
                   :message="Resource.ErrorInput.DepartmentCode.VI"
                   placeholder="Chọn mã bộ phận sử dụng"
                   @item-click="clickDataDepartment"
@@ -94,11 +97,12 @@
                     ResourceTable.FieldAssetCategory.fixedAssetCategoryId
                   "
                   displayField="fixed_asset_category_code"
-                  :message="Resource.ErrorInput.AssetCategoryCode.VI"
                   rightIcon="ic-angle-downs"
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="clickDataAssetCategory"
+                  :disabledMessage="errorMessage.AssetCategoryCode"
+                  :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></ms-drop-down>
               </div>
               <div class="form-group__right">
@@ -125,6 +129,8 @@
                   bottomIcon="ic-angle_down"
                   :radius="true"
                   @changeValue="changeValueInput"
+                  :disabledMessage="errorMessage.Quantity"
+                  :message="Resource.ErrorInput.Quantity.VI"
                 >
                 </ms-input-number>
               </div>
@@ -136,6 +142,8 @@
                   hasInput
                   v-model="dataForm.cost"
                   :radius="true"
+                  :disabledMessage="errorMessage.Cost"
+                  :message="Resource.ErrorInput.Cost.VI"
                 >
                 </ms-input-number>
                 <ms-input-number
@@ -146,6 +154,8 @@
                   v-model="dataForm.life_time"
                   :valueField="ResourceTable.FieldAssetCategory.lifeTime"
                   :radius="true"
+                  :disabledMessage="errorMessage.LifeTime"
+                  :message="Resource.ErrorInput.LifeTime.VI"
                 ></ms-input-number>
               </div>
             </div>
@@ -163,6 +173,8 @@
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
+                  :disabledMessage="errorMessage.DepreciationRate"
+                  :message="Resource.ErrorInput.DepreciationRate.VI"
                 >
                 </ms-input-number>
               </div>
@@ -175,6 +187,9 @@
                   v-model="dataForm.depreciation_year"
                   :valueField="ResourceTable.FieldAsset.depreciationYear"
                   :radius="true"
+                  :disabledMessage="errorMessage.DepreciationYear"
+                  :message="Resource.ErrorInput.DepreciationYear.VI"
+
                 ></ms-input-number>
                 <ms-input-number
                   label="Năm theo dõi"
@@ -374,6 +389,9 @@ export default {
     allData: {
       default: [],
     },
+    dataPram:{
+      default: {},
+    }
   },
   methods: {
     close() {
@@ -382,25 +400,19 @@ export default {
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-    // function show() {
-    //   props.statePopup = true;
-    // }
-
     //Show toastMessage
-    window.u = proxy;
+    window.popup = proxy;
     const isShowMessage = ref(false);
 
     const isDialogMessCancelAdd = ref(false);
 
+    const errorMessage = ref({})
     //Show dialog cập nhật
     const isDialogMessUpdate = ref(false);
 
     const titleErrValidate = ref([]);
 
     const isShowDialogDetail = ref(false);
-
-    const titleError = ref("");
-
     const dataForm = ref({
       Mode: 0,
       fixed_asset_id: "",
@@ -532,7 +544,7 @@ export default {
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
 
             // Lấy dữ liệu tài sản theo id tài sản
-            proxy.loadDataAssetID();
+            proxy.dataForm = proxy.dataPram;
             proxy.setValueDateYear();
             proxy.dataForm.Mode = 2;
             break;
@@ -645,6 +657,35 @@ export default {
       proxy.dataForm.department_name = item.department_name;
       proxy.dataForm.department_code = item.department_code;
     };
+    const onBlurInput = (isValue,valueField,e) =>{
+      switch (valueField) {
+        case "fixed_asset_name": {
+         if(isValue != ""){
+            proxy.errorMessage.AssetName = false;
+            proxy.dataForm.department_name = isValue;
+          }
+          else{
+            proxy.errorMessage.AssetName = true;
+          }
+          break;
+        }
+        case "fixed_asset_code": {
+          if(isValue != ""){
+            proxy.errorMessage.AssetCode = false;
+            proxy.dataForm.fixed_asset_code = isValue;
+          }
+          else{
+            proxy.errorMessage.AssetCode = true;
+          }
+         
+          break;
+        }
+      
+        default: {
+          break;
+        }
+    }
+  }
 
     /**
      * Xử lý cập nhật lại dữ liệu dataForm
@@ -708,41 +749,51 @@ export default {
       proxy.v$.$validate();
       if (proxy.v$.$error) {
         proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
         if (proxy.dataForm.fixed_asset_code == "") {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
+          proxy.errorMessage.AssetCode = true;
         }
         if (proxy.dataForm.fixed_asset_name == "") {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
+          proxy.errorMessage.AssetName = true;
         }
 
         if (proxy.dataForm.department_code == "") {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
+          proxy.errorMessage.DepartmentCode = true;
         }
 
         if (proxy.dataForm.fixed_asset_category_code == "") {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.AssetCategoryCode.VI
-          );
+          // proxy.titleErrValidate.push(
+          //   Resource.ErrorValidate.AssetCategoryCode.VI
+          // );
+          proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.dataForm.quantity == 0) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
+          proxy.errorMessage.Quantity = true;
         }
         if (proxy.dataForm.cost == 0) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
+          proxy.errorMessage.Cost = true;
         }
         if (proxy.dataForm.life_time == 0) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
+          // proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
+          proxy.errorMessage.LifeTime = true;
         }
         if (proxy.dataForm.depreciation_year == null) {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.DepreciationYear.VI
-          );
+          // proxy.titleErrValidate.push(
+          //   Resource.ErrorValidate.DepreciationYear.VI
+          // );
+          proxy.errorMessage.DepreciationYear = true;
         }
 
         if (proxy.dataForm.depreciation_rate == 0) {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.DepreciationRate.VI
-          );
+          // proxy.titleErrValidate.push(
+          //   Resource.ErrorValidate.DepreciationRate.VI
+          // );
+          proxy.errorMessage.DepreciationRate = true;
         }
 
         if (proxy.dataForm.purchase_date == "") {
@@ -751,14 +802,14 @@ export default {
         if (proxy.dataForm.production_date == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
         }
-        proxy.isShowDialogDetail = true;
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
-        proxy.titleErrValidate.push(
-          "Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá"
-        );
-        proxy.isShowDialogDetail = true;
+        proxy.errorMessage = {};
+        // proxy.titleErrValidate.push(
+        //   "Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá"
+        // );
+      
         return false;
       } else if (
         proxy.dataForm.depreciation_rate !=
@@ -766,10 +817,12 @@ export default {
       ) {
         console.log(parseFloat(100 / proxy.dataForm.life_time).toFixed(2));
         proxy.titleErrValidate = [];
-        proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
-        proxy.isShowDialogDetail = true;
+        proxy.errorMessage = {};
+        // proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
+      
         return false;
       } else {
+        proxy.errorMessage = {};
         return true;
       }
     };
@@ -826,8 +879,9 @@ export default {
       getAssetNextCode,
       saveData,
       handlePopupClose,
-      titleError,
+      errorMessage,
       validateData,
+      onBlurInput,
       dataFormValidate,
       v$,
     };
