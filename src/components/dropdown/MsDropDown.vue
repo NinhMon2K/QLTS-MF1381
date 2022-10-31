@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-dropdown" :class="disabledMess ? 'mg-9' : false">
+  <div class="filter-dropdown" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>

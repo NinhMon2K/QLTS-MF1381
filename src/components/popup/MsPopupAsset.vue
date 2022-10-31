@@ -3,7 +3,7 @@
     <div class="model">
       <div class="form-asset">
         <div class="header-popup">
-          <div class="form-asset__title" >
+          <div class="form-asset__title">
             {{ title }}
           </div>
           <ms-tooltip content="Hủy" placement="bottom" right="bottom">
@@ -29,7 +29,7 @@
                   placeholder="Mã tài sản"
                   @blur="changeValueInput"
                   @focus="changeValueInput"
-                  :disabledMessage="errorMessage.AssetCode"
+                  :disabledMessage="errorMessage.AssetCode && isSubmited"
                   :message="Resource.ErrorInput.AssetCode.VI"
                 ></ms-input>
               </div>
@@ -44,7 +44,7 @@
                   :valueField="ResourceTable.FieldAsset.fixedAssetName"
                   :radius="true"
                   placeholder="Nhập tên tài sản"
-                  :disabledMessage="errorMessage.AssetName"
+                  :disabledMessage="errorMessage.AssetName && isSubmited"
                   :message="Resource.ErrorInput.AssetName.VI"
                   @blur="onBlurInput"
                   @focus="changeValueInput"
@@ -65,7 +65,7 @@
                   displayField="department_code"
                   rightIcon="ic-angle-downs"
                   :dataAll="DataDepartment.value"
-                  :disabledMessage="errorMessage.DepartmentCode"
+                  :disabledMessage="errorMessage.DepartmentCode && isSubmited"
                   :message="Resource.ErrorInput.DepartmentCode.VI"
                   placeholder="Chọn mã bộ phận sử dụng"
                   @item-click="clickDataDepartment"
@@ -101,7 +101,9 @@
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="clickDataAssetCategory"
-                  :disabledMessage="errorMessage.AssetCategoryCode"
+                  :disabledMessage="
+                    errorMessage.AssetCategoryCode && isSubmited
+                  "
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></ms-drop-down>
               </div>
@@ -129,7 +131,7 @@
                   bottomIcon="ic-angle_down"
                   :radius="true"
                   @changeValue="changeValueInput"
-                  :disabledMessage="errorMessage.Quantity"
+                  :disabledMessage="errorMessage.Quantity && isSubmited"
                   :message="Resource.ErrorInput.Quantity.VI"
                 >
                 </ms-input-number>
@@ -142,7 +144,7 @@
                   hasInput
                   v-model="dataForm.cost"
                   :radius="true"
-                  :disabledMessage="errorMessage.Cost"
+                  :disabledMessage="errorMessage.Cost && isSubmited"
                   :message="Resource.ErrorInput.Cost.VI"
                 >
                 </ms-input-number>
@@ -154,7 +156,7 @@
                   v-model="dataForm.life_time"
                   :valueField="ResourceTable.FieldAssetCategory.lifeTime"
                   :radius="true"
-                  :disabledMessage="errorMessage.LifeTime"
+                  :disabledMessage="errorMessage.LifeTime && isSubmited"
                   :message="Resource.ErrorInput.LifeTime.VI"
                 ></ms-input-number>
               </div>
@@ -173,7 +175,7 @@
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
-                  :disabledMessage="errorMessage.DepreciationRate"
+                  :disabledMessage="errorMessage.DepreciationRate && isSubmited"
                   :message="Resource.ErrorInput.DepreciationRate.VI"
                 >
                 </ms-input-number>
@@ -187,9 +189,8 @@
                   v-model="dataForm.depreciation_year"
                   :valueField="ResourceTable.FieldAsset.depreciationYear"
                   :radius="true"
-                  :disabledMessage="errorMessage.DepreciationYear"
+                  :disabledMessage="errorMessage.DepreciationYear && isSubmited"
                   :message="Resource.ErrorInput.DepreciationYear.VI"
-
                 ></ms-input-number>
                 <ms-input-number
                   label="Năm theo dõi"
@@ -328,7 +329,7 @@
       <ms-button
         :text="Resource.TitleBtnDialog.Close.VI"
         radius
-        @click="isShowDialogDetail = false"
+        @click="handleCloseErrorMultiple"
       ></ms-button>
     </ms-message-box>
   </teleport>
@@ -389,9 +390,9 @@ export default {
     allData: {
       default: [],
     },
-    dataPram:{
+    dataPram: {
       default: {},
-    }
+    },
   },
   methods: {
     close() {
@@ -406,13 +407,14 @@ export default {
 
     const isDialogMessCancelAdd = ref(false);
 
-    const errorMessage = ref({})
+    const errorMessage = ref({});
     //Show dialog cập nhật
     const isDialogMessUpdate = ref(false);
 
     const titleErrValidate = ref([]);
 
     const isShowDialogDetail = ref(false);
+    const isSubmited = ref(false);
     const dataForm = ref({
       Mode: 0,
       fixed_asset_id: "",
@@ -492,6 +494,10 @@ export default {
       }
     }
 
+    const handleCloseErrorMultiple = () => {
+      proxy.isShowDialogDetail = false;
+      proxy.isSubmited = true;
+    };
     watch(
       () => dataForm.value,
       (newVal, old) => {},
@@ -657,35 +663,33 @@ export default {
       proxy.dataForm.department_name = item.department_name;
       proxy.dataForm.department_code = item.department_code;
     };
-    const onBlurInput = (isValue,valueField,e) =>{
+    const onBlurInput = (isValue, valueField, e) => {
       switch (valueField) {
         case "fixed_asset_name": {
-         if(isValue != ""){
+          if (isValue != "") {
             proxy.errorMessage.AssetName = false;
             proxy.dataForm.department_name = isValue;
-          }
-          else{
+          } else {
             proxy.errorMessage.AssetName = true;
           }
           break;
         }
         case "fixed_asset_code": {
-          if(isValue != ""){
+          if (isValue != "") {
             proxy.errorMessage.AssetCode = false;
             proxy.dataForm.fixed_asset_code = isValue;
-          }
-          else{
+          } else {
             proxy.errorMessage.AssetCode = true;
           }
-         
+
           break;
         }
-      
+
         default: {
           break;
         }
-    }
-  }
+      }
+    };
 
     /**
      * Xử lý cập nhật lại dữ liệu dataForm
@@ -751,48 +755,48 @@ export default {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
         if (proxy.dataForm.fixed_asset_code == "") {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
           proxy.errorMessage.AssetCode = true;
         }
         if (proxy.dataForm.fixed_asset_name == "") {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
           proxy.errorMessage.AssetName = true;
         }
 
         if (proxy.dataForm.department_code == "") {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
           proxy.errorMessage.DepartmentCode = true;
         }
 
         if (proxy.dataForm.fixed_asset_category_code == "") {
-          // proxy.titleErrValidate.push(
-          //   Resource.ErrorValidate.AssetCategoryCode.VI
-          // );
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.AssetCategoryCode.VI
+          );
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.dataForm.quantity == 0) {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
           proxy.errorMessage.Quantity = true;
         }
         if (proxy.dataForm.cost == 0) {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
           proxy.errorMessage.Cost = true;
         }
         if (proxy.dataForm.life_time == 0) {
-          // proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
+          proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
         }
         if (proxy.dataForm.depreciation_year == null) {
-          // proxy.titleErrValidate.push(
-          //   Resource.ErrorValidate.DepreciationYear.VI
-          // );
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.DepreciationYear.VI
+          );
           proxy.errorMessage.DepreciationYear = true;
         }
 
         if (proxy.dataForm.depreciation_rate == 0) {
-          // proxy.titleErrValidate.push(
-          //   Resource.ErrorValidate.DepreciationRate.VI
-          // );
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.DepreciationRate.VI
+          );
           proxy.errorMessage.DepreciationRate = true;
         }
 
@@ -802,6 +806,7 @@ export default {
         if (proxy.dataForm.production_date == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
         }
+        proxy.isShowDialogDetail = true;
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
@@ -809,7 +814,7 @@ export default {
         // proxy.titleErrValidate.push(
         //   "Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá"
         // );
-      
+
         return false;
       } else if (
         proxy.dataForm.depreciation_rate !=
@@ -819,7 +824,7 @@ export default {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
         // proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
-      
+
         return false;
       } else {
         proxy.errorMessage = {};
@@ -834,6 +839,7 @@ export default {
             //Kiểm tra giá trị mode là cập nhật
             case Enum.Mode.Update: {
               proxy.isDialogMessUpdate = true;
+
               break;
             }
             //Kiểm tra giá trị mode là thêm hay nhân bản
@@ -883,6 +889,8 @@ export default {
       validateData,
       onBlurInput,
       dataFormValidate,
+      handleCloseErrorMultiple,
+      isSubmited,
       v$,
     };
   },

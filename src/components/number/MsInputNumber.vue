@@ -1,10 +1,16 @@
 <template>
-  <div class="ms-number">
+  <div class="ms-number" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <div class="flex-row" :class="[leftIcon ? 'has-icon' : '', disabledMessage ? 'input__error' : '',]">
+    <div
+      class="flex-row"
+      :class="[
+        leftIcon ? 'has-icon' : '',
+        disabledMessage ? 'input__error' : '',
+      ]"
+    >
       <div class="icon-filter">
         <span
           :class="[
@@ -192,7 +198,7 @@ export default defineComponent({
         }
       );
     });
-    onMounted(()=>{
+    onMounted(() => {
       () => proxy.isValue,
         (newVal, old) => {
           proxy.isValue = newVal;
@@ -200,8 +206,8 @@ export default defineComponent({
           proxy.plus;
 
           emit("changeValue", proxy.isValue, proxy.valueField);
-        }
-    })
+        };
+    });
 
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
@@ -256,12 +262,10 @@ export default defineComponent({
         emit("blur", proxy.isValue, proxy.valueField);
       } else if (proxy.isValue < 0) {
         emit("blur", proxy.isValue, proxy.valueField);
-      } 
+      }
       return proxy.isValue;
     };
-    const onFocus = (e) => {
-
-    };
+    const onFocus = (e) => {};
 
     const eventListsioner = computed(() => {
       const me = this;

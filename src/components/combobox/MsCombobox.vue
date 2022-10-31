@@ -18,7 +18,6 @@
           ]"
           v-if="leftIcon"
         ></div>
-
         <input
           type="text"
           :value="display"
