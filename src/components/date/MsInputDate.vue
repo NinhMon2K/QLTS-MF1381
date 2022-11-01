@@ -2,7 +2,7 @@
   <div class="input-date__field">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
-      <span v-if="hasInput">*</span>
+      <span v-if="hasInput">&#8727;</span>
     </label>
     <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
       <el-date-picker

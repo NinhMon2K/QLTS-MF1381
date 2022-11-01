@@ -4,36 +4,50 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <ms-tooltip :content="display" placement="top" right="top">
-      <button
-        class="combobox-menu-toggle"
-        ref="input"
-        @click="isShowMenu = !isShowMenu"
+
+    <button
+      class="combobox-menu-toggle"
+      ref="input"
+      @click="isShowMenu = !isShowMenu"
+    >
+      <div
+        :class="[
+          'app-icon icon--left',
+          leftIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="leftIcon"
+      ></div>
+      <div
+        class="container-list_combo"
+        v-if="selected.length == 0 ? false : true"
       >
         <div
-          :class="[
-            'app-icon icon--left',
-            leftIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
-          v-if="leftIcon"
-        ></div>
-        <input
-          type="text"
-          :value="display"
-          :placeholder="placeholder"
-          :id="id"
-        />
-        <div
-          :class="[
-            'app-icon icon--right',
-            rightIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
-          v-if="rightIcon"
-        ></div>
-      </button>
-    </ms-tooltip>
+          class="item-checked__combobox"
+          v-for="item in selected"
+          :key="item[valueField]"
+        >
+          <ms-tooltip
+            :content="item[displayField]"
+            placement="bottom"
+            right="bottom"
+          >
+            <div class="text-cbo">{{ item[displayField] }}</div>
+          </ms-tooltip>
+          <div class="app-icon ic-remove__cbo"></div>
+        </div>
+      </div>
+      <input type="text" :placeholder="placeholder" :id="id" />
+      <div
+        :class="[
+          'app-icon icon--right',
+          rightIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
+        v-if="rightIcon"
+      ></div>
+    </button>
+
     <teleport to="body">
       <div class="combobox-menu" :style="style" v-if="isShowMenu">
         <div class="combobox-content">
@@ -270,4 +284,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/MsCombobox.scss";
+.container-list_combo {
+  display: flex;
+}
 </style>

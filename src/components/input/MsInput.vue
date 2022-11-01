@@ -2,7 +2,7 @@
   <div class="input-field" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" for="input__text">
       {{ label ? label : "" }}
-      <span v-if="hasInput">*</span>
+      <span v-if="hasInput">&#8727;</span>
     </label>
     <div
       class="flex-row"

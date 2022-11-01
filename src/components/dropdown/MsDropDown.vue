@@ -1,8 +1,12 @@
 <template>
-  <div class="filter-dropdown" :class="disabledMessage ? 'mg-9' : false">
+  <div
+    class="filter-dropdown"
+    ref="container"
+    :class="disabledMessage ? 'mg-9' : false"
+  >
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
-      <span v-if="hasInput">*</span>
+      <span v-if="hasInput">&#8727;</span>
     </label>
     <button
       class="dropdown-menu-toggle"
@@ -36,12 +40,11 @@
         ]"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
-        v-click-outside="hideDropdown"
       ></div>
     </button>
 
     <teleport to="body">
-      <div class="dropdown-menu" :style="style" v-if="isShowMenu">
+      <div class="dropdown-menu" ref="drop" :style="style" v-if="isShowMenu">
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
             <dropdown-item
@@ -270,37 +273,43 @@ export default {
       }
     };
 
-    const hideDropdown = (evt, el) => {
+    onMounted(() => {
       document.addEventListener("click", (e) => {
-        if (proxy.isShowMenu) {
-          let target = e.target;
-          let cbo =
-            target.closest(".dropdown-menu") ||
-            target.closest(".dropdown-menu-toggle");
-          if (!cbo) {
-            proxy.isShowMenu = false;
-          }
+        let target = e.target;
+
+        let cont = target.closest(".filter-dropdown");
+        if (cont && cont.isEqualNode(proxy.$refs.container)) {
+          e.preventDefault();
+          e.stopPropagation();
+        } else {
+          isShowMenu.value = false;
+          // cont = target.closest(".dropdown-menu");
+          // if (cont && cont.isEqualNode(proxy.$refs.drop)) {
+          //   e.preventDefault();
+          //   e.stopPropagation();
+          // }
         }
       });
-    };
+    });
+
     // const onBlur = (e) => {};
     const eventListsioner = computed(() => {
       const me = this;
       return {
         click: (e) => {
-          proxy.cancelEvent(e);
+          // proxy.cancelEvent(e);
           proxy.isShowMenu = !proxy.isShowMenu;
         },
         blur: (e) => {
-          proxy.cancelEvent(e);
+          // proxy.cancelEvent(e);
           // proxy.onBlur(e);
         },
         focus: (e) => {
-          proxy.cancelEvent(e);
+          // proxy.cancelEvent(e);
           // proxy.onFocus(e);
         },
         change: (e) => {
-          proxy.cancelEvent(e);
+          // proxy.cancelEvent(e);
           // proxy.changeValue(e);
         },
         keydown: (e) => {
@@ -354,7 +363,6 @@ export default {
       search,
       data,
       disp,
-      hideDropdown,
     };
   },
 };

@@ -193,6 +193,10 @@
     @include setSquare(18);
     background-position: -375px -287px;
   }
+  &.ic-remove__cbo {
+    @include setSquare(10);
+    background-position: -291px -247px;
+  }
 }
 .menu-group {
   .menu-item:hover,

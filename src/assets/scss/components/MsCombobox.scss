@@ -126,3 +126,33 @@
 .list-item--combobox::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
+.container-list_combo {
+  display: flex;
+  width: 100%;
+  .item-checked__combobox {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    border: none;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin-left: 5px;
+    padding: 2px 6px;
+
+    .text-cbo {
+      max-width: 46px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      color: #fff;
+      font-size: 13px;
+      /* display: flex; */
+    }
+    .app-icon {
+      margin-left: 6px;
+      cursor: pointer;
+    }
+  }
+}

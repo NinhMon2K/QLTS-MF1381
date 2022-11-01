@@ -3,6 +3,8 @@ export default function directive(app) {
   app.directive("click-outside", {
     beforeMount(el, binding) {
       el.clickOutsideEvent = (evt) => {
+        let con = el.closest(".filter-dropdown");
+
         evt.stopPropagation();
         if (!(el === evt.target || el.contains(evt.target))) {
           binding.value(evt, el);
