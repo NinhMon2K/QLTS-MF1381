@@ -24,7 +24,7 @@
       >
         <div
           class="item-checked__combobox"
-          v-for="item in selected"
+          v-for="(item , i ) in selected"
           :key="item[valueField]"
         >
           <ms-tooltip
@@ -34,7 +34,7 @@
           >
             <div class="text-cbo">{{ item[displayField] }}</div>
           </ms-tooltip>
-          <div class="app-icon ic-remove__cbo"></div>
+          <div class="app-icon ic-remove__cbo" @click="console.log(item[i])" ></div>
         </div>
       </div>
       <input type="text" :placeholder="placeholder" :id="id" />
@@ -164,6 +164,10 @@ export default {
         {}
       )
     );
+    const handleRemoveItem = (item)=>{
+
+      console.log(item)
+    }
 
     /**
      * Xet positon cho combobox
@@ -277,6 +281,7 @@ export default {
       display,
       selected,
       changeValue,
+      handleRemoveItem,
       objSelected,
     };
   },

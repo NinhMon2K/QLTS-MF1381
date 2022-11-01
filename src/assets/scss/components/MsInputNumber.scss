@@ -2,10 +2,13 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
   .error-message {
     color: red;
     font-size: 13px;
     margin-top: 5px;
+    position: absolute;
+    bottom: -19px;
   }
   .text-label {
     display: flex;
@@ -146,7 +149,7 @@ input:disabled {
   }
 }
 .mg-9 {
-  margin-bottom: -9px !important;
+  // margin-bottom: -9px !important;
 }
 
 // .disabled-icon {

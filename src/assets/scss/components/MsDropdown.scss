@@ -4,6 +4,7 @@
   border: none;
   width: 100%;
   height: auto;
+  position: relative;
   .text-label {
     display: flex;
     position: relative;
@@ -105,12 +106,13 @@
   font-size: 13px;
   margin-top: 5px;
   // position: relative;
+  position: absolute;
+  bottom: -19px;
   max-width: 100%;
   text-overflow: ellipsis;
   // white-space: no;
 }
 .mg-9 {
-  margin-bottom: -9px !important;
 }
 ::-webkit-scrollbar {
   width: 5px;

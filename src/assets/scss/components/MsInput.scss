@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
   .error-message {
     color: red;
+    position: absolute;
     font-size: 13px;
-    margin-top: 5px;
+    bottom: -19px;
     // position: relative;
     max-width: 100%;
     text-overflow: ellipsis;
@@ -123,5 +125,5 @@ input[type="text"]:disabled {
   }
 }
 .mg-9 {
-  margin-bottom: -9px !important;
+  // margin-bottom: -9px !important;
 }
