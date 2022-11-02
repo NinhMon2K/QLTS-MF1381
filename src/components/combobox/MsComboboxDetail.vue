@@ -131,4 +131,7 @@ export default {
 .active {
   background-color: #c7e0f5;
 }
+.selected {
+  background-color: #c7e0f5;
+}
 </style>

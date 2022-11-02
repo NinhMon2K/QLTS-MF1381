@@ -1,5 +1,5 @@
 <template>
-  <tr class="ms-tr" >
+  <tr :tabindex="7" class="ms-tr">
     <ms-td v-if="selectedCol" :config="configSelect" v-model:value="select">
     </ms-td>
     <ms-td

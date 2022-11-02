@@ -76,6 +76,7 @@ import {
   nextTick,
   reactive,
   onMounted,
+  onUpdated,
 } from "vue";
 import Resource from "@/resource/dictionary/resource.js";
 import CommonFunction from "@/commons/commonFunction.js";
@@ -236,7 +237,6 @@ export default defineComponent({
       } else {
         proxy.isValue = proxy.isValue - proxy.step;
         emit("changeValue", proxy.isValue, proxy.valueField);
-        return proxy.isValue;
       }
     };
 
@@ -248,24 +248,17 @@ export default defineComponent({
       if (proxy.isValue > proxy.max) {
         emit("plus", proxy.isValue, proxy.valueField);
       } else {
-        proxy.disabledMess = false;
         proxy.isValue = proxy.isValue + proxy.step;
         emit("changeValue", proxy.isValue, proxy.valueField);
-        return proxy.isValue;
       }
     };
 
     const onBlur = (e) => {
-      if (proxy.isValue > proxy.max) {
-        emit("blur", proxy.isValue, proxy.valueField);
-      } else if (proxy.isValue < proxy.min) {
-        emit("blur", proxy.isValue, proxy.valueField);
-      } else if (proxy.isValue < 0) {
-        emit("blur", proxy.isValue, proxy.valueField);
-      }
-      return proxy.isValue;
+      emit("blur", proxy.isValue, proxy.valueField);
     };
-    const onFocus = (e) => {};
+    const onFocus = (e) => {
+      emit("blur", proxy.isValue, proxy.valueField);
+    };
 
     const eventListsioner = computed(() => {
       const me = this;
@@ -281,12 +274,6 @@ export default defineComponent({
         change: (e) => {
           cancelEvent(e);
           proxy.changeValue(e);
-        },
-        keydown: (e) => {
-          proxy.less();
-        },
-        keyup: (e) => {
-          proxy.plus();
         },
       };
     });

@@ -1,21 +1,25 @@
 <template>
   <div class="contrainer-toolbar">
     <div class="toobar-left">
-      <ms-input
-        :hasLabel="false"
-        leftIcon="ic-search"
-        id="txt-search"
-        :radius="true"
-        placeholder="Tìm kiếm tài sản"
-        :disabledMessage="false"
-        message=""
-      ></ms-input>
+      <div class="container__search">
+        <ms-input
+          :hasLabel="false"
+          leftIcon="ic-search"
+          id="txt-search"
+          :tabindex="1"
+          :radius="true"
+          placeholder="Tìm kiếm tài sản"
+          :disabledMessage="false"
+          message=""
+        ></ms-input>
+      </div>
       <ms-combobox
         leftIcon="ic-fillter"
         valueField="fixed_asset_category_id"
         displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
+        :tabindex="2"
         :heightCb="13"
         :dataAll="DataAssetCategory.value"
       ></ms-combobox>
@@ -23,6 +27,7 @@
         leftIcon="ic-fillter"
         valueField="department_id"
         :heightCb="13"
+        :tabindex="3"
         displayField="department_name"
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
@@ -33,6 +38,7 @@
       <ms-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
         <ms-button
           ref="MsPopupAsset"
+          :tabindex="4"
           text="Thêm tài sản"
           id="btn-add"
           leftIcon="ic-add"
@@ -45,6 +51,7 @@
         <ms-button
           leftIcon="ic-export"
           id="btn-export"
+          :tabindex="5"
           :radius="true"
         ></ms-button>
       </ms-tooltip>
@@ -52,12 +59,17 @@
         <ms-button
           leftIcon="ic-delete__toolbar"
           id="btn-delete"
+          :tabindex="6"
           :radius="true"
           @click="handleShowMessBox"
         >
         </ms-button>
       </ms-tooltip>
-      <ms-popup-asset v-if="isShowPopup" :formModel="pram"></ms-popup-asset>
+      <ms-popup-asset
+        v-if="isShowPopup"
+        :formModel="pram"
+        @closePopup="handlClosePopup"
+      ></ms-popup-asset>
     </div>
   </div>
 
@@ -275,6 +287,10 @@ export default {
       } else return val;
     }
 
+    const handlClosePopup = (isShowPopup) => {
+      proxy.isShowPopup = false;
+    };
+
     /**
      * Sự kiện show mesagebox
      *  @author NNNinh(20/10/2021)
@@ -425,6 +441,7 @@ export default {
       isShowMessage,
       handleClickAdd,
       valueMessageBox,
+      handlClosePopup,
     };
   },
 

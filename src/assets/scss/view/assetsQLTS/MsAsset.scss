@@ -9,10 +9,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      .input-field {
-        // margin-right: 11px;
+      .container__search {
+        min-width: 200px;
       }
       .filter-combobox {
+        max-width: 218px;
         margin-left: 11px;
       }
     }

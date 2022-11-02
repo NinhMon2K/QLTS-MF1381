@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-combobox">
+  <div class="filter-combobox" ref="container">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
@@ -24,7 +24,7 @@
       >
         <div
           class="item-checked__combobox"
-          v-for="(item , i ) in selected"
+          v-for="item in selected"
           :key="item[valueField]"
         >
           <ms-tooltip
@@ -34,10 +34,19 @@
           >
             <div class="text-cbo">{{ item[displayField] }}</div>
           </ms-tooltip>
-          <div class="app-icon ic-remove__cbo" @click="console.log(item[i])" ></div>
+          <div
+            class="app-icon ic-remove__cbo"
+            @click="handleRemoveItem(item[valueField])"
+          ></div>
         </div>
       </div>
-      <input type="text" :placeholder="placeholder" :id="id" />
+      <input
+        type="text"
+        :placeholder="placeholder"
+        ref="inputCbo"
+        @keyup="search"
+        :id="id"
+      />
       <div
         :class="[
           'app-icon icon--right',
@@ -49,16 +58,29 @@
     </button>
 
     <teleport to="body">
-      <div class="combobox-menu" :style="style" v-if="isShowMenu">
+      <div
+        class="combobox-menu"
+        ref="cbo"
+        :style="style"
+        :class="autoHeight ? 'height_auto--cbo' : ''"
+        v-if="isShowMenu"
+      >
         <div class="combobox-content">
           <ul class="list-item--combobox">
             <ms-combobox-detail
-              v-for="item in dataAll"
+              v-for="item in data"
               :key="item"
               :dataItem="item"
               :displayField="displayField"
               :valueField="valueField"
-              :class="[selected == item ? 'selected' : '']"
+              :class="[
+                selected?.find((x) => x[valueField] == item[valueField])
+                  ? 'selected'
+                  : '',
+              ]"
+              :selected="
+                selected?.some((x) => x[valueField] == item[valueField])
+              "
               @change-value="changeValue"
             >
             </ms-combobox-detail>
@@ -150,6 +172,8 @@ export default {
     const { proxy } = getCurrentInstance();
 
     const selected = ref([]);
+    const data = ref(props.dataAll);
+    const autoHeight = ref(false);
     window.cb = proxy;
     const display = computed(() =>
       proxy.selected.map((x) => x[props.displayField]).join("; ")
@@ -164,10 +188,11 @@ export default {
         {}
       )
     );
-    const handleRemoveItem = (item)=>{
-
-      console.log(item)
-    }
+    const handleRemoveItem = (item) => {
+      proxy.isShowMenu = true;
+      let i = proxy.selected.findIndex((x) => x[proxy.valueField] == item);
+      proxy.selected.splice(i, 1);
+    };
 
     /**
      * Xet positon cho combobox
@@ -202,6 +227,23 @@ export default {
       return arr.join("; ");
     });
 
+    onMounted(() => {
+      document.addEventListener("click", (e) => {
+        let target = e.target;
+
+        let cont = target.closest(".filter-combobox");
+        if (cont && cont.isEqualNode(proxy.$refs.container)) {
+          e.preventDefault();
+          e.stopPropagation();
+        } else {
+          let cont = target.closest(".combobox-menu");
+          if (!cont || !cont.isEqualNode(proxy.$refs.cbo)) {
+            isShowMenu.value = false;
+          }
+        }
+      });
+    });
+
     //Theo dõi show list
     watch(
       () => isShowMenu.value,
@@ -212,11 +254,30 @@ export default {
       }
     );
 
+    const search = function (e) {
+      setTimeout(() => {
+        let val = proxy.$refs.inputCbo.value;
+        proxy.data = proxy.dataAll.filter((x) =>
+          x[props.displayField].toLowerCase()?.includes(val.toLowerCase())
+        );
+      }, 100);
+    };
+
     const itemClick = (item) => {
       selected.value = item;
       emit("item-click", item);
     };
 
+    onMounted(() => {
+      proxy.data = proxy.dataAll;
+
+      watch(
+        () => proxy.dataAll,
+        () => {
+          search();
+        }
+      );
+    });
     onMounted(() => {
       proxy.setPosition();
       proxy.setDropdown();
@@ -239,6 +300,14 @@ export default {
     }
 
     const changeValue = function (item, select) {
+      if (
+        proxy.selected?.some(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        )
+      ) {
+        return false;
+      }
+
       proxy.$emit("update:modelValue", proxy.selected);
       if (select) {
         proxy.selected.push(item);
@@ -247,7 +316,6 @@ export default {
         let i = proxy.selected.findIndex(
           (x) => x[proxy.valueField] == item[proxy.valueField]
         );
-
         proxy.selected.splice(i, 1);
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
@@ -279,10 +347,13 @@ export default {
       style,
       isShowMenu,
       display,
+      data,
+      search,
       selected,
       changeValue,
       handleRemoveItem,
       objSelected,
+      autoHeight,
     };
   },
 };

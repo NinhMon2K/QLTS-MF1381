@@ -112,6 +112,11 @@
   text-overflow: ellipsis;
   // white-space: no;
 }
+.height_auto--cbo {
+  height: auto !important;
+  max-height: 153.5px !important;
+  overflow: auto !important;
+}
 .mg-9 {
 }
 ::-webkit-scrollbar {

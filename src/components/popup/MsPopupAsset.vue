@@ -346,6 +346,7 @@ import {
   mergeProps as _mergeProps,
   onBeforeMount,
   onUpdated,
+  nextTick,
 } from "vue";
 import {
   ssrRenderComponent as _ssrRenderComponent,
@@ -405,6 +406,7 @@ export default {
     window.popup = proxy;
     const isShowMessage = ref(false);
 
+    const isShowPopup = ref(false);
     const isDialogMessCancelAdd = ref(false);
 
     const errorMessage = ref({});
@@ -497,6 +499,7 @@ export default {
     const handleCloseErrorMultiple = () => {
       proxy.isShowDialogDetail = false;
       proxy.isSubmited = true;
+      proxy.focusInput();
     };
     watch(
       () => dataForm.value,
@@ -518,27 +521,33 @@ export default {
       proxy.updateValDepYear();
     });
     onMounted(() => {
-      proxy.$refs.inputAssetCode.$el.getElementsByTagName("input")[0].focus();
+      proxy.focusInput();
     });
+
+    const focusInput = () => {
+      proxy.$refs.inputAssetCode.$el.getElementsByTagName("input")[0].focus();
+    };
 
     /**
      * Xét giá trị ban đầu cho ngày mua và ngày sử dụng
      *  @author NNNinh(21/10/2021)
      */
     const defaultValueDate = () => {
-      // xét giá trị ban đầu cho ngày mua
-      if (proxy.dataForm.purchase_date == "") {
-        proxy.dataForm.purchase_date =
-          new Date().toLocaleDateString() + new Date().toString();
-      }
-      // xét giá trị ban đầu cho ngày sử dụng
-      if (proxy.dataForm.production_date == "") {
-        proxy.dataForm.production_date =
-          new Date().toLocaleDateString() + new Date().toString();
-      }
+      nextTick(() => {
+        // xét giá trị ban đầu cho ngày mua
+        if (proxy.dataForm.purchase_date == "") {
+          proxy.dataForm.purchase_date =
+            new Date().toLocaleDateString() + new Date().toString();
+        }
+        // xét giá trị ban đầu cho ngày sử dụng
+        if (proxy.dataForm.production_date == "") {
+          proxy.dataForm.production_date =
+            new Date().toLocaleDateString() + new Date().toString();
+        }
+      });
     };
 
-    onBeforeMount(async () => {
+    onMounted(() => {
       try {
         /**
          * Kiểm tra giá trị mode là add hay cập nhật,nhân bản
@@ -546,36 +555,37 @@ export default {
          */
         switch (proxy.formModel.mode) {
           //Kiểm tra giá trị mode là cập nhật
-          case Enum.Mode.Update: {
+          case Enum.Mode.Update:
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
 
             // Lấy dữ liệu tài sản theo id tài sản
-            proxy.dataForm = proxy.dataPram;
+            proxy.loadDataAssetID();
             proxy.setValueDateYear();
             proxy.dataForm.Mode = 2;
             break;
-          }
+
           //Kiểm tra giá trị mode là thêm
-          case Enum.Mode.Add: {
+          case Enum.Mode.Add:
             proxy.title = Resource.TitleFormPopup.FormAddAsset.VI;
             // Lấy mã tài sản tự tăng
-            let result = await assetAPI.get("AssetGetNextCode", {});
-            proxy.dataForm.fixed_asset_code =
-              result?.Data && result?.Data[0].fixed_asset_code;
+            // let result = await assetAPI.get("AssetGetNextCode", {});
+            // proxy.dataForm.fixed_asset_code =
+            //   result?.Data && result?.Data[0].fixed_asset_code;
             proxy.defaultValueDate();
+            proxy.getAssetNextCode();
             proxy.setValueDateYear();
             proxy.dataForm.Mode = 1;
             break;
-          }
+
           //Kiểm tra giá trị mode là nhân bản
-          case Enum.Mode.Duplicate: {
+          case Enum.Mode.Duplicate:
             proxy.title = Resource.TitleFormPopup.FormDuplicateAsset.VI;
             proxy.dataForm.Mode = 3;
             proxy.loadDataAssetID();
             proxy.getAssetNextCode();
             proxy.setValueDateYear();
             break;
-          }
+
           default:
             break;
         }
@@ -806,14 +816,13 @@ export default {
         if (proxy.dataForm.production_date == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
         }
-        proxy.isShowDialogDetail = true;
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        // proxy.titleErrValidate.push(
-        //   "Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá"
-        // );
+        proxy.titleErrValidate.push(
+          "Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá"
+        );
 
         return false;
       } else if (
@@ -823,8 +832,7 @@ export default {
         console.log(parseFloat(100 / proxy.dataForm.life_time).toFixed(2));
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        // proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
-
+        proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
         return false;
       } else {
         proxy.errorMessage = {};
@@ -834,7 +842,9 @@ export default {
 
     const saveData = () => {
       try {
-        if (proxy.validateData()) {
+        if (proxy.validateData() == false) {
+          proxy.isShowDialogDetail = true;
+        } else {
           switch (proxy.formModel.mode) {
             //Kiểm tra giá trị mode là cập nhật
             case Enum.Mode.Update: {
@@ -857,12 +867,18 @@ export default {
       }
     };
     const handlePopupClose = () => {
-      proxy.isDialogMessCancelAdd = true;
+      let closes = proxy.validateData();
+      if (closes == true) {
+        proxy.isDialogMessCancelAdd = true;
+      } else {
+        emit("closePopup", proxy.isShowPopup);
+      }
     };
 
     return {
       styles,
       title,
+      isShowPopup,
       isShowMessage,
       titleErrValidate,
       isDialogMessCancelAdd,
@@ -876,6 +892,7 @@ export default {
       loadDataCategory,
       loadDataDepartment,
       clickDataDepartment,
+      focusInput,
       clickDataAssetCategory,
       setValueDateYear,
       defaultValueDate,

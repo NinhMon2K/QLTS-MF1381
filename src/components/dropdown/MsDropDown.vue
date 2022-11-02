@@ -44,7 +44,13 @@
     </button>
 
     <teleport to="body">
-      <div class="dropdown-menu" ref="drop" :style="style" v-if="isShowMenu">
+      <div
+        class="dropdown-menu"
+        ref="drop"
+        :style="style"
+        :class="autoHeight ? 'height_auto--cbo' : ''"
+        v-if="isShowMenu"
+      >
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
             <dropdown-item
@@ -155,18 +161,22 @@ export default {
 
     const data = ref(props.dataAll);
     const disp = ref("");
+    const autoHeight = ref(false);
 
     window.cb = proxy;
 
     const selected = computed(() => {
       if (proxy.modelValue) {
-        return proxy.data.find((x) => x[proxy.valueField] == proxy.modelValue);
+        return proxy.dataAll.find(
+          (x) => x[proxy.valueField] == proxy.modelValue
+        );
       } else {
         return null;
       }
     });
     onMounted(() => {
       proxy.data = proxy.dataAll;
+      proxy.disp = display.value;
 
       watch(
         () => proxy.dataAll,
@@ -180,8 +190,12 @@ export default {
       setTimeout(() => {
         let val = proxy.$refs.input.value;
         proxy.data = proxy.dataAll.filter((x) =>
-          x[props.displayField]?.includes(val)
+          x[props.displayField].toLowerCase()?.includes(val.toLowerCase())
         );
+        if (val != "") {
+          proxy.autoHeight = true;
+        }
+        disp.value = display.value;
       }, 100);
     };
 
@@ -363,6 +377,7 @@ export default {
       search,
       data,
       disp,
+      autoHeight,
     };
   },
 };
