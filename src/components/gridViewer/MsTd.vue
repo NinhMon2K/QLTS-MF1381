@@ -82,12 +82,14 @@ export default {
       );
     });
 
+
     const setTooltipDisplay = () => {
       let offset = proxy.$refs.td.getBoundingClientRect();
       if (proxy.text.length > offset.width) {
         return proxy.text;
       } else return "";
     };
+    // Xét style cho td
     const styles = computed(() => {
       let arr = [];
       if (props.config.width) {
@@ -101,6 +103,8 @@ export default {
       return arr.join("; ");
     });
 
+
+    // Show giá trị value td
     const showValue = () => {
       let rs = props.value;
 
@@ -116,6 +120,7 @@ export default {
       return rs;
     };
 
+    // Giá trị hiện lên Dom
     const text = computed(() => showValue());
 
     const cls = computed(() => {
@@ -132,6 +137,8 @@ export default {
 
       return rs.join(" ");
     });
+
+    //Căn chỉnh nội dung bên trái,phải hay center
     const styleAlign = computed(() => {
       let rs = [];
 

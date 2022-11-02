@@ -194,6 +194,7 @@ export default defineComponent({
       );
     });
 
+    //Theo dõi biến allSelected kiểm tra là true thì lấy tất cả dữ liệu
     watch(
       () => allSelected.value,
       (newVal) => {
@@ -205,11 +206,21 @@ export default defineComponent({
       }
     );
 
+     /**
+     * Xử lý sự kiện double click tr
+     *  @author NNNinh(01/11/2022)
+     * @pram {object} item dữ liệu asset khi click tr
+     */
     const handleDoubleClick = (item) => {
       proxy.pram.mode = Enum.Mode.Update;
       proxy.pramData = item;
       proxy.isShowPopup = true;
     };
+
+     /**
+     * Xử lý sự kiện bỏ checked 1 dòng 
+     *  @author NNNinh(01/11/2022)
+     */
     const handleClick = (index) => {
       if (proxy.selectedIndex[index]) {
         proxy.selectedIndex[index] = false;
@@ -222,10 +233,13 @@ export default defineComponent({
       proxy.handleSum();
     });
 
+    // format tiền
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
     }
+
+    // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
     function handleSum(value) {
       let sumA = 0;
       this.allData.forEach((data) => {

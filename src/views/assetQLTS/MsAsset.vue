@@ -6,7 +6,7 @@
           :hasLabel="false"
           leftIcon="ic-search"
           id="txt-search"
-          :tabindex="1"
+          tabindex="1"
           :radius="true"
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
@@ -19,7 +19,7 @@
         displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
-        :tabindex="2"
+        tabindex="2"
         :heightCb="13"
         :dataAll="DataAssetCategory.value"
       ></ms-combobox>
@@ -27,7 +27,7 @@
         leftIcon="ic-fillter"
         valueField="department_id"
         :heightCb="13"
-        :tabindex="3"
+        tabindex="3"
         displayField="department_name"
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
@@ -38,7 +38,7 @@
       <ms-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
         <ms-button
           ref="MsPopupAsset"
-          :tabindex="4"
+          tabindex="4"
           text="Thêm tài sản"
           id="btn-add"
           leftIcon="ic-add"
@@ -51,7 +51,7 @@
         <ms-button
           leftIcon="ic-export"
           id="btn-export"
-          :tabindex="5"
+          tabindex="5"
           :radius="true"
         ></ms-button>
       </ms-tooltip>
@@ -59,7 +59,7 @@
         <ms-button
           leftIcon="ic-delete__toolbar"
           id="btn-delete"
-          :tabindex="6"
+          tabindex="6"
           :radius="true"
           @click="handleShowMessBox"
         >
@@ -230,19 +230,28 @@ export default {
     const isDialogMessCancelDelete = ref(false);
     //Show Dialog MessageBox không thể xóa nhiều dòng
     const isDialogMessCancelDeleMultiple = ref(false);
+
+     //Show Dialog MessageBox không chọn dữ liệu để xóa
     const isDialogMessDeleNoData = ref(false);
     const valueMessageBox = ref("");
-    const isShowMessage = ref(false);
+
+    // Biến lấy dữ liệu toàn bộ tài sản
     const allData = ref([]);
-    const dataAssets = ref([]);
+
+    // Biến lấy dữ liệu lại tài sản
     const DataAssetCategory = ref([]);
+
+    // Biến lấy dữ liệu tên bộ phận
     const DataDepartment = ref([]);
-    const Loading = ref(true);
+
+    // Biến lấy những dữ liệu tr selected
     const dataSelected = ref([]);
     let pram = reactive({
       mode: 0,
       fixed_asset_id: "",
     });
+
+    //Load dữ liệu data asset
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
@@ -255,6 +264,7 @@ export default {
         console.log(error);
       }
     }
+     //Load dữ liệu data combobox loại tài sản
     async function loadDataCombotCategory() {
       try {
         let res = await assetAPI.get("CategoryGetAll", {});
@@ -263,6 +273,7 @@ export default {
         console.log(error);
       }
     }
+     //Load dữ liệu data combobox tên bộ phận
     async function loadDataComboDepartment() {
       try {
         let res = await assetAPI.get("DepartmentGetAll", {});
@@ -272,13 +283,14 @@ export default {
       }
     }
 
+
     onMounted(() => {
       proxy.loadDataAsset();
       proxy.loadDataCombotCategory();
       proxy.loadDataComboDepartment();
     });
 
-    const isShowMessageBox = () => {};
+    //Custom giá trị truyền vào messbox
     function customValueMessBox(val) {
       if (val == 1) {
         return `<<${proxy.dataSelected[0].fixed_asset_code} - ${proxy.dataSelected[0].fixed_asset_name}>>`;
@@ -287,6 +299,7 @@ export default {
       } else return val;
     }
 
+    //Sự kiện đóng popup
     const handlClosePopup = (isShowPopup) => {
       proxy.isShowPopup = false;
     };
@@ -296,15 +309,18 @@ export default {
      *  @author NNNinh(20/10/2021)
      */
     const handleShowMessBox = () => {
+      //kiểm tra dataSelected bằng 0 => Hiển thị message : Bạn chưa chọn dữ liệu để xóa
       if (proxy.dataSelected.length == 0) {
         proxy.isDialogMessDeleNoData = true;
       } else {
+        //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
         if (proxy.dataSelected.length == 1) {
           proxy.valueMessageBox = proxy.customValueMessBox(
             proxy.dataSelected.length
           );
           proxy.isDialogMessDelete = true;
         } else {
+          //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
           proxy.valueMessageBox = proxy.customValueMessBox(
             proxy.dataSelected.length
           );
@@ -321,23 +337,34 @@ export default {
       proxy.pram.mode = Enum.Mode.Add;
       proxy.isShowPopup = true;
     };
+
+    //Sự kiện click chức năng sửa hay nhân bản
     const clickMenu = async (action, val) => {
       switch (action) {
-        case 0: {
+        case 0: // kiểm tra action = 0 là sửa
           proxy.pram.mode = Enum.Mode.Update;
           proxy.pram.fixed_asset_id = val;
           proxy.isShowPopup = true;
-          break;
-        }
-        case 1: {
+          break;    
+        case 1: // kiểm tra action = 1 là nhân bản
           proxy.pram.mode = Enum.Mode.Duplicate;
           proxy.pram.fixed_asset_id = val;
           proxy.isShowPopup = true;
           break;
-        }
+        
       }
     };
 
+     /**
+     * Xác định cột cho table
+     * @param {string} type giá trị là number,text hay checked
+     * @param {string} field trường để map dữ liệu 
+     * @param {string} title text hiện thị lên giao diện
+     * @param {string} width độ rộng của cột
+     * @param {string} align vị trí bên trái, phải, center
+     * Author: NNNinh (16/10/2022)
+     */
+    
     const columns = ref([
       {
         field: ResourceTable.FieldAsset.STT,
@@ -419,26 +446,22 @@ export default {
       allData,
       dataSelected,
       customValueMessBox,
-      isShowMessageBox,
       handleShowMessBox,
-      isDialogMessDeleNoData,
-      DataAssetCategory,
-      DataDepartment,
-      isLoading,
-      Loading,
-      ResourceTable,
-      Resource,
-      isDialogMessDeleMultiple,
-      isDialogMessDelete,
+      isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
+      DataAssetCategory, // dữ liệu data mã loại tài sản
+      DataDepartment, // dữ liệu data bộ phận
+      isLoading, // loading trang 
+      ResourceTable, // Resource table
+      Resource, // Resource
+      isDialogMessDeleMultiple, // show message xóa nhiều dữ liệu
+      isDialogMessDelete, 
       isDialogMessCancelDelete,
       isDialogMessCancelDeleMultiple,
       clickMenu,
-      dataAssets,
       pram,
       loadDataAsset,
       loadDataCombotCategory,
       loadDataComboDepartment,
-      isShowMessage,
       handleClickAdd,
       valueMessageBox,
       handlClosePopup,

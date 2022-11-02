@@ -140,19 +140,24 @@ export default defineComponent({
     const forcused = ref(false);
     const isValue = ref("");
 
-    const cancelEvent = (e) => {
+   //Xử lý sự kiện
+   const cancelEvent = (e) => {
       if (e) {
+        //phương thức hủy sự kiện nếu nó có thể hủy được, nghĩa là hành động mặc định của sự kiện sẽ không xảy ra.
         if (typeof e.preventDefault === "function") {
           e.preventDefault();
         }
+        //phương thức ngăn không cho sự lan truyền của cùng một sự kiện được gọi.
         if (typeof e.stopPropagation === "function") {
           e.stopPropagation();
         }
+        //Sự kiện ngăn không cho người nghe khác của cùng một sự kiện được gọi.
         if (typeof e.stopImmediatePropagation === "function") {
           e.stopImmediatePropagation();
         }
       }
     };
+
     const onFocus = (e) => {
       proxy.forcused = true;
       emit("focus", proxy.isValue, proxy.valueField, e);

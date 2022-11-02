@@ -165,6 +165,7 @@ export default {
 
     window.cb = proxy;
 
+    // Lấy dữ liệu những item selected
     const selected = computed(() => {
       if (proxy.modelValue) {
         return proxy.dataAll.find(
@@ -177,7 +178,6 @@ export default {
     onMounted(() => {
       proxy.data = proxy.dataAll;
       proxy.disp = display.value;
-
       watch(
         () => proxy.dataAll,
         () => {
@@ -186,12 +186,14 @@ export default {
       );
     });
 
+    //Tìm kiếm dữ liệu trong dropdown
     const search = function (e) {
       setTimeout(() => {
         let val = proxy.$refs.input.value;
         proxy.data = proxy.dataAll.filter((x) =>
           x[props.displayField].toLowerCase()?.includes(val.toLowerCase())
         );
+        // Kiểm tra giá trị input khác "" hay k
         if (val != "") {
           proxy.autoHeight = true;
         }
@@ -212,6 +214,7 @@ export default {
       height: 0,
     });
 
+    // Biến show menu list item dropdown
     const isShowMenu = ref(false);
 
     /**
@@ -273,14 +276,18 @@ export default {
       offsetPosi.left = offset.left;
     }
 
+    //Xử lý sự kiện
     const cancelEvent = (e) => {
       if (e) {
+        //phương thức hủy sự kiện nếu nó có thể hủy được, nghĩa là hành động mặc định của sự kiện sẽ không xảy ra.
         if (typeof e.preventDefault === "function") {
           e.preventDefault();
         }
+        //phương thức ngăn không cho sự lan truyền của cùng một sự kiện được gọi.
         if (typeof e.stopPropagation === "function") {
           e.stopPropagation();
         }
+        //Sự kiện ngăn không cho người nghe khác của cùng một sự kiện được gọi.
         if (typeof e.stopImmediatePropagation === "function") {
           e.stopImmediatePropagation();
         }
@@ -296,12 +303,7 @@ export default {
           e.preventDefault();
           e.stopPropagation();
         } else {
-          isShowMenu.value = false;
-          // cont = target.closest(".dropdown-menu");
-          // if (cont && cont.isEqualNode(proxy.$refs.drop)) {
-          //   e.preventDefault();
-          //   e.stopPropagation();
-          // }
+          isShowMenu.value = false;    
         }
       });
     });
@@ -376,7 +378,7 @@ export default {
       initEvent, //Đóng menu dropdown khi windown click,
       search,
       data,
-      disp,
+      disp, // Gán giá trị
       autoHeight,
     };
   },

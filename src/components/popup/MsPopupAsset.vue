@@ -496,6 +496,7 @@ export default {
       }
     }
 
+    //Sự kiện close error message Multiple
     const handleCloseErrorMultiple = () => {
       proxy.isShowDialogDetail = false;
       proxy.isSubmited = true;
@@ -603,9 +604,9 @@ export default {
      * @pram {fixed_asset_id} Id tài sản
      *  @author NNNinh(21/10/2021)
      */
-    async function loadDataAssetID() {
+     function loadDataAssetID() {
       try {
-        let result = await assetAPI.get("AssetSelectID", {
+        let result =  assetAPI.get("AssetSelectID", {
           fixed_asset_id: proxy.formModel.fixed_asset_id,
         });
         proxy.dataForm = result?.Data && result?.Data[0];
@@ -649,12 +650,20 @@ export default {
       return arr.join("; ");
     });
 
+    
+    const take_decimal_number = (num,n)=>{
+    //num : số cần xử lý
+    //n: số chữ số sau dấu phẩy cần lấy
+    let base = 10**n;
+    let result = Math.round(num * base) / base ;
+    return result;
+}
     /**
      * Cập nhật giá trị hao mòn năm
      *  @author NNNinh(21/10/2021)
      */
     function updateValDepYear() {
-      proxy.dataForm.depreciation_year =
+      proxy.dataForm.depreciation_year = 
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
       if (proxy.dataForm.depreciation_rate > 100)
         proxy.dataForm.depreciation_rate = 100;
@@ -759,6 +768,7 @@ export default {
       proxy.dataForm.fixed_asset_category_code = item.fixed_asset_category_code;
     };
 
+    // Validate dữ liệu
     const validateData = () => {
       proxy.v$.$validate();
       if (proxy.v$.$error) {
@@ -908,6 +918,7 @@ export default {
       dataFormValidate,
       handleCloseErrorMultiple,
       isSubmited,
+      take_decimal_number,
       v$,
     };
   },

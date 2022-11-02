@@ -227,6 +227,7 @@ export default {
       return arr.join("; ");
     });
 
+    // Sự kiện chỉ hiện menu cho 1 combobox
     onMounted(() => {
       document.addEventListener("click", (e) => {
         let target = e.target;
@@ -254,6 +255,11 @@ export default {
       }
     );
 
+    
+        /**
+         * Tìm kiếm dữ liệu khi nhập input
+         * NNNinh (01/11/2022)
+         */
     const search = function (e) {
       setTimeout(() => {
         let val = proxy.$refs.inputCbo.value;
@@ -263,6 +269,7 @@ export default {
       }, 100);
     };
 
+    // Sự kiện click item 
     const itemClick = (item) => {
       selected.value = item;
       emit("item-click", item);
@@ -270,7 +277,6 @@ export default {
 
     onMounted(() => {
       proxy.data = proxy.dataAll;
-
       watch(
         () => proxy.dataAll,
         () => {
@@ -300,6 +306,17 @@ export default {
     }
 
     const changeValue = function (item, select) {
+       // Kiểm tra select là true ỏ false 
+      // Nếu true push vào mảng , false xóa khỏi mảng
+      if (select) {
+        proxy.selected.push(item);
+      } else {
+        let i = proxy.selected.findIndex(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        );
+        proxy.selected.splice(i, 1);
+      }
+      proxy.$emit("change-value", proxy.selected, proxy.dataItem);
       if (
         proxy.selected?.some(
           (x) => x[proxy.valueField] == item[proxy.valueField]
@@ -309,16 +326,8 @@ export default {
       }
 
       proxy.$emit("update:modelValue", proxy.selected);
-      if (select) {
-        proxy.selected.push(item);
-        console.log(proxy.selected);
-      } else {
-        let i = proxy.selected.findIndex(
-          (x) => x[proxy.valueField] == item[proxy.valueField]
-        );
-        proxy.selected.splice(i, 1);
-      }
-      proxy.$emit("change-value", proxy.selected, proxy.dataItem);
+     
+      
     };
 
     /**
@@ -340,20 +349,20 @@ export default {
     }
 
     return {
-      initEvent,
-      itemClick,
-      setPosition,
-      setDropdown,
-      style,
-      isShowMenu,
+      initEvent,//Sự kiện event click windown ẩn list combobox
+      itemClick, //Sự kiện event click item
+      setPosition, // Xét giá trị vị trí cho list cbo
+      setDropdown,// Xét giá trị width,height  
+      style,//Xét style cho list
+      isShowMenu,// Show list item
       display,
       data,
-      search,
+      search, // Tìm kiếm dữ liệu
       selected,
       changeValue,
       handleRemoveItem,
       objSelected,
-      autoHeight,
+      autoHeight, // Xét style height auto khi tìm kiếm cho list
     };
   },
 };

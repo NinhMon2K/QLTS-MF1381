@@ -62,6 +62,8 @@ export default {
     const text = "";
 
     window.th = proxy;
+
+
     const allSelected = ref(false);
     const selectedData = ref([]);
     onMounted(() => {
@@ -82,6 +84,8 @@ export default {
         proxy.$emit("change-value", proxy.allSelected);
       }
     );
+
+    // Xét style cho th
     const styles = computed(() => {
       let arr = [];
       if (props.config.width) {
