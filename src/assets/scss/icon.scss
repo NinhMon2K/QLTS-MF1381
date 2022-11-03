@@ -15,7 +15,8 @@
   background-image: url("../images/icons/icons8-v-24.png");
 }
 @mixin commonAppIcWarning() {
-  background-image: url("../images/icons/icons8-warning.png");
+  background-image: url("../images/icons/waring.png");
+  background-repeat: no-repeat;
 }
 @mixin commonAppIcCheckBox() {
   background-image: url("../images/icons/checked.png");
@@ -180,7 +181,7 @@
   }
   &.ic-warning {
     @include commonAppIcWarning();
-    @include setSquare(24);
+    @include setSquare(32);
   }
   &.ic-checkbox {
     @include commonAppIcCheckBox();

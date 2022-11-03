@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./../App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-import clickOutside from "@/directives/eventClickOutSide.js";
+import clickOutside from "@/assets/js/directives/eventClickOutSide.js";
 import vi from "element-plus/es/locale/lang/vi";
 const app = createApp(App);
 
@@ -10,9 +10,8 @@ const app = createApp(App);
 import "@/assets/scss/font.scss";
 import "@/assets/scss/icon.scss";
 import "@/assets/scss/app.scss";
-import "@/assets/scss/button.scss";
 //Khai báo router
-import router from "@/routers/router";
+import router from "@/assets/js/routers/router.js";
 
 // app.directive("clickoutside", {
 //   beforeMount: (el, binding) => {

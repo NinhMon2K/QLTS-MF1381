@@ -2,80 +2,75 @@
   <div class="contrainer-toolbar">
     <div class="toobar-left">
       <div class="container__search">
-        <ms-input
+        <v-input
           :hasLabel="false"
           leftIcon="ic-search"
           id="txt-search"
-          tabindex="1"
           :radius="true"
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
           message=""
-        ></ms-input>
+        ></v-input>
       </div>
-      <ms-combobox
+      <v-combobox
         leftIcon="ic-fillter"
         valueField="fixed_asset_category_id"
         displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
-        tabindex="2"
         :heightCb="13"
         :dataAll="DataAssetCategory.value"
-      ></ms-combobox>
-      <ms-combobox
+      ></v-combobox>
+      <v-combobox
         leftIcon="ic-fillter"
         valueField="department_id"
         :heightCb="13"
-        tabindex="3"
         displayField="department_name"
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
         :dataAll="DataDepartment.value"
-      ></ms-combobox>
+      ></v-combobox>
     </div>
     <div class="toolbar-right">
-      <ms-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
-        <ms-button
+      <v-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
+        <v-button
           ref="MsPopupAsset"
-          tabindex="4"
           text="Thêm tài sản"
           id="btn-add"
           leftIcon="ic-add"
           :radius="true"
           @click="handleClickAdd"
         >
-        </ms-button>
-      </ms-tooltip>
-      <ms-tooltip content="Xuất Excel" placement="bottom">
-        <ms-button
+        </v-button>
+      </v-tooltip>
+      <v-tooltip content="Xuất Excel" placement="bottom">
+        <v-button
           leftIcon="ic-export"
           id="btn-export"
-          tabindex="5"
           :radius="true"
-        ></ms-button>
-      </ms-tooltip>
-      <ms-tooltip content="Xóa" placement="bottom">
-        <ms-button
+        ></v-button>
+      </v-tooltip>
+      <v-tooltip content="Xóa" placement="bottom">
+        <v-button
           leftIcon="ic-delete__toolbar"
           id="btn-delete"
-          tabindex="6"
           :radius="true"
           @click="handleShowMessBox"
         >
-        </ms-button>
-      </ms-tooltip>
-      <ms-popup-asset
+        </v-button>
+      </v-tooltip>
+      <v-popup-asset
         v-if="isShowPopup"
         :formModel="pram"
         @closePopup="handlClosePopup"
-      ></ms-popup-asset>
+        :allData="dataAssetID"
+      ></v-popup-asset>
     </div>
   </div>
 
   <!-- Dialog xóa nhiều dòng -->
   <teleport to="body">
-    <ms-message-box
+    <v-message-box
       :disabledTop="false"
       leftIcon="ic-warning"
       :valueMessageBox="valueMessageBox"
@@ -84,19 +79,19 @@
       :disabledValueRight="false"
       v-if="isDialogMessDeleMultiple"
     >
-      <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
-      <ms-button
+      <v-button :text="Resource.TitleBtnDialog.Delete.VI" radius></v-button>
+      <v-button
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
         @click="isDialogMessDeleMultiple = false"
         radius
-      ></ms-button>
-    </ms-message-box>
+      ></v-button>
+    </v-message-box>
   </teleport>
 
   <!-- Dialog xóa 1 dòng -->
   <teleport to="body">
-    <ms-message-box
+    <v-message-box
       :disabledTop="false"
       leftIcon="ic-warning"
       :valueMessageBox="valueMessageBox"
@@ -105,20 +100,20 @@
       :disabledValueRight="true"
       v-if="isDialogMessDelete"
     >
-      <ms-button :text="Resource.TitleBtnDialog.Delete.VI" radius></ms-button>
-      <ms-button
+      <v-button :text="Resource.TitleBtnDialog.Delete.VI" radius></v-button>
+      <v-button
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
         @click="isDialogMessDelete = false"
         radius
       >
-      </ms-button>
-    </ms-message-box>
+      </v-button>
+    </v-message-box>
   </teleport>
 
   <!-- Dialog cancel xóa -->
   <teleport to="body">
-    <ms-message-box
+    <v-message-box
       :disabledTop="false"
       leftIcon="ic-warning"
       :valueMessageBox="valueMessageBox"
@@ -127,13 +122,13 @@
       :disabledValueRight="false"
       v-if="isDialogMessCancelDelete"
     >
-      <ms-button :text="Resource.TitleBtnDialog.Close.VI" radius></ms-button>
-    </ms-message-box>
+      <v-button :text="Resource.TitleBtnDialog.Close.VI" radius></v-button>
+    </v-message-box>
   </teleport>
 
   <!-- Dialog cancel xóa nhiều dòng -->
   <teleport to="body">
-    <ms-message-box
+    <v-message-box
       :disabledTop="false"
       leftIcon="ic-warning"
       :valueMessageBox="valueMessageBox"
@@ -142,13 +137,13 @@
       :disabledValueRight="false"
       v-if="isDialogMessCancelDeleMultiple"
     >
-      <ms-button :text="Resource.TitleBtnDialog.Agree.VI" radius></ms-button>
-    </ms-message-box>
+      <v-button :text="Resource.TitleBtnDialog.Agree.VI" radius></v-button>
+    </v-message-box>
   </teleport>
 
   <!-- Khi không chọn dữ để xóa cảnh báo  -->
   <teleport to="body">
-    <ms-message-box
+    <v-message-box
       :disabledTop="false"
       leftIcon="ic-warning"
       :textMessageBox="Resource.TitleDialogMessage.DeleteNoData.VI"
@@ -156,36 +151,35 @@
       :disabledValueRight="false"
       v-if="isDialogMessDeleNoData"
     >
-      <ms-button
+      <v-button
         :text="Resource.TitleBtnDialog.Close.VI"
         radius
         @click="isDialogMessDeleNoData = false"
-      ></ms-button>
-    </ms-message-box>
+      ></v-button>
+    </v-message-box>
   </teleport>
   <!-- Loading form -->
   <teleport to="body">
-    <ms-loading v-if="isLoading"></ms-loading>
+    <v-loading v-if="isLoading"></v-loading>
   </teleport>
-  <ms-grid
+  <v-grid
     :columns="columns"
-    :allData="allData.value"
+    :allData="allData"
     :selectedCol="true"
     ref="abc"
     v-model:selectedData="dataSelected"
   >
-  </ms-grid>
+  </v-grid>
 </template>
 <script>
-import MsButton from "@/components/button/MsButton.vue";
-import MsInput from "@/components/input/MsInput.vue";
-import MsPopupAsset from "@/components/popup/MsPopupAsset.vue";
-import MsMessageBox from "@/components/toast/MsMessageBox.vue";
-
-import MsCombobox from "@/components/combobox/MsCombobox.vue";
-import MsGrid from "@/components/gridViewer/MsGrid.vue";
-import MsTooltip from "@/components/tooltip/MsTooltip.vue";
-import MsLoading from "@/components/loading/MsLoading.vue";
+import VButton from "@/components/button/VButton.vue";
+import VInput from "@/components/input/VInput.vue";
+import VPopupAsset from "@/components/popup/VPopupAsset.vue";
+import VMessageBox from "@/components/toast/VMessageBox.vue";
+import VCombobox from "@/components/combobox/VCombobox.vue";
+import VGrid from "@/components/grid/VGrid.vue";
+import VTooltip from "@/components/tooltip/VTooltip.vue";
+import VLoading from "@/components/loading/VLoading.vue";
 import {
   computed,
   getCurrentInstance,
@@ -195,20 +189,20 @@ import {
   watch,
 } from "vue";
 import assetAPI from "@/apis/api/assetAPI.js";
-import ResourceTable from "@/resource/dictionary/resourceTable.js";
-import Enum from "@/resource/dictionary/enum.js";
-import Resource from "@/resource/dictionary/resource.js";
+import ResourceTable from "@/assets/js/resource/resourceTable";
+import Enum from "@/assets/js/enums/enum.js";
+import Resource from "@/assets/js/resource/resource.js";
 export default {
   name: "MsAsset",
   components: {
-    MsButton,
-    MsInput,
-    MsGrid,
-    MsPopupAsset,
-    MsLoading,
-    MsCombobox,
-    MsTooltip,
-    MsMessageBox,
+    VButton,
+    VInput,
+    VGrid,
+    VPopupAsset,
+    VLoading,
+    VCombobox,
+    VTooltip,
+    VMessageBox,
   },
   methods: {
     close() {
@@ -231,7 +225,7 @@ export default {
     //Show Dialog MessageBox không thể xóa nhiều dòng
     const isDialogMessCancelDeleMultiple = ref(false);
 
-     //Show Dialog MessageBox không chọn dữ liệu để xóa
+    //Show Dialog MessageBox không chọn dữ liệu để xóa
     const isDialogMessDeleNoData = ref(false);
     const valueMessageBox = ref("");
 
@@ -244,6 +238,7 @@ export default {
     // Biến lấy dữ liệu tên bộ phận
     const DataDepartment = ref([]);
 
+    const dataAssetID = ref({});
     // Biến lấy những dữ liệu tr selected
     const dataSelected = ref([]);
     let pram = reactive({
@@ -259,12 +254,12 @@ export default {
         proxy.isLoading = false;
         let data = res?.Data;
         data.forEach((x, i) => (x.STT = i + 1));
-        proxy.allData.value = data;
+        proxy.allData = data;
       } catch (error) {
         console.log(error);
       }
     }
-     //Load dữ liệu data combobox loại tài sản
+    //Load dữ liệu data combobox loại tài sản
     async function loadDataCombotCategory() {
       try {
         let res = await assetAPI.get("CategoryGetAll", {});
@@ -273,7 +268,7 @@ export default {
         console.log(error);
       }
     }
-     //Load dữ liệu data combobox tên bộ phận
+    //Load dữ liệu data combobox tên bộ phận
     async function loadDataComboDepartment() {
       try {
         let res = await assetAPI.get("DepartmentGetAll", {});
@@ -282,7 +277,6 @@ export default {
         console.log(error);
       }
     }
-
 
     onMounted(() => {
       proxy.loadDataAsset();
@@ -343,28 +337,31 @@ export default {
       switch (action) {
         case 0: // kiểm tra action = 0 là sửa
           proxy.pram.mode = Enum.Mode.Update;
-          proxy.pram.fixed_asset_id = val;
-          proxy.isShowPopup = true;
-          break;    
-        case 1: // kiểm tra action = 1 là nhân bản
-          proxy.pram.mode = Enum.Mode.Duplicate;
-          proxy.pram.fixed_asset_id = val;
+          proxy.dataAssetID = proxy.allData.filter((x) =>
+            x["fixed_asset_id"]?.includes(val)
+          );
           proxy.isShowPopup = true;
           break;
-        
+        case 1: // kiểm tra action = 1 là nhân bản
+          proxy.pram.mode = Enum.Mode.Duplicate;
+          proxy.dataAssetID = proxy.allData.filter((x) =>
+            x["fixed_asset_id"]?.includes(val)
+          );
+          proxy.isShowPopup = true;
+          break;
       }
     };
 
-     /**
+    /**
      * Xác định cột cho table
      * @param {string} type giá trị là number,text hay checked
-     * @param {string} field trường để map dữ liệu 
+     * @param {string} field trường để map dữ liệu
      * @param {string} title text hiện thị lên giao diện
      * @param {string} width độ rộng của cột
      * @param {string} align vị trí bên trái, phải, center
      * Author: NNNinh (16/10/2022)
      */
-    
+
     const columns = ref([
       {
         field: ResourceTable.FieldAsset.STT,
@@ -450,15 +447,16 @@ export default {
       isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
       DataAssetCategory, // dữ liệu data mã loại tài sản
       DataDepartment, // dữ liệu data bộ phận
-      isLoading, // loading trang 
+      isLoading, // loading trang
       ResourceTable, // Resource table
       Resource, // Resource
       isDialogMessDeleMultiple, // show message xóa nhiều dữ liệu
-      isDialogMessDelete, 
+      isDialogMessDelete,
       isDialogMessCancelDelete,
       isDialogMessCancelDeleMultiple,
       clickMenu,
       pram,
+      dataAssetID,
       loadDataAsset,
       loadDataCombotCategory,
       loadDataComboDepartment,
@@ -477,5 +475,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/view/assetsQLTS/MsAsset.scss";
-@import "@/assets/scss/components/MsMessageBox.scss";
+@import "@/assets/scss/components/v_message_box.scss";
 </style>
