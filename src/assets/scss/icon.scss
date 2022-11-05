@@ -160,10 +160,12 @@
     background-position: -64px -328px;
   }
   &.ic-angle-left {
-    background-position: -21px -240px;
+    @include setSquare(20);
+    background-position: -22px -242px;
   }
   &.ic-angle-right {
-    background-position: -64px -240px;
+    @include setSquare(20);
+    background-position: -65px -242px;
   }
   &.ic-angle_down {
     @include setSquare(8);

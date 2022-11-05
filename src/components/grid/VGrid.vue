@@ -36,67 +36,7 @@
           </v-tr>
         </tbody>
         <tfoot>
-          <tr>
-            <td colspan="6">
-              <div class="container-tfooter-left">
-                <div class="tfooter--left" style="font-size: 11px">
-                  Tổng số:
-                  <span
-                    style="font-size: 11px; font-weight: 700; margin: 0 4px"
-                    >{{ allData.length }}</span
-                  >
-                  bản ghi
-                </div>
-                <div class="total-page">
-                  <select>
-                    <option class="item-total" value="20" selected>20</option>
-                    <option class="item-total" value="50">50</option>
-                    <option class="item-total" value="100">100</option>
-                    <option class="item-total" value="200">200</option>
-                  </select>
-                  <div class="icon-bottom app-icon ic-angle_down"></div>
-                </div>
-
-                <div class="tfooter--right">
-                  <div class="pagering">
-                    <div class="page--left">
-                      <div class="app-icon ic-angle-left"></div>
-                    </div>
-                    <div class="page--content">
-                      <div
-                        style="font-size: 11px; font-weight: 700"
-                        class="item-page"
-                      >
-                        1
-                      </div>
-                      <div style="font-size: 11px" class="item-page">2</div>
-                      <div style="font-size: 11px" class="item-page">..</div>
-                      <div style="font-size: 11px" class="item-page">10</div>
-                      <div style="font-size: 11px" class="item-page">11</div>
-                    </div>
-                    <div class="page--right">
-                      <div class="app-icon ic-angle-right"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </td>
-
-            <td style="font-size: 13px; font-weight: 700">
-              {{ handleSum("quantity") }}
-            </td>
-
-            <td style="font-size: 13px; font-weight: 700">
-              {{ handleSum("cost") }}
-            </td>
-            <td style="font-size: 13px; font-weight: 700">
-              {{ handleSum("cost") }}
-            </td>
-            <td style="font-size: 13px; font-weight: 700">
-              {{ handleSum("cost") }}
-            </td>
-            <td></td>
-          </tr>
+          <v-tfoot :totalCount="50" :allData="allData"></v-tfoot>
         </tfoot>
       </table>
     </div>
@@ -127,10 +67,11 @@ import VPopupAsset from "@/components/popup/VPopupAsset.vue";
 import Resource from "@/assets/js/resource/resource.js";
 import commonFunction from "@/assets/js/commons/commonFunction.js";
 import VCheckbox from "@/components/input/VCheckbox.vue";
+import VTfoot from "@/components/grid/VTfoot.vue";
 
 export default defineComponent({
   name: "MsGrid",
-  components: { VTh, VTr, VPopupAsset, VCheckbox },
+  components: { VTh, VTr, VPopupAsset, VCheckbox, VTfoot },
   props: {
     selectedCol: {
       default: false,

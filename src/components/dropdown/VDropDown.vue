@@ -53,6 +53,10 @@
       >
         <div class="dropdown-content">
           <ul class="list-item--dropdown">
+            <!-- <li>
+              <div>Mã</div>
+              <div>Bộ phận sử dụng</div>
+            </li> -->
             <dropdown-item
               v-for="item in data"
               :key="item"
