@@ -124,7 +124,7 @@ export default {
     // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
     function handleSum(value) {
       let sumA = 0;
-      console.log(proxy.dataAsset);
+     
       proxy.dataAsset.forEach((data) => {
         sumA += data[value];
       });

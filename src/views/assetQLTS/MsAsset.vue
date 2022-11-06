@@ -170,12 +170,17 @@
     v-model:selectedData="dataSelected"
   >
   </v-grid>
+  <v-toast-message
+  iconMessage="ic-success"
+  textMessage="Thêm mới thành công"
+  ></v-toast-message>
 </template>
 <script>
 import VButton from "@/components/button/VButton.vue";
 import VInput from "@/components/input/VInput.vue";
 import VPopupAsset from "@/components/popup/VPopupAsset.vue";
 import VMessageBox from "@/components/toast/VMessageBox.vue";
+import VToastMessage from "@/components/toast/VToastMessage.vue";
 import VCombobox from "@/components/combobox/VCombobox.vue";
 import VGrid from "@/components/grid/VGrid.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
@@ -203,6 +208,7 @@ export default {
     VCombobox,
     VTooltip,
     VMessageBox,
+    VToastMessage
   },
   methods: {
     close() {

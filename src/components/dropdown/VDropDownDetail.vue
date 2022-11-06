@@ -7,8 +7,8 @@
       @keyup.enter="emitClick"
       @keyup.space="emitClick"
     >
-      <div class="app-icon icon_left-dropdown"></div>
-      <label class="text-item">{{ dataItem[displayField] }}</label>
+      <!-- <div class="app-icon icon_left-dropdown"></div> -->
+      <label class="text-item" v-for="col in columns" :key="col">{{ dataItem[col.field] }}</label>
     </li>
   </v-tooltip>
 </template>
@@ -32,6 +32,9 @@ export default {
     displayField: {
       default: null,
       type: String,
+    },
+     columns: {
+      default: [],
     },
 
     dataItem: {

@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="filter-dropdown"
-    ref="container"
-    :class="disabledMessage ? 'mg-9' : false"
-  >
+  <div class="filter-dropdown" ref="container" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">&#8727;</span>
@@ -14,11 +10,7 @@
       :class="disabledMessage ? 'error__message' : ''"
     >
       <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
         v-if="leftIcon"
       ></div>
       <input
@@ -33,11 +25,7 @@
         @click="isShowMenu = true"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
       ></div>
@@ -61,10 +49,9 @@
               v-for="item in data"
               :key="item"
               :dataItem="item"
+              :columns="columns"
               :displayField="displayField"
-              :class="[
-                modelValue && modelValue == item[valueField] ? 'selected' : '',
-              ]"
+              :class="[modelValue && modelValue == item[valueField] ? 'selected' : '']"
               @menu-item-click="itemClick"
             >
             </dropdown-item>
@@ -72,9 +59,7 @@
         </div>
       </div>
     </teleport>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 <script>
@@ -159,6 +144,9 @@ export default {
       default: false,
       type: Boolean,
     },
+    columns: {
+      default: [],
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -167,14 +155,12 @@ export default {
     const disp = ref("");
     const autoHeight = ref(false);
 
-    window.cb = proxy;
+    window.dr = proxy;
 
     // Lấy dữ liệu những item selected
     const selected = computed(() => {
       if (proxy.modelValue) {
-        return proxy.dataAll.find(
-          (x) => x[proxy.valueField] == proxy.modelValue
-        );
+        return proxy.dataAll.find((x) => x[proxy.valueField] == proxy.modelValue);
       } else {
         return null;
       }
@@ -205,9 +191,7 @@ export default {
       }, 100);
     };
 
-    const display = computed(
-      () => proxy.selected && proxy.selected[proxy.displayField]
-    );
+    const display = computed(() => proxy.selected && proxy.selected[proxy.displayField]);
 
     const offsetPosi = reactive({
       top: 0,
@@ -360,8 +344,7 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".dropdown-menu") ||
-            target.closest(".dropdown-menu-toggle");
+            target.closest(".dropdown-menu") || target.closest(".dropdown-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }
