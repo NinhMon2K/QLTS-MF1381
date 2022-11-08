@@ -5,7 +5,7 @@
         <div class="tfooter--left" style="font-size: 11px">
           Tổng số:
           <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{
-            allData.length
+            407
           }}</span>
           bản ghi
         </div>
@@ -29,7 +29,7 @@
         <div class="tfooter--right">
           <v-pageding
             :v-model="20"
-            :totalCount="500"
+            :totalCount="407"
             :countRecordPageRecord="tableView"
             @totalPagge="handleTotalPage"
           ></v-pageding>
@@ -105,8 +105,8 @@ export default {
       totalPagge: "",
     });
     const handleTotalPage = (val) => {
-      console.log(val);
       proxy.dataPage.totalPagge = val;
+      emit("handleTotalPage", proxy.tableView, proxy.dataPage.totalPagge);
     };
 
     watch(
@@ -124,7 +124,7 @@ export default {
     // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
     function handleSum(value) {
       let sumA = 0;
-     
+
       proxy.dataAsset.forEach((data) => {
         sumA += data[value];
       });

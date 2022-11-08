@@ -1,6 +1,6 @@
 export default {
   LeftMenu: {
-    TitleLogo :"MISA QLTC",
+    TitleLogo: "MISA QLTC",
     Control: "Control",
     Dashboard: "Tổng quan",
     FA: "Tài sản",
@@ -86,10 +86,11 @@ export default {
       VI: "Số năm sử dụng không được để trống!",
     },
     DepreciationYear: {
-      VI: "Giá trị hao mòn năm không được để trống!" ,
+      VI: "Giá trị hao mòn năm không được để trống!",
     },
-
-
+    DepreciationRateVali: {
+      VI: "Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng!",
+    },
   },
   TitleBtnDialog: {
     Cancel: {
@@ -111,8 +112,8 @@ export default {
       VI: "Xóa",
     },
     Agree: {
-      VI: "Đồng ý"
-    }
+      VI: "Đồng ý",
+    },
   },
   TitleFormPopup: {
     FormAddAsset: {
@@ -160,9 +161,9 @@ export default {
   },
   LanguageCode: {
     // Việt Nam
-    VN: 'vi-VN',
+    VN: "vi-VN",
     // Hoa kỳ
-    US: 'en-US',
+    US: "en-US",
   },
   Method: {
     GET: "GET",

@@ -4,7 +4,13 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">&#8727;</span>
     </label>
-    <div class="flex-row" :class="[leftIcon ? 'has-icon' : '']">
+    <div
+      class="flex-row"
+      :class="[
+        leftIcon ? 'has-icon' : '',
+        disabledMessage ? 'input__error' : '',
+      ]"
+    >
       <el-date-picker
         :id="id ? id : ''"
         class="input-text"

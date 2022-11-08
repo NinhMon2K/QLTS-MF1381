@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip :content="dataItem[displayField]" placement="right">
+  <v-tooltip :content="dataItem[columns[1].field]" placement="right">
     <li
       class="item-dropdown"
       tabindex="-1"
@@ -8,12 +8,21 @@
       @keyup.space="emitClick"
     >
       <!-- <div class="app-icon icon_left-dropdown"></div> -->
-      <label class="text-item" v-for="col in columns" :key="col">{{ dataItem[col.field] }}</label>
+      <label class="text-item" v-for="col in columns" :key="col">{{
+        dataItem[col.field]
+      }}</label>
     </li>
   </v-tooltip>
 </template>
 <script>
-import { computed, onMounted, reactive, ref, watch } from "@vue/runtime-core";
+import {
+  getCurrentInstance,
+  computed,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 export default {
   name: "vDropdownDetail",
@@ -33,7 +42,7 @@ export default {
       default: null,
       type: String,
     },
-     columns: {
+    columns: {
       default: [],
     },
 
@@ -47,8 +56,9 @@ export default {
     },
   },
   setup(props, { emit }) {
-    // const { proxy } = getCurrentInstance();
+    const { proxy } = getCurrentInstance();
 
+    window.drpdetail = proxy;
     return {};
   },
 };
@@ -107,7 +117,12 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    margin-left: 16px;
+
+    &:first-child {
+      width: 86px;
+      text-align: center;
+      min-width: 86px;
+    }
   }
 }
 .selected {

@@ -47,6 +47,7 @@
         <v-button
           leftIcon="ic-export"
           id="btn-export"
+          :disabled="disabledButton.disabledExport"
           :radius="true"
         ></v-button>
       </v-tooltip>
@@ -55,6 +56,7 @@
           leftIcon="ic-delete__toolbar"
           id="btn-delete"
           :radius="true"
+          :disabled="disabledButton.disabledDelete"
           @click="handleShowMessBox"
         >
         </v-button>
@@ -62,8 +64,9 @@
       <v-popup-asset
         v-if="isShowPopup"
         :formModel="pram"
-        @closePopup="handlClosePopup"
         :allData="dataAssetID"
+        @handle-close="handlClosePopup"
+        @show-message="handleShowMess"
       ></v-popup-asset>
     </div>
   </div>
@@ -100,7 +103,11 @@
       :disabledValueRight="true"
       v-if="isDialogMessDelete"
     >
-      <v-button :text="Resource.TitleBtnDialog.Delete.VI" radius></v-button>
+      <v-button
+        :text="Resource.TitleBtnDialog.Delete.VI"
+        @click="handleDelete"
+        radius
+      ></v-button>
       <v-button
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
@@ -168,27 +175,32 @@
     :selectedCol="true"
     ref="abc"
     v-model:selectedData="dataSelected"
+    @handleTotalPage="handleTotalPage"
   >
   </v-grid>
-  <v-toast-message
-  iconMessage="ic-success"
-  textMessage="Thêm mới thành công"
-  ></v-toast-message>
+  <teleport to="body">
+    <v-message
+      :iconMessage="confirmMessage.iconMessage"
+      :textMessage="confirmMessage.textMessage"
+      v-if="confirmMessage.isShow"
+    ></v-message>
+  </teleport>
 </template>
 <script>
 import VButton from "@/components/button/VButton.vue";
 import VInput from "@/components/input/VInput.vue";
 import VPopupAsset from "@/components/popup/VPopupAsset.vue";
 import VMessageBox from "@/components/toast/VMessageBox.vue";
-import VToastMessage from "@/components/toast/VToastMessage.vue";
 import VCombobox from "@/components/combobox/VCombobox.vue";
 import VGrid from "@/components/grid/VGrid.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VLoading from "@/components/loading/VLoading.vue";
+import VMessage from "@/components/toast/VToastMessage.vue";
 import {
   computed,
   getCurrentInstance,
   onMounted,
+  onUpdated,
   reactive,
   ref,
   watch,
@@ -208,7 +220,7 @@ export default {
     VCombobox,
     VTooltip,
     VMessageBox,
-    VToastMessage
+    VMessage,
   },
   methods: {
     close() {
@@ -237,6 +249,31 @@ export default {
 
     // Biến lấy dữ liệu toàn bộ tài sản
     const allData = ref([]);
+
+    onUpdated(() => {
+      if (proxy.confirmMessage.isShow == true) {
+        setTimeout(() => {
+          proxy.confirmMessage.isShow = false;
+        }, 3000);
+      }
+    });
+    const confirmMessage = reactive({
+      iconMessage: "",
+      textMessage: "",
+      isShow: false,
+    });
+
+    const handleShowMess = (mode, isShowMessage) => {
+      if (mode == Enum.Mode.Add || Enum.Mode.Duplicate) {
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Thêm mới thành công!";
+        proxy.confirmMessage.isShow = true;
+      }
+    };
+    const disabledButton = reactive({
+      disabledExport: true,
+      disabledDelete: true,
+    });
 
     // Biến lấy dữ liệu lại tài sản
     const DataAssetCategory = ref([]);
@@ -284,6 +321,35 @@ export default {
       }
     }
 
+    //Load dữ liệu data combobox tên bộ phận
+    async function loadDataAssetPageding(tableView, totalPagge) {
+      try {
+        proxy.isLoading = true;
+        let v_Offset = totalPagge;
+        let v_Limit = tableView;
+        let v_Sort = "";
+        let v_Where = "";
+        let res = await assetAPI.get("AssetGetPageding", {
+          v_Offset,
+          v_Limit,
+          v_Sort,
+          v_Where,
+        });
+
+        let data = res?.Data;
+        let o = (totalPagge - 1) * tableView;
+        data.forEach((x, i) => (x.STT = i + 1 + o));
+        proxy.allData = data;
+        proxy.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const handleTotalPage = (tableView, totalPagge) => {
+      proxy.loadDataAssetPageding(tableView, totalPagge);
+    };
+
     onMounted(() => {
       proxy.loadDataAsset();
       proxy.loadDataCombotCategory();
@@ -300,10 +366,28 @@ export default {
     }
 
     //Sự kiện đóng popup
-    const handlClosePopup = (isShowPopup) => {
-      proxy.isShowPopup = false;
+    const handlClosePopup = (value) => {
+      proxy.isShowPopup = value;
     };
 
+    watch(
+      () => dataSelected.value,
+      (newVal) => {
+        if (proxy.dataSelected.length == 0) {
+          proxy.disabledButton.disabledExport = true;
+          proxy.disabledButton.disabledDelete = true;
+        } else {
+          //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
+          if (proxy.dataSelected.length == 1) {
+            proxy.disabledButton.disabledExport = false;
+            proxy.disabledButton.disabledDelete = false;
+          } else {
+            proxy.disabledButton.disabledExport = false;
+            proxy.disabledButton.disabledDelete = false;
+          }
+        }
+      }
+    );
     /**
      * Sự kiện show mesagebox
      *  @author NNNinh(20/10/2021)
@@ -327,6 +411,24 @@ export default {
           proxy.isDialogMessDeleMultiple = true;
         }
       }
+    };
+    async function deletaAsset() {
+      try {
+        let v_fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
+        let res = await assetAPI.delete("DeleteAssetID", { v_fixed_asset_id });
+
+        if (res?.Data == 1) {
+          console.log("Thanh cong");
+        } else {
+          console.log("That bai");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const handleDelete = () => {
+      proxy.deletaAsset();
     };
 
     /**
@@ -445,6 +547,9 @@ export default {
     ]);
 
     return {
+      handleDelete,
+      handleTotalPage,
+      loadDataAssetPageding,
       columns,
       allData,
       dataSelected,
@@ -469,6 +574,10 @@ export default {
       handleClickAdd,
       valueMessageBox,
       handlClosePopup,
+      disabledButton,
+      confirmMessage,
+      handleShowMess,
+      deletaAsset,
     };
   },
 

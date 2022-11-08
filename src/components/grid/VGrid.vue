@@ -36,7 +36,11 @@
           </v-tr>
         </tbody>
         <tfoot>
-          <v-tfoot :totalCount="50" :allData="allData"></v-tfoot>
+          <v-tfoot
+            :totalCount="50"
+            :allData="allData"
+            @handleTotalPage="handleTotalPage"
+          ></v-tfoot>
         </tfoot>
       </table>
     </div>
@@ -183,6 +187,9 @@ export default defineComponent({
       return money;
     }
 
+    const handleTotalPage = (tableView, totalPagge) => {
+      emit('handleTotalPage',tableView,totalPagge)
+    };
     // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
     function handleSum(value) {
       let sumA = 0;
@@ -192,6 +199,7 @@ export default defineComponent({
       return formatMoney(sumA);
     }
     return {
+      handleTotalPage,
       selected,
       handleSum,
       dataSelected,

@@ -4,7 +4,11 @@
       <div class="left-toast">
         <div
           class="icon-message"
-          :class="['app-icon icon--left', iconMessage, disabled ? 'disabled-icon' : '']"
+          :class="[
+            'app-icon icon--left',
+            iconMessage,
+            disabled ? 'disabled-icon' : '',
+          ]"
         ></div>
         <div class="toast-content">
           <div class="title-toast">
@@ -56,21 +60,25 @@ export default {
     align-items: center;
     justify-content: space-between;
     min-width: 300px;
+    border: solid 1px #ccc;
     height: 48px;
     min-height: 48px;
     background-color: #fff;
-padding: 16px;
+    padding: 16px;
     border-radius: 4px;
     animation: toastLeft ease 0.3s, toastOut linear 1s 2.5s forwards;
     .left-toast {
       display: flex;
+      .icon-message {
+        margin-right: 14px;
+      }
       .toast-content {
         align-items: center;
         flex-direction: column;
         justify-content: start;
         .title-toast {
           display: block;
-          font-size: 20px;
+          font-size: 16px;
         }
       }
     }

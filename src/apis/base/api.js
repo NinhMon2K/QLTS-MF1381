@@ -28,4 +28,11 @@ export default class BaseAPI {
     };
     return httpclient.postAsync(request);
   }
+  async delete(action, payload) {
+    let request = {
+      url: this.getBaseURL() + "/" + action,
+      data: payload,
+    };
+    return httpclient.deleteAsync(request);
+  }
 }

@@ -305,6 +305,13 @@ export default {
     }
 
     const changeValue = function (item, select) {
+      if (
+        proxy.selected?.some(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        )
+      ) {
+        return false;
+      }
       // Kiểm tra select là true ỏ false
       // Nếu true push vào mảng , false xóa khỏi mảng
       if (select) {
@@ -316,14 +323,6 @@ export default {
         proxy.selected.splice(i, 1);
       }
       proxy.$emit("change-value", proxy.selected, proxy.dataItem);
-      if (
-        proxy.selected?.some(
-          (x) => x[proxy.valueField] == item[proxy.valueField]
-        )
-      ) {
-        return false;
-      }
-
       proxy.$emit("update:modelValue", proxy.selected);
     };
 

@@ -1,5 +1,9 @@
 <template>
-  <div class="filter-dropdown" ref="container" :class="disabledMessage ? 'mg-9' : false">
+  <div
+    class="filter-dropdown"
+    ref="container"
+    :class="disabledMessage ? 'mg-9' : false"
+  >
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">&#8727;</span>
@@ -10,7 +14,11 @@
       :class="disabledMessage ? 'error__message' : ''"
     >
       <div
-        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
+        :class="[
+          'app-icon icon--left',
+          leftIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
         v-if="leftIcon"
       ></div>
       <input
@@ -25,7 +33,11 @@
         @click="isShowMenu = true"
       />
       <div
-        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
+        :class="[
+          'app-icon icon--right',
+          rightIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
       ></div>
@@ -40,6 +52,14 @@
         v-if="isShowMenu"
       >
         <div class="dropdown-content">
+          <div class="container-title">
+            <div class="title-list">
+              <div class="text__title" v-for="col in columns" :key="col">
+                {{ col.titleField }}
+              </div>
+            </div>
+          </div>
+
           <ul class="list-item--dropdown">
             <!-- <li>
               <div>Mã</div>
@@ -51,7 +71,9 @@
               :dataItem="item"
               :columns="columns"
               :displayField="displayField"
-              :class="[modelValue && modelValue == item[valueField] ? 'selected' : '']"
+              :class="[
+                modelValue && modelValue == item[valueField] ? 'selected' : '',
+              ]"
               @menu-item-click="itemClick"
             >
             </dropdown-item>
@@ -59,7 +81,9 @@
         </div>
       </div>
     </teleport>
-    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
+    <span v-if="disabledMessage" class="error-message">{{
+      message ? message : ""
+    }}</span>
   </div>
 </template>
 <script>
@@ -160,7 +184,9 @@ export default {
     // Lấy dữ liệu những item selected
     const selected = computed(() => {
       if (proxy.modelValue) {
-        return proxy.dataAll.find((x) => x[proxy.valueField] == proxy.modelValue);
+        return proxy.dataAll.find(
+          (x) => x[proxy.valueField] == proxy.modelValue
+        );
       } else {
         return null;
       }
@@ -191,7 +217,9 @@ export default {
       }, 100);
     };
 
-    const display = computed(() => proxy.selected && proxy.selected[proxy.displayField]);
+    const display = computed(
+      () => proxy.selected && proxy.selected[proxy.displayField]
+    );
 
     const offsetPosi = reactive({
       top: 0,
@@ -344,7 +372,8 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".dropdown-menu") || target.closest(".dropdown-menu-toggle");
+            target.closest(".dropdown-menu") ||
+            target.closest(".dropdown-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }
@@ -373,4 +402,39 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/v_dropdown.scss";
+.container-title {
+  width: 100%;
+  padding: 3px 6px;
+  width: 100%;
+  height: 36px;
+
+  .title-list {
+    display: flex;
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    align-items: center;
+    border-radius: 3px;
+    background-color: #96c6ee;
+
+    .text__title {
+      font-size: 13px;
+      font-weight: 700;
+      &:first-child {
+        width: 86px;
+        text-align: center;
+      }
+    }
+  }
+}
+.selected {
+  transition: 0.2s;
+  background-color: #c7e0f5;
+  cursor: pointer;
+  border-radius: 4px;
+  .inline-block {
+    .item-dropdown {
+    }
+  }
+}
 </style>

@@ -55,7 +55,7 @@
               bottomIcon,
               disabledIconBottom ? 'disabled-icon' : '',
             ]"
-            v-if="bottomIcon || disabledIcon"
+            v-if="bottomIcon"
             @click="less"
           ></div>
         </v-tooltip>
@@ -126,6 +126,10 @@ export default defineComponent({
       type: Boolean,
     },
     disabledIconTop: {
+      default: false,
+      type: Boolean,
+    },
+    disabledIconBottom: {
       default: false,
       type: Boolean,
     },
