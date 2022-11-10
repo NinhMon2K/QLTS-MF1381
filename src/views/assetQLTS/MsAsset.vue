@@ -293,9 +293,9 @@ export default {
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
-        let res = await assetAPI.get("AssetGetAll", {});
+        let res = await assetAPI.get("Assets", {});
         proxy.isLoading = false;
-        let data = res?.Data;
+        let data = res;
         data.forEach((x, i) => (x.STT = i + 1));
         proxy.allData = data;
       } catch (error) {
@@ -305,8 +305,9 @@ export default {
     //Load dữ liệu data combobox loại tài sản
     async function loadDataCombotCategory() {
       try {
-        let res = await assetAPI.get("CategoryGetAll", {});
-        proxy.DataAssetCategory.value = res?.Data;
+        let res = await assetAPI.get("Categories", {});
+
+        proxy.DataAssetCategory.value = res;
       } catch (error) {
         console.log(error);
       }
@@ -314,8 +315,8 @@ export default {
     //Load dữ liệu data combobox tên bộ phận
     async function loadDataComboDepartment() {
       try {
-        let res = await assetAPI.get("DepartmentGetAll", {});
-        proxy.DataDepartment.value = res?.Data;
+        let res = await assetAPI.get("Departments", {});
+        proxy.DataDepartment.value = res;
       } catch (error) {
         console.log(error);
       }

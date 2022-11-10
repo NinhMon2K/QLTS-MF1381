@@ -515,8 +515,8 @@ export default {
      */
     async function loadDataCategory() {
       try {
-        let res = await assetAPI.get("CategoryGetAll", {});
-        proxy.DataAssetCategory.value = res?.Data;
+        let res = await assetAPI.get("Categories", {});
+        proxy.DataAssetCategory.value = res;
       } catch (error) {
         console.log(error);
       }
@@ -528,8 +528,8 @@ export default {
      */
     async function loadDataDepartment() {
       try {
-        let res = await assetAPI.get("DepartmentGetAll", {});
-        proxy.DataDepartment.value = res?.Data;
+        let res = await assetAPI.get("Departments", {});
+        proxy.DataDepartment.value = res;
       } catch (error) {
         console.log(error);
       }
@@ -918,7 +918,7 @@ export default {
             //   proxy.dataForm.fixed_asset_code
             // );
 
-            // emit("show-message", proxy.formModel.mode, proxy.isShowMessage);
+            emit("show-message", proxy.formModel.mode, proxy.isShowMessage);
             // emit("handle-close", false);
           }
         }

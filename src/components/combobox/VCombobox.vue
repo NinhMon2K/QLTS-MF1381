@@ -283,6 +283,7 @@ export default {
         }
       );
     });
+    
     onMounted(() => {
       proxy.setPosition();
       proxy.setDropdown();

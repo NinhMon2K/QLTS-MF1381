@@ -4,7 +4,7 @@ export default class BaseAPI {
   controllerName = "";
 
   getBaseURL() {
-    return "https://localhost:44336/api" + "/" + this.controllerName;
+    return "https://localhost:44375/api" + "/" + this.controllerName;
   }
 
   async get(action, payload) {
