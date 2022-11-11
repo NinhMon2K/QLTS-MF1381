@@ -1,7 +1,7 @@
 import BaseAPI from "../base/api";
-
+import Version from "@/assets/js/resource/resource.js";
 class AssetApi extends BaseAPI {
-  controllerName = "v1";
+  controllerName = Version.Version.Major;
 }
 
 export default new AssetApi();

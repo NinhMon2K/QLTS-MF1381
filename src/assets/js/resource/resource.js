@@ -165,6 +165,9 @@ export default {
     // Hoa kỳ
     US: "en-US",
   },
+  Version:{
+    Major: "v1"
+  },
   Method: {
     GET: "GET",
     PUT: "PUT",
