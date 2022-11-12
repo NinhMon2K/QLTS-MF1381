@@ -94,14 +94,18 @@
                   hasInput
                   :heightCb="-25"
                   v-model="dataForm.fixed_asset_category_id"
-                  :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.fixedAssetCategoryId
+                  "
                   displayField="fixed_asset_category_code"
                   rightIcon="ic-angle-downs"
                   :columns="columnsAssetCategory"
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="clickDataAssetCategory"
-                  :disabledMessage="errorMessage.AssetCategoryCode && isSubmited"
+                  :disabledMessage="
+                    errorMessage.AssetCategoryCode && isSubmited
+                  "
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></v-drop-down>
               </div>
@@ -167,7 +171,9 @@
                   hasLabel
                   hasInput
                   v-model="dataForm.depreciation_rate"
-                  :valueField="ResourceTable.FieldAssetCategory.depreciationRate"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.depreciationRate
+                  "
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -249,7 +255,12 @@
               </v-button>
             </v-tooltip>
             <v-tooltip content="Lưu và cất" placement="top" right="top">
-              <v-button text="Lưu" @click="saveData" tabindex="111" radius></v-button>
+              <v-button
+                text="Lưu"
+                @click="saveData"
+                tabindex="111"
+                radius
+              ></v-button>
             </v-tooltip>
           </div>
         </div>
@@ -292,7 +303,11 @@
       v-if="isDialogMessUpdate"
     >
       <v-button :text="Resource.TitleBtnDialog.Save.VI" radius></v-button>
-      <v-button :text="Resource.TitleBtnDialog.NoSave.VI" type="abort" radius></v-button>
+      <v-button
+        :text="Resource.TitleBtnDialog.NoSave.VI"
+        type="abort"
+        radius
+      ></v-button>
       <v-button
         :text="Resource.TitleBtnDialog.Cancel.VI"
         type="secodary"
@@ -439,6 +454,8 @@ export default {
     const isSubmited = ref(false);
     const isEdited = ref(false);
     const oldDataForm = ref({});
+
+    // Lưu dữ liệu 1 tài sản
     const dataForm = ref({
       fixed_asset_id: "",
       fixed_asset_code: "",
@@ -467,6 +484,8 @@ export default {
       modified_by: "",
       modified_date: "",
     });
+
+    // Kiểm tra dữ liệu 1 tài sản đã chỉnh sữa hay không
     const EqualData = computed(() => {
       return _.isEqual(proxy.dataForm, proxy.oldDataForm);
     });
@@ -526,6 +545,18 @@ export default {
       proxy.isSubmited = true;
       proxy.focusInput();
     };
+
+    /**
+     * Cập nhật giá trị hao mòn năm
+     *  @author NNNinh(21/10/2021)
+     */
+    function updateValDepYear() {
+      proxy.dataForm.depreciation_year =
+        (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
+      if (proxy.dataForm.depreciation_rate > 100)
+        proxy.dataForm.depreciation_rate = 100;
+    }
+
     onMounted(() => {
       watch(
         () => dataForm.value,
@@ -576,6 +607,11 @@ export default {
       });
     };
 
+    // Xét giá trị năm theo dõi mặc định là năm hiện tại
+    function setValueDateYear() {
+      proxy.dataForm.tracked_year = new Date().getFullYear();
+    }
+
     onMounted(() => {
       try {
         /**
@@ -614,6 +650,7 @@ export default {
         console.log(error);
       }
     });
+
     onMounted(() => {
       proxy.loadDataCategory();
       proxy.loadDataDepartment();
@@ -656,21 +693,6 @@ export default {
       let result = Math.round(num * base) / base;
       return result;
     };
-
-    /**
-     * Cập nhật giá trị hao mòn năm
-     *  @author NNNinh(21/10/2021)
-     */
-    function updateValDepYear() {
-      proxy.dataForm.depreciation_year =
-        (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
-      if (proxy.dataForm.depreciation_rate > 100) proxy.dataForm.depreciation_rate = 100;
-    }
-
-    // Xét giá trị năm theo dõi mặc định là năm hiện tại
-    function setValueDateYear() {
-      proxy.dataForm.tracked_year = new Date().getFullYear();
-    }
 
     /**
      * Xử lý sự kiện click mã bộ phận câp nhật lại tên bộ phận cho input
@@ -787,7 +809,9 @@ export default {
         }
 
         if (proxy.dataForm.fixed_asset_category_code == "") {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCategoryCode.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.AssetCategoryCode.VI
+          );
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.dataForm.quantity == 0) {
@@ -801,7 +825,8 @@ export default {
         if (proxy.dataForm.life_time == 0) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
-          proxy.titleErrorMess.DepreciationRate = Resource.ErrorInput.DepreciationYear.VI;
+          proxy.titleErrorMess.DepreciationRate =
+            Resource.ErrorInput.DepreciationYear.VI;
         }
         if (proxy.dataForm.depreciation_year == null) {
           proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationRate.VI);
@@ -809,7 +834,9 @@ export default {
         }
 
         if (proxy.dataForm.depreciation_rate == 0) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.DepreciationRate.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.DepreciationRate.VI
+          );
           proxy.errorMessage.DepreciationRate = true;
         }
 
@@ -823,7 +850,9 @@ export default {
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(Resource.ErrorValidate.CompareDepreciationYear.VI);
+        proxy.titleErrValidate.push(
+          Resource.ErrorValidate.CompareDepreciationYear.VI
+        );
         return false;
       } else if (
         proxy.dataForm.depreciation_rate !=
@@ -869,7 +898,7 @@ export default {
      */
     async function handleInsertAsset(val) {
       try {
-        let result = await assetAPI.post("Assets", val );
+        let result = await assetAPI.post("Assets", val);
         return result;
       } catch (error) {
         console.log(error);
@@ -885,16 +914,15 @@ export default {
           } else {
             proxy.isShowMessage = true;
 
+            let k = {};
             let result = proxy.handleInsertAsset(proxy.dataForm);
 
-            if(result != ""){
-
+            k = result;
+            console.log(k);
+            if (result != "") {
               emit("handle-close", false);
               emit("show-message", proxy.formModel.mode, proxy.isShowMessage);
             }
-            
-            
-            
           }
         }
       } catch (error) {

@@ -415,14 +415,10 @@ export default {
     };
     async function deletaAsset() {
       try {
-        let v_fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
-        let res = await assetAPI.delete("DeleteAssetID", { v_fixed_asset_id });
+        let fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
+        let res = await assetAPI.delete("Assets", fixed_asset_id);
 
-        if (res?.Data == 1) {
-          console.log("Thanh cong");
-        } else {
-          console.log("That bai");
-        }
+        console.log(res);
       } catch (error) {
         console.log(error);
       }
