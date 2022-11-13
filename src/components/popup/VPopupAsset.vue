@@ -65,6 +65,7 @@
                   :valueField="ResourceTable.FieldDepartment.departmentId"
                   displayField="department_code"
                   rightIcon="ic-angle-downs"
+                  @blur="onBlurDropdown"
                   :dataAll="DataDepartment.value"
                   :disabledMessage="errorMessage.DepartmentCode && isSubmited"
                   :message="Resource.ErrorInput.DepartmentCode.VI"
@@ -94,18 +95,14 @@
                   hasInput
                   :heightCb="-25"
                   v-model="dataForm.fixed_asset_category_id"
-                  :valueField="
-                    ResourceTable.FieldAssetCategory.fixedAssetCategoryId
-                  "
+                  :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
                   displayField="fixed_asset_category_code"
                   rightIcon="ic-angle-downs"
                   :columns="columnsAssetCategory"
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="clickDataAssetCategory"
-                  :disabledMessage="
-                    errorMessage.AssetCategoryCode && isSubmited
-                  "
+                  :disabledMessage="errorMessage.AssetCategoryCode && isSubmited"
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></v-drop-down>
               </div>
@@ -171,9 +168,7 @@
                   hasLabel
                   hasInput
                   v-model="dataForm.depreciation_rate"
-                  :valueField="
-                    ResourceTable.FieldAssetCategory.depreciationRate
-                  "
+                  :valueField="ResourceTable.FieldAssetCategory.depreciationRate"
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -255,12 +250,7 @@
               </v-button>
             </v-tooltip>
             <v-tooltip content="Lưu và cất" placement="top" right="top">
-              <v-button
-                text="Lưu"
-                @click="saveData"
-                tabindex="111"
-                radius
-              ></v-button>
+              <v-button text="Lưu" @click="saveData" tabindex="111" radius></v-button>
             </v-tooltip>
           </div>
         </div>
@@ -302,12 +292,12 @@
       :disabledValueRight="false"
       v-if="isDialogMessUpdate"
     >
-      <v-button :text="Resource.TitleBtnDialog.Save.VI" radius></v-button>
       <v-button
-        :text="Resource.TitleBtnDialog.NoSave.VI"
-        type="abort"
+        :text="Resource.TitleBtnDialog.Save.VI"
         radius
+        @click="handleUpdate"
       ></v-button>
+      <v-button :text="Resource.TitleBtnDialog.NoSave.VI" type="abort" radius></v-button>
       <v-button
         :text="Resource.TitleBtnDialog.Cancel.VI"
         type="secodary"
@@ -407,6 +397,7 @@ export default {
       default: {},
     },
   },
+  emits: ['handle-close', 'show-message'],
   methods: {
     close() {
       this.$parent.close();
@@ -418,6 +409,7 @@ export default {
     window.popup = proxy;
     const isShowMessage = ref(false);
 
+    // colums bộ phận sử dụng
     const columnsDepartment = ref([
       {
         field: ResourceTable.FieldDepartment.departmentCode,
@@ -428,6 +420,8 @@ export default {
         titleField: "Tên bộ phận sử dụng",
       },
     ]);
+
+    // colums loại tài sản
     const columnsAssetCategory = ref([
       {
         field: ResourceTable.FieldAssetCategory.fixedAssetCategoryCode,
@@ -438,6 +432,8 @@ export default {
         titleField: "Tên loại tài sản",
       },
     ]);
+
+    // biến show popup
     const isShowPopup = ref(false);
     const isDialogMessCancelAdd = ref(false);
 
@@ -553,8 +549,7 @@ export default {
     function updateValDepYear() {
       proxy.dataForm.depreciation_year =
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
-      if (proxy.dataForm.depreciation_rate > 100)
-        proxy.dataForm.depreciation_rate = 100;
+      if (proxy.dataForm.depreciation_rate > 100) proxy.dataForm.depreciation_rate = 100;
     }
 
     onMounted(() => {
@@ -584,6 +579,7 @@ export default {
       proxy.focusInput();
     });
 
+    // focus vào input dầu tiên
     const focusInput = () => {
       proxy.$refs.inputAssetCode.$el.getElementsByTagName("input")[0].focus();
     };
@@ -627,7 +623,6 @@ export default {
             proxy.setValueDateYear();
             proxy.oldDataForm = _.cloneDeep(proxy.dataForm);
             break;
-
           //Kiểm tra giá trị mode là thêm
           case Enum.Mode.Add:
             proxy.title = Resource.TitleFormPopup.FormAddAsset.VI;
@@ -702,6 +697,8 @@ export default {
       proxy.dataForm.department_name = item.department_name;
       proxy.dataForm.department_code = item.department_code;
     };
+
+    //Sự kiện blur của input
     const onBlurInput = (isValue, valueField, e) => {
       switch (valueField) {
         case "fixed_asset_name": {
@@ -728,6 +725,10 @@ export default {
           break;
         }
       }
+    };
+
+    const onBlurDropdown = (val) => {
+      console.log(val);
     };
 
     /**
@@ -809,9 +810,7 @@ export default {
         }
 
         if (proxy.dataForm.fixed_asset_category_code == "") {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.AssetCategoryCode.VI
-          );
+          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCategoryCode.VI);
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.dataForm.quantity == 0) {
@@ -825,8 +824,7 @@ export default {
         if (proxy.dataForm.life_time == 0) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
-          proxy.titleErrorMess.DepreciationRate =
-            Resource.ErrorInput.DepreciationYear.VI;
+          proxy.titleErrorMess.DepreciationRate = Resource.ErrorInput.DepreciationYear.VI;
         }
         if (proxy.dataForm.depreciation_year == null) {
           proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationRate.VI);
@@ -834,9 +832,7 @@ export default {
         }
 
         if (proxy.dataForm.depreciation_rate == 0) {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.DepreciationRate.VI
-          );
+          proxy.titleErrValidate.push(Resource.ErrorValidate.DepreciationRate.VI);
           proxy.errorMessage.DepreciationRate = true;
         }
 
@@ -846,13 +842,13 @@ export default {
         if (proxy.dataForm.production_date == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
         }
+        proxy.isShowDialogDetail = true;
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(
-          Resource.ErrorValidate.CompareDepreciationYear.VI
-        );
+        proxy.titleErrValidate.push(Resource.ErrorValidate.CompareDepreciationYear.VI);
+        proxy.isShowDialogDetail = true;
         return false;
       } else if (
         proxy.dataForm.depreciation_rate !=
@@ -864,6 +860,7 @@ export default {
         proxy.titleErrValidate.push("Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng");
         proxy.titleErrorMess.DepreciationRate =
           Resource.ErrorInput.DepreciationRateVali.VI;
+        proxy.isShowDialogDetail = true;
         return false;
         // } else if (
         //   proxy.dataForm.production_date > proxy.dataForm.purchase_date
@@ -891,7 +888,21 @@ export default {
         }, 2500);
       }
     );
+    /**
+     * Hiện thị cảnh báo lỗi truyền từ BackEnd
+     * NDDAT (12/10/2022)
+     */
+    const backEndErrorNotify = (moreInfo) => {
+      proxy.titleErrValidate = [];
+      if (moreInfo != null) {
+        proxy.titleErrValidate = moreInfo;
+        proxy.isShowDialogDetail = true;
+      } else {
+        proxy.errorBackend = false;
+      }
+    };
 
+    const errorBackend = ref(false);
     /**
      * Thêm mới tài sản
      *  @author NNNinh(21/10/2021)
@@ -901,9 +912,61 @@ export default {
         let result = await assetAPI.post("Assets", val);
         return result;
       } catch (error) {
-        console.log(error);
+        switch (error.response.status) {
+          case 400:
+            proxy.backEndErrorNotify(error.response.data.moreInfo);
+            proxy.errorBackend = true;
+            break;
+          case 405:
+            this.backEndErrorNotify(Resource.ErrorCode[405]);
+            proxy.errorBackend = true;
+            break;
+          case 500:
+            this.backEndErrorNotify(Resource.ErrorCode[500]);
+            proxy.errorBackend = true;
+            break;
+          default:
+        }
       }
     }
+
+    /**
+     * API Sửa dữ liệu tài sản
+     *  @author NNNinh(21/10/2021)
+     */
+    async function handleUpdateAsset(recordId, val) {
+      try {
+        let result = await assetAPI.put("Assets", recordId, val);
+        return result;
+      } catch (error) {
+        switch (error.response.status) {
+          case 400:
+            proxy.backEndErrorNotify(error.response.data.moreInfo);
+            proxy.errorBackend = true;
+            break;
+          case 405:
+            this.backEndErrorNotify(Resource.ErrorCode[405]);
+            proxy.errorBackend = true;
+            break;
+          case 500:
+            this.backEndErrorNotify(Resource.ErrorCode[500]);
+            proxy.errorBackend = true;
+            break;
+          default:
+        }
+      }
+    }
+
+    const handleUpdate = () => {
+      proxy.handleUpdateAsset(proxy.dataForm.fixed_asset_id,proxy.dataForm);
+      if (proxy.titleErrValidate.length == 0 && proxy.errorBackend == false) {
+        emit("handle-close", false);
+        emit("show-message", proxy.formModel.mode, true);
+        console.log("ok");
+      }
+    };
+
+    //Sự kiện lưu dữ liệu data
     const saveData = () => {
       try {
         if (proxy.validateData() == false) {
@@ -912,16 +975,11 @@ export default {
           if (proxy.formModel.mode == Enum.Mode.Update) {
             proxy.isDialogMessUpdate = true;
           } else {
-            proxy.isShowMessage = true;
-
-            let k = {};
-            let result = proxy.handleInsertAsset(proxy.dataForm);
-
-            k = result;
-            console.log(k);
-            if (result != "") {
+            proxy.handleInsertAsset(proxy.dataForm);
+            if (proxy.titleErrValidate.length == 0 && proxy.errorBackend == false) {
               emit("handle-close", false);
-              emit("show-message", proxy.formModel.mode, proxy.isShowMessage);
+              emit("show-message", proxy.formModel.mode, true);
+              console.log("ok");
             }
           }
         }
@@ -929,9 +987,13 @@ export default {
         console.error(error);
       }
     };
+
+    // Sự kiện đóng close popup
     const handleClosePop = () => {
       emit("handle-close", false);
     };
+
+    // Sự kiện kiểm tra có sửa dữ liệu hay không
     const handlePopupClose = () => {
       if (proxy.EqualData) {
         emit("handle-close", false);
@@ -981,6 +1043,11 @@ export default {
       EqualData,
       titleErrorMess,
       handleInsertAsset,
+      handleUpdateAsset,
+      handleUpdate,
+      onBlurDropdown,
+      backEndErrorNotify,
+      errorBackend,
       v$,
     };
   },

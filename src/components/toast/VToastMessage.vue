@@ -66,7 +66,7 @@ export default {
     background-color: #fff;
     padding: 16px;
     border-radius: 4px;
-    animation: toastLeft ease 0.3s, toastOut linear 1s 2.5s forwards;
+    animation: toastLeft ease 0.3s, toastOut linear 1s 3.5s forwards;
     .left-toast {
       display: flex;
       .icon-message {

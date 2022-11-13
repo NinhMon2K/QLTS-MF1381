@@ -37,9 +37,9 @@
         </tbody>
         <tfoot>
           <v-tfoot
-            :totalCount="50"
-            :allData="allData"
-            @handleTotalPage="handleTotalPage"
+            :dataTotal="dataTotal"
+            @currentPage="handleTotalPage"
+            @changeTabView="handleChangeTab"
           ></v-tfoot>
         </tfoot>
       </table>
@@ -100,6 +100,12 @@ export default defineComponent({
     selectedData: {
       default: [],
     },
+    dataTotal:{
+      default : {}
+    },
+    page:{
+      default : {}
+    }
     // filters: {
     //   default: [],
     //   type: Array,
@@ -109,12 +115,12 @@ export default defineComponent({
     //   type: Object,
     // }
   },
-
+  emits: ['currentPage','selected','selectedData','changeTabView','update:selected','update:selectedData'],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+    window.tables = proxy;
     const selected = ref([]);
     const isShowPopup = ref(false);
-    window.tables = proxy;
     let pram = reactive({
       mode: 0,
       fixed_asset_id: "",
@@ -177,31 +183,27 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
-      proxy.handleSum();
-    });
-
     // format tiền
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
     }
-
-    const handleTotalPage = (tableView, totalPagge) => {
-      emit('handleTotalPage',tableView,totalPagge)
-    };
-    // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
-    function handleSum(value) {
-      let sumA = 0;
-      this.allData.forEach((data) => {
-        sumA += data[value];
-      });
-      return formatMoney(sumA);
+    const handleChangeTab = (val)=>{
+      emit("changeTabView", val);
     }
+
+    const handleTotalPage = (tableView, val) => {
+      emit('currentPage',tableView,val)
+    };
+
+    function reset(){
+      proxy.selectedIndex = [];
+    }
+    
     return {
       handleTotalPage,
       selected,
-      handleSum,
+      handleChangeTab,
       dataSelected,
       handleDoubleClick,
       dataPageging,
@@ -210,6 +212,7 @@ export default defineComponent({
       allSelected,
       selectedIndex,
       handleClick,
+      reset
     };
   },
 });

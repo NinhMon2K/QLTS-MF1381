@@ -1,11 +1,10 @@
 <template>
   <el-pagination
-    @size-change="handleSizeChange"
+   :page-size="tableView"
     @current-change="handleCurrentChange"
     current-page.sync="currentPage"
-    :page-size="countRecordPageRecord"
     layout=" prev, pager, next"
-    :total="totalCount"
+    :total="dataTotal.totalCount"
   >
   </el-pagination>
 </template>
@@ -14,7 +13,7 @@
 import {
   getCurrentInstance,
   onMounted,
-  ref,
+  ref, 
   watch,
   reactive,
   nextTick,
@@ -28,16 +27,11 @@ export default {
     modelValue: {
       default: null,
     },
-    totalCount: {
-      default: null,
-      type: [String, Number],
-    },
-    countRecordPageRecord: {
-      default: null,
-      type: [String, Number],
+    dataTotal:{
+      default:{}
     },
   },
-  emits: ["update:modelValue"],
+  emits: ['currentPage'],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.page = proxy;
@@ -46,19 +40,34 @@ export default {
      * @author NNNinh(03/11/2022)
      */
     const currentPage = ref(1);
+    const tableView = ref(proxy.modelValue);
     const handleCurrentChange = (val) => {
       nextTick(() => {
-        emit("totalPagge", val);
+        proxy.currentPage = val;
+        emit("currentPage", proxy.currentPage);
       });
     };
-    const handleSizeChange = (val) => {
-      console.log(`${val} items per page`);
+    onMounted(()=>{
+      emit("currentPage", proxy.currentPage);
+    })
+    watch(
+      () => proxy.modelValue,
+      (newVal) => {
+        proxy.tableView = newVal;
+      }
+    );
+    const changeValue = function (e) {
+      proxy.$emit("update:modelValue", proxy.tableView);
+      nextTick(() => {
+        emit("changeValue", proxy.tableView);
+      });
     };
 
     return {
       currentPage,
-      handleSizeChange,
       handleCurrentChange,
+      tableView,
+      changeValue
     };
   },
 };

@@ -313,7 +313,6 @@ export default {
     onMounted(() => {
       document.addEventListener("click", (e) => {
         let target = e.target;
-
         let cont = target.closest(".filter-dropdown");
         if (cont && cont.isEqualNode(proxy.$refs.container)) {
           e.preventDefault();
@@ -324,7 +323,9 @@ export default {
       });
     });
 
-    // const onBlur = (e) => {};
+     const onBlur = (e) => {
+      emit('blur',proxy.disp)
+     };
     const eventListsioner = computed(() => {
       const me = this;
       return {
@@ -334,7 +335,7 @@ export default {
         },
         blur: (e) => {
           // proxy.cancelEvent(e);
-          // proxy.onBlur(e);
+           proxy.onBlur(e);
         },
         focus: (e) => {
           // proxy.cancelEvent(e);
@@ -342,7 +343,7 @@ export default {
         },
         change: (e) => {
           // proxy.cancelEvent(e);
-          // proxy.changeValue(e);
+           proxy.changeValue(e);
         },
         keydown: (e) => {
           emit("keydown", e);
@@ -396,6 +397,7 @@ export default {
       data,
       disp, // Gán giá trị
       autoHeight,
+      onBlur
     };
   },
 };

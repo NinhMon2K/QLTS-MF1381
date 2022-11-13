@@ -5,18 +5,20 @@
         <div class="tfooter--left" style="font-size: 11px">
           Tổng số:
           <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{
-            407
+            dataTotal.totalCount
           }}</span>
           bản ghi
         </div>
         <div class="total-page">
-          <select id="total-page_size" v-model="tableView">
+          <select id="total-page_size" v-model="tableView" @change="handleChangeTab" >
             <option
               class="item-total"
               v-for="item in dataTotalPage"
               :key="item"
               :value="item"
               selected
+              @click="handleTotalPage"
+              @change="handleTotalPage"
             >
               {{ item }}
             </option>
@@ -28,26 +30,25 @@
 
         <div class="tfooter--right">
           <v-pageding
-            :v-model="20"
-            :totalCount="407"
-            :countRecordPageRecord="tableView"
-            @totalPagge="handleTotalPage"
+            v-model="tableView"
+            :dataTotal="dataTotal"
+            @currentPage="handleTotalPage"
           ></v-pageding>
         </div>
       </div>
     </td>
 
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ handleSum(ResourceTable.FieldAsset.quantity) }}
+      {{ dataTotal.totalQuantity }}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ handleSum(ResourceTable.FieldAsset.cost) }}
+      {{formatMoney(dataTotal.totalCost)}}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ handleSum(ResourceTable.FieldAsset.cost) }}
+      {{formatMoney(dataTotal.totalDepreciation)}}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ handleSum(ResourceTable.FieldAsset.cost) }}
+      {{formatMoney(dataTotal.totalRemain)}}
     </td>
     <td></td>
   </tr>
@@ -71,74 +72,41 @@ export default {
     VPageding,
   },
   props: {
-    totalCount: {
-      default: null,
-      type: Number,
+    dataTotal:{
+      default: {}
     },
-    totalCost: {
-      default: null,
-      type: Number,
-    },
-    totalQuantity: {
-      default: null,
-      type: Number,
-    },
-    totalRemain: {
-      default: null,
-      type: Number,
-    },
-    allData: {
-      default: [],
-    },
+    page:{
+      default:{}
+    }
   },
+  emits: ['currentPage','changeTabView'],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.tfoot = proxy;
     const dataTotalPage = ref([20, 50, 100, 200]);
-
-    const dataAsset = toRefs(props.allData);
     // Số trang hiển thị
     const tableView = ref(20);
-
-    const dataPage = reactive({
-      totalCount: "",
-      totalPagge: "",
-    });
     const handleTotalPage = (val) => {
-      proxy.dataPage.totalPagge = val;
-      emit("handleTotalPage", proxy.tableView, proxy.dataPage.totalPagge);
+      emit("currentPage", proxy.tableView, val);
     };
 
-    watch(
-      () => props.allData,
-      (newVal) => {
-        proxy.dataAsset = newVal;
-      }
-    );
+    const handleChangeTab = ()=>{
+      emit("changeTabView", proxy.tableView);
+
+    
+    }
+
     // format tiền
     function formatMoney(money) {
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
     }
-
-    // Tính tổng giá trị số lượng nguyên giá,HM/KH lũy kế, giá trị còn lại
-    function handleSum(value) {
-      let sumA = 0;
-
-      proxy.dataAsset.forEach((data) => {
-        sumA += data[value];
-      });
-      return formatMoney(sumA);
-    }
     return {
       dataTotalPage,
       tableView,
       handleTotalPage,
-      dataPage,
-      handleSum,
-      dataAsset,
-      Resource,
-      ResourceTable,
+      handleChangeTab,
+      formatMoney
     };
   },
 };
