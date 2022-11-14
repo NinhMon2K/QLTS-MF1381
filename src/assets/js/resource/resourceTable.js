@@ -41,6 +41,7 @@ export default {
         createdDate:'created_date',
         modifiedBy:'modified_by',
         modifiedDate:'modified_date',
+        depreciationResidual : "depreciation_residual"
     },
     FieldDepartment:{
         departmentId:'department_id',

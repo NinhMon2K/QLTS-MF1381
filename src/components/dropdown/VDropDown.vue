@@ -418,7 +418,8 @@ export default {
     align-items: center;
     border-radius: 3px;
     background-color: #96c6ee;
-
+    z-index: 9999;
+    position: relative;
     .text__title {
       font-size: 13px;
       font-weight: 700;

@@ -8,7 +8,7 @@
           id="txt-search"
           :radius="true"
           v-model="txtSearch"
-          @blur="handleChangeSeach"
+          @change="handleChangeSeach"
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
           message=""
@@ -180,7 +180,7 @@
     :allData="allData"
     :selectedCol="true"
     :dataTotal="dataTotal"
-     ref="table"
+    ref="table"
     v-model:selectedData="dataSelected"
     @currentPage="handleTotalPage"
     @changeTabView="handleChangeTab"
@@ -239,33 +239,22 @@ export default {
   async setup() {
     const { proxy } = getCurrentInstance();
     window.asset = proxy;
-    //Loading form
     const isLoading = ref(false);
-    //Show Dialog MessageBox xóa nhiều dòng
     const isDialogMessDeleMultiple = ref(false);
-    //Show Dialog MessageBox xóa 1 dòng
     const isDialogMessDelete = ref(false);
-    //Show Dialog MessageBox không thể xóa 1 dòng
     const isDialogMessCancelDelete = ref(false);
-    //Show Dialog MessageBox không thể xóa nhiều dòng
     const isDialogMessCancelDeleMultiple = ref(false);
-    //Show Dialog MessageBox không chọn dữ liệu để xóa
     const isDialogMessDeleNoData = ref(false);
     const valueMessageBox = ref("");
-    // Biến lấy dữ liệu toàn bộ tài sản
     const allData = ref([]);
     const txtSearch = ref(" ");
     const currentPage = ref(0);
     const tableView = ref(0);
     const isShowPopup = ref(false);
-    // Biến lấy dữ liệu lại tài sản
     const DataAssetCategory = ref([]);
-    // Biến lấy dữ liệu tên bộ phận
     const DataDepartment = ref([]);
     const dataAssetID = ref({});
-    // Biến lấy những dữ liệu tr selected
     const dataSelected = ref([]);
-
     const disabledButton = reactive({
       disabledExport: true,
       disabledDelete: true,
@@ -275,23 +264,35 @@ export default {
       mode: 0,
       fixed_asset_id: "",
     });
+
     const dataTotal = ref({
-      totalCount: 0,
-      totalQuantity: 0,
-      totalCost: 0,
-      totalDepreciation: 0,
-      totalRemain: 0,
+      totalCount: 0, // Tổng số bản ghi
+      totalQuantity: 0, // Tổng số lượng
+      totalCost: 0, // Tổng số nguyên giá
+      totalDepreciation: 0, // Tổng số hao mòn lũy kế
+      totalRemain: 0, // Tổng số còn lại
     });
+
+    /**
+     * Hiện thi giá trị cảnh báo
+     * @param {string} iconMessage icon cho cảnh báo
+     * @param {string} textMessage title cho cảnh báo
+     * @param {boolean} isShow Có hiển thị cảnh báo hay không
+     * Author: NNNinh (16/10/2022)
+     */
     const confirmMessage = reactive({
       iconMessage: "",
       textMessage: "",
       isShow: false,
     });
+
+    // Thực hiện gọi dữ liệu api bộ phận sử dụng và loại tài sản
     onMounted(() => {
       proxy.loadDataCombotCategory();
       proxy.loadDataComboDepartment();
     });
 
+    // Reset lại giá trị show toast message
     onUpdated(() => {
       if (proxy.confirmMessage.isShow == true) {
         setTimeout(() => {
@@ -319,7 +320,7 @@ export default {
       }
     );
 
-    //Load dữ liệu data asset
+    //Load dữ liệu tài sản
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
@@ -339,7 +340,10 @@ export default {
         proxy.dataTotal.totalRemain = res.totalRemain;
         let data = res?.data;
         let o = (proxy.currentPage - 1) * proxy.tableView;
-        data.forEach((x, i) => (x.STT = i + 1 + o));
+        data.forEach((x, i) => {
+          x.STT = i + 1 + o;
+          x.depreciation_residual = x.depreciation_year * x.life_time;
+        });
         proxy.allData = data;
       } catch (error) {
         proxy.isLoading = false;
@@ -356,6 +360,7 @@ export default {
         console.log(error);
       }
     }
+
     //Load dữ liệu data combobox tên bộ phận
     async function loadDataComboDepartment() {
       try {
@@ -399,6 +404,12 @@ export default {
       }
     }
 
+    /**
+     * Hiện thị toast mesage 
+     * @param {string} mode xác định form thêm mới ,nhân bản hay sử dữ liệu
+     * @param {string} isShowMessage xác định xóa thành công hay thất bại
+     * Author: NNNinh (13/11/2022)
+     */
     const handleShowMess = (mode, isShowMessage) => {
       if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
         proxy.loadDataAsset();
@@ -413,12 +424,14 @@ export default {
       }
     };
 
+    // Sự kiện change page number
     const handleTotalPage = (tableView, val) => {
       proxy.tableView = tableView;
       proxy.currentPage = val;
       proxy.loadDataAsset();
     };
 
+    // Sự kiện change giới hạn bản ghi
     const handleChangeTab = (val) => {
       proxy.tableView = val;
       proxy.loadDataAsset();
@@ -449,15 +462,11 @@ export default {
       } else {
         //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
         if (proxy.dataSelected.length == 1) {
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
+          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
           proxy.isDialogMessDelete = true;
         } else {
           //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
+          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
           proxy.isDialogMessDeleMultiple = true;
         }
       }
@@ -483,11 +492,13 @@ export default {
       }
     };
 
+    // Xử lý sự kiện change input tìm kiếm
     const handleChangeSeach = () => {
       setTimeout(() => {
         proxy.loadDataAsset();
       }, 2000);
     };
+
     // Sự kiện xóa dữ liệu 1 dòng
     const handleMultiDelete = async () => {
       let result = await proxy.deleteMultiAsset();
@@ -495,14 +506,17 @@ export default {
       if (result) {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
+        proxy.confirmMessage.textMessage =
+          proxy.customValueMessBox(proxy.dataSelected.length) +
+          " Xóa dữ liệu thành công!";
         proxy.confirmMessage.isShow = true;
         proxy.loadDataAsset();
         proxy.$refs.table.reset();
       } else {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
+        proxy.confirmMessage.textMessage =
+          proxy.customValueMessBox(proxy.dataSelected.length) + " Xóa dữ liệu thất bại!";
         proxy.confirmMessage.isShow = true;
         proxy.loadDataAsset();
         proxy.$refs.table.reset();
@@ -518,7 +532,12 @@ export default {
       proxy.isShowPopup = true;
     };
 
-    //Sự kiện click chức năng sửa hay nhân bản
+    /**
+     * Sự kiện click chức năng sửa hay nhân bản
+     * @param {string} action xác định cho form là sửa hay nhân bản
+     * @param {string} val giá trị mã tài sản
+     * Author: NNNinh (16/10/2022)
+     */
     const clickMenu = async (action, val) => {
       switch (action) {
         case 0: // kiểm tra action = 0 là sửa
@@ -547,7 +566,6 @@ export default {
      * @param {string} align vị trí bên trái, phải, center
      * Author: NNNinh (16/10/2022)
      */
-
     const columns = ref([
       {
         field: ResourceTable.FieldAsset.STT,
@@ -593,13 +611,13 @@ export default {
         width: 110,
       },
       {
-        field: ResourceTable.FieldAsset.cost,
+        field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
         width: 110,
       },
       {
-        field: ResourceTable.FieldAsset.cost,
+        field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
         width: 110,
@@ -627,43 +645,43 @@ export default {
     return {
       isLoading, // loading trang
       isDialogMessDeleMultiple, // show message xóa nhiều dữ liệu
-      isDialogMessDelete,
-      isDialogMessCancelDelete,
-      isDialogMessCancelDeleMultiple,
-      isShowPopup,
+      isDialogMessDelete, // Hiển thị dialog xóa hay không
+      isDialogMessCancelDelete, // Hiển thị thông báo không thể xóa
+      isDialogMessCancelDeleMultiple,// Hiển thị thông báo không thể xóa nhiều khi có chứng từ phát sinh
+      isShowPopup, // Có hiện show popup hay không
       isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
-      disabledButton,
-      txtSearch,
-      tableView,
-      currentPage,
-      columns,
-      allData,
-      pram,
-      dataAssetID,
-      dataSelected,
-      dataTotal,
-      customValueMessBox,
+      disabledButton, // disabled buttom hay không
+      txtSearch, // Từ khóa để tìm kiếm (theo mã và tên tài sản )
+      tableView, // Số bản ghi muốn hiện lên trong 1 trang
+      currentPage, // Trang đang chọn, đang đứng hiện tại 
+      columns, // Mảng xác định các cột, trường dữ liệu của table
+      allData, // Mảng lưu toàn bộ dữ liệu tài sản
+      pram, // Đối tượng xác định là thêm mới, nhân bản, sử tài sản
+      dataAssetID, // Biến lấy dữ liệu mã tài sản
+      dataSelected, // Mảng lấy dữ liệu những dòng checked
+      dataTotal, // Đối tượng lấy tổng số bản ghi, số lượng, nguyên giá, hao mòn lũy kế,tổng số còn lại
+      customValueMessBox, // custom lại giá trị khi cho vào message
       DataAssetCategory, // dữ liệu data mã loại tài sản
       DataDepartment, // dữ liệu data bộ phận
       ResourceTable, // Resource table
       Resource, // Resource
-      confirmMessage,
-      valueMessageBox,
-      clickMenu,
-      loadDataAsset,
-      loadDataCombotCategory,
-      loadDataComboDepartment,
-      handleClickAdd,
-      handleDelete,
-      handleTotalPage,
-      handleShowMessBox,
-      handlClosePopup,
-      handleShowMess,
-      deleteAsset,
-      handleMultiDelete,
-      deleteMultiAsset,
-      handleChangeSeach,
-      handleChangeTab,
+      confirmMessage, // Hiển thị cảnh báo 
+      valueMessageBox, // title của messagebox
+      clickMenu, // Xử lý sự kiện click menu
+      loadDataAsset, // Lấy dữ liệu toàn bộ tài sản
+      loadDataCombotCategory, // Lấy dữ liệu toàn bộ loại tài sản
+      loadDataComboDepartment, // Lấy dữ liệu toàn bộ phận xử dụng
+      handleClickAdd, // Xử lý sự kiện click buttom thêm mới tài sản
+      handleDelete, // Sự kiện xóa dữ liệu 1 dòng
+      handleTotalPage, // Sự kiện change trang trong pageding
+      handleShowMessBox, // Sự kiện show mesagebox
+      handlClosePopup, // Sự kiện close popup
+      handleShowMess, // Hiện thị toast mesage 
+      deleteAsset, // Xử lý sự kiện xóa dữ liệu tài sản
+      handleMultiDelete, // Xử lý sự kiện xóa nhiều dữ liệu dữ liệu tài sản
+      deleteMultiAsset, // API xóa nhiều tài sản
+      handleChangeSeach, // Xử lý sự kiện change tìm kiếm
+      handleChangeTab, // Xử lý sự kiện change dữ liệu tabview
     };
   },
 };
