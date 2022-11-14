@@ -47,7 +47,7 @@
     <v-popup-asset
       v-if="isShowPopup"
       :formModel="pram"
-      :dataPram="pramData"
+      :allData="pramData"
     ></v-popup-asset>
   </div>
 </template>
@@ -100,12 +100,12 @@ export default defineComponent({
     selectedData: {
       default: [],
     },
-    dataTotal:{
-      default : {}
+    dataTotal: {
+      default: {},
     },
-    page:{
-      default : {}
-    }
+    page: {
+      default: {},
+    },
     // filters: {
     //   default: [],
     //   type: Array,
@@ -115,7 +115,14 @@ export default defineComponent({
     //   type: Object,
     // }
   },
-  emits: ['currentPage','selected','selectedData','changeTabView','update:selected','update:selectedData'],
+  emits: [
+    "currentPage",
+    "selected",
+    "selectedData",
+    "changeTabView",
+    "update:selected",
+    "update:selectedData",
+  ],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.tables = proxy;
@@ -123,7 +130,6 @@ export default defineComponent({
     const isShowPopup = ref(false);
     let pram = reactive({
       mode: 0,
-      fixed_asset_id: "",
     });
     let pramData = ref({});
 
@@ -188,18 +194,18 @@ export default defineComponent({
       money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
       return money;
     }
-    const handleChangeTab = (val)=>{
+    const handleChangeTab = (val) => {
       emit("changeTabView", val);
-    }
-
-    const handleTotalPage = (tableView, val) => {
-      emit('currentPage',tableView,val)
     };
 
-    function reset(){
+    const handleTotalPage = (tableView, val) => {
+      emit("currentPage", tableView, val);
+    };
+
+    function reset() {
       proxy.selectedIndex = [];
     }
-    
+
     return {
       handleTotalPage,
       selected,
@@ -212,7 +218,7 @@ export default defineComponent({
       allSelected,
       selectedIndex,
       handleClick,
-      reset
+      reset,
     };
   },
 });

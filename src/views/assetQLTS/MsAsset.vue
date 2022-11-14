@@ -66,7 +66,7 @@
       <v-popup-asset
         v-if="isShowPopup"
         :formModel="pram"
-        :allData="dataAssetID"
+        :allData="dataAssetID[0]"
         @handle-close="handlClosePopup"
         @show-message="handleShowMess"
       ></v-popup-asset>
@@ -84,8 +84,10 @@
       :disabledValueRight="false"
       v-if="isDialogMessDeleMultiple"
     >
-      <v-button :text="Resource.TitleBtnDialog.Delete.VI" radius 
-      @click="handleMultiDelete"
+      <v-button
+        :text="Resource.TitleBtnDialog.Delete.VI"
+        radius
+        @click="handleMultiDelete"
       ></v-button>
       <v-button
         :text="Resource.TitleBtnDialog.NoCancel.VI"
@@ -178,7 +180,7 @@
     :allData="allData"
     :selectedCol="true"
     :dataTotal="dataTotal"
-    ref="table"
+     ref="table"
     v-model:selectedData="dataSelected"
     @currentPage="handleTotalPage"
     @changeTabView="handleChangeTab"
@@ -239,7 +241,6 @@ export default {
     window.asset = proxy;
     //Loading form
     const isLoading = ref(false);
-
     //Show Dialog MessageBox xóa nhiều dòng
     const isDialogMessDeleMultiple = ref(false);
     //Show Dialog MessageBox xóa 1 dòng
@@ -248,144 +249,56 @@ export default {
     const isDialogMessCancelDelete = ref(false);
     //Show Dialog MessageBox không thể xóa nhiều dòng
     const isDialogMessCancelDeleMultiple = ref(false);
-
     //Show Dialog MessageBox không chọn dữ liệu để xóa
     const isDialogMessDeleNoData = ref(false);
     const valueMessageBox = ref("");
-
     // Biến lấy dữ liệu toàn bộ tài sản
     const allData = ref([]);
-
-    const txtSearch = ref(" ")
-
-
-     const currentPage= ref(0);
+    const txtSearch = ref(" ");
+    const currentPage = ref(0);
     const tableView = ref(0);
     const isShowPopup = ref(false);
+    // Biến lấy dữ liệu lại tài sản
+    const DataAssetCategory = ref([]);
+    // Biến lấy dữ liệu tên bộ phận
+    const DataDepartment = ref([]);
+    const dataAssetID = ref({});
+    // Biến lấy những dữ liệu tr selected
+    const dataSelected = ref([]);
 
+    const disabledButton = reactive({
+      disabledExport: true,
+      disabledDelete: true,
+    });
+
+    let pram = reactive({
+      mode: 0,
+      fixed_asset_id: "",
+    });
     const dataTotal = ref({
-        totalCount :0,
-        totalQuantity :0,
-        totalCost :0,
-        totalDepreciation :0,
-        totalRemain :0
-    })
-    onUpdated(() => {
-      if (proxy.confirmMessage.isShow == true) {
-        setTimeout(() => {
-          proxy.confirmMessage.isShow = false;
-        }, 500);
-      }
+      totalCount: 0,
+      totalQuantity: 0,
+      totalCost: 0,
+      totalDepreciation: 0,
+      totalRemain: 0,
     });
     const confirmMessage = reactive({
       iconMessage: "",
       textMessage: "",
       isShow: false,
     });
-
-    const handleShowMess = (mode, isShowMessage) => {
-      if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
-        proxy.loadDataAsset();
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Thêm mới thành công!";
-        proxy.confirmMessage.isShow = true;
-      }
-      else{
-        proxy.loadDataAsset();
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
-        proxy.confirmMessage.isShow = true;
-        
-      }
-    };
-    const disabledButton = reactive({
-      disabledExport: true,
-      disabledDelete: true,
-    });
-
-    // Biến lấy dữ liệu lại tài sản
-    const DataAssetCategory = ref([]);
-
-    // Biến lấy dữ liệu tên bộ phận
-    const DataDepartment = ref([]);
-
-    const dataAssetID = ref({});
-    // Biến lấy những dữ liệu tr selected
-    const dataSelected = ref([]);
-    let pram = reactive({
-      mode: 0,
-      fixed_asset_id: "",
-    });
-    
-    //Load dữ liệu data asset
-    async function loadDataAsset() {
-      try {
-        proxy.isLoading = true;
-        let res = await assetAPI.filters("Assets/Filters", proxy.txtSearch,' ',' ', proxy.tableView, proxy.currentPage);
-        proxy.isLoading = false;  
-        proxy.dataTotal.totalCount = res.totalCount;
-        proxy.dataTotal.totalQuantity = res.totalQuantity;
-        proxy.dataTotal.totalCost = res.totalCost;
-        proxy.dataTotal.totalDepreciation = res.totalDepreciation;
-        proxy.dataTotal.totalRemain = res.totalRemain;
-        let data = res?.data;
-        let o = (proxy.currentPage - 1) * proxy.tableView;
-        data.forEach((x, i) => (x.STT = i + 1 + o));
-        proxy.allData = data;
-      } catch (error) {
-        proxy.isLoading = false;
-        console.log(error);
-      }
-    }
-    //Load dữ liệu data combobox loại tài sản
-    async function loadDataCombotCategory() {
-      try {
-        let res = await assetAPI.get("Categories", {});
-        proxy.DataAssetCategory.value = res;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    //Load dữ liệu data combobox tên bộ phận
-    async function loadDataComboDepartment() {
-      try {
-        let res = await assetAPI.get("Departments", {});
-        proxy.DataDepartment.value = res;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    
-
-    const handleTotalPage = (tableView, val) => {
-      proxy.tableView = tableView;
-      proxy.currentPage = val;
-      proxy.loadDataAsset();
-    };
-
-    const  handleChangeTab = (val)=>{
-      proxy.tableView = val;
-      proxy.loadDataAsset();
-    }
     onMounted(() => {
       proxy.loadDataCombotCategory();
-      proxy.loadDataComboDepartment(); 
+      proxy.loadDataComboDepartment();
     });
 
-    //Custom giá trị truyền vào messbox
-    function customValueMessBox(val) {
-      if (val == 1) {
-        return `<<${proxy.dataSelected[0].fixed_asset_code} - ${proxy.dataSelected[0].fixed_asset_name}>>`;
-      } else if (val < 10) {
-        return `0${val}`;
-      } else return val;
-    }
-
-    //Sự kiện đóng popup
-    const handlClosePopup = (value) => {
-      proxy.isShowPopup = value;
-    };
+    onUpdated(() => {
+      if (proxy.confirmMessage.isShow == true) {
+        setTimeout(() => {
+          proxy.confirmMessage.isShow = false;
+        }, 2500);
+      }
+    });
 
     watch(
       () => dataSelected.value,
@@ -405,6 +318,126 @@ export default {
         }
       }
     );
+
+    //Load dữ liệu data asset
+    async function loadDataAsset() {
+      try {
+        proxy.isLoading = true;
+        let res = await assetAPI.filters(
+          "Assets/Filters",
+          proxy.txtSearch,
+          " ",
+          " ",
+          proxy.tableView,
+          proxy.currentPage
+        );
+        proxy.isLoading = false;
+        proxy.dataTotal.totalCount = res.totalCount;
+        proxy.dataTotal.totalQuantity = res.totalQuantity;
+        proxy.dataTotal.totalCost = res.totalCost;
+        proxy.dataTotal.totalDepreciation = res.totalDepreciation;
+        proxy.dataTotal.totalRemain = res.totalRemain;
+        let data = res?.data;
+        let o = (proxy.currentPage - 1) * proxy.tableView;
+        data.forEach((x, i) => (x.STT = i + 1 + o));
+        proxy.allData = data;
+      } catch (error) {
+        proxy.isLoading = false;
+        console.log(error);
+      }
+    }
+
+    //Load dữ liệu data combobox loại tài sản
+    async function loadDataCombotCategory() {
+      try {
+        let res = await assetAPI.get("Categories", {});
+        proxy.DataAssetCategory.value = res;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    //Load dữ liệu data combobox tên bộ phận
+    async function loadDataComboDepartment() {
+      try {
+        let res = await assetAPI.get("Departments", {});
+        proxy.DataDepartment.value = res;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    // API Xóa 1 dòng dữ liệu
+    async function deleteAsset() {
+      try {
+        let fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
+        let res = await assetAPI.delete("Assets", fixed_asset_id);
+        if (res != null || res != "") {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    //API Xóa nhiều dữ liệu
+    async function deleteMultiAsset() {
+      try {
+        let arr = [];
+        proxy.dataSelected.forEach((data) => {
+          arr.push(data.fixed_asset_id);
+        });
+        let res = await assetAPI.post("Assets/batch-delete", arr);
+        if (res != null || res != "") {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const handleShowMess = (mode, isShowMessage) => {
+      if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
+        proxy.loadDataAsset();
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Thêm mới thành công!";
+        proxy.confirmMessage.isShow = true;
+      } else {
+        proxy.loadDataAsset();
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
+        proxy.confirmMessage.isShow = true;
+      }
+    };
+
+    const handleTotalPage = (tableView, val) => {
+      proxy.tableView = tableView;
+      proxy.currentPage = val;
+      proxy.loadDataAsset();
+    };
+
+    const handleChangeTab = (val) => {
+      proxy.tableView = val;
+      proxy.loadDataAsset();
+    };
+
+    //Custom giá trị truyền vào messbox
+    function customValueMessBox(val) {
+      if (val == 1) {
+        return `<<${proxy.dataSelected[0].fixed_asset_code} - ${proxy.dataSelected[0].fixed_asset_name}>>`;
+      } else if (val < 10) {
+        return `0${val}`;
+      } else return val;
+    }
+
+    //Sự kiện đóng popup
+    const handlClosePopup = (value) => {
+      proxy.isShowPopup = value;
+    };
+
     /**
      * Sự kiện show mesagebox
      *  @author NNNinh(20/10/2021)
@@ -430,76 +463,51 @@ export default {
       }
     };
 
-    // API Xóa 1 dòng dữ liệu
-    async function deleteAsset() {
-      try {
-        let fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
-        let res = await assetAPI.delete("Assets", fixed_asset_id);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    //API Xóa nhiều dữ liệu
-    async function deleteMultiAsset() {
-      try {
-        let arr = [];
-        proxy.dataSelected.forEach(data =>{
-          arr.push(data.fixed_asset_id)
-        })
-        let res = await assetAPI.post("Assets/batch-delete", arr);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     // Sự kiện xóa dữ liệu 1 dòng
-    const handleDelete =async () => {
+    const handleDelete = async () => {
       let result = await proxy.deleteAsset();
-      if(result != null){
-      proxy.isDialogMessDelete = false;
-      proxy.confirmMessage.iconMessage = "ic-success";
-      proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
-      proxy.confirmMessage.isShow = true;
-      proxy.loadDataAsset();
-      proxy.$refs.table.reset();
-      }
-      else{
+      if (result) {
         proxy.isDialogMessDelete = false;
-      proxy.confirmMessage.iconMessage = "ic-success";
-      proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
-      proxy.confirmMessage.isShow = true;
-      proxy.loadDataAsset();
-      proxy.$refs.table.reset();
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
+        proxy.confirmMessage.isShow = true;
+        proxy.loadDataAsset();
+        proxy.$refs.table.reset();
+      } else {
+        proxy.isDialogMessDelete = false;
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
+        proxy.confirmMessage.isShow = true;
+        proxy.loadDataAsset();
+        proxy.$refs.table.reset();
       }
     };
 
-    const  handleChangeSeach = ()=>{
-      setTimeout(()=>{
+    const handleChangeSeach = () => {
+      setTimeout(() => {
         proxy.loadDataAsset();
-      },2000)
-    }
+      }, 2000);
+    };
     // Sự kiện xóa dữ liệu 1 dòng
     const handleMultiDelete = async () => {
-      let result =await proxy.deleteMultiAsset();
-      if(result != null){
-      proxy.isDialogMessDeleMultiple = false;
-      proxy.confirmMessage.iconMessage = "ic-success";
-      proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
-      proxy.confirmMessage.isShow = true;
-      proxy.loadDataAsset();
-      proxy.$refs.table.reset();
-      }
-      else{
+      let result = await proxy.deleteMultiAsset();
+      console.log(result);
+      if (result) {
         proxy.isDialogMessDeleMultiple = false;
-      proxy.confirmMessage.iconMessage = "ic-success";
-      proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
-      proxy.confirmMessage.isShow = true;
-      proxy.loadDataAsset();
-      proxy.$refs.table.reset();
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
+        proxy.confirmMessage.isShow = true;
+        proxy.loadDataAsset();
+        proxy.$refs.table.reset();
+      } else {
+        proxy.isDialogMessDeleMultiple = false;
+        proxy.confirmMessage.iconMessage = "ic-success";
+        proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
+        proxy.confirmMessage.isShow = true;
+        proxy.loadDataAsset();
+        proxy.$refs.table.reset();
       }
     };
-
 
     /**
      * Xử lý sự kiện click thêm mới
@@ -528,8 +536,6 @@ export default {
           proxy.isShowPopup = true;
           break;
       }
-
-     
     };
 
     /**
@@ -619,45 +625,45 @@ export default {
     ]);
 
     return {
-      handleDelete,
-      handleTotalPage,
-      columns,
-      allData,
-      dataSelected,
-      customValueMessBox,
-      handleShowMessBox,
-      isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
-      DataAssetCategory, // dữ liệu data mã loại tài sản
-      DataDepartment, // dữ liệu data bộ phận
       isLoading, // loading trang
-      ResourceTable, // Resource table
-      Resource, // Resource
       isDialogMessDeleMultiple, // show message xóa nhiều dữ liệu
       isDialogMessDelete,
       isDialogMessCancelDelete,
       isDialogMessCancelDeleMultiple,
       isShowPopup,
-      clickMenu,
+      isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
+      disabledButton,
+      txtSearch,
+      tableView,
+      currentPage,
+      columns,
+      allData,
       pram,
       dataAssetID,
+      dataSelected,
+      dataTotal,
+      customValueMessBox,
+      DataAssetCategory, // dữ liệu data mã loại tài sản
+      DataDepartment, // dữ liệu data bộ phận
+      ResourceTable, // Resource table
+      Resource, // Resource
+      confirmMessage,
+      valueMessageBox,
+      clickMenu,
       loadDataAsset,
       loadDataCombotCategory,
       loadDataComboDepartment,
       handleClickAdd,
-      valueMessageBox,
+      handleDelete,
+      handleTotalPage,
+      handleShowMessBox,
       handlClosePopup,
-      disabledButton,
-      confirmMessage,
       handleShowMess,
       deleteAsset,
       handleMultiDelete,
       deleteMultiAsset,
-      dataTotal,
-      txtSearch,
       handleChangeSeach,
-      tableView,
-      currentPage,
-      handleChangeTab
+      handleChangeTab,
     };
   },
 };
