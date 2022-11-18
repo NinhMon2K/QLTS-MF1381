@@ -4,42 +4,32 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-
-    <button
-      class="combobox-menu-toggle"
-      ref="input"
-      @click="isShowMenu = !isShowMenu"
+    <div
+      :style="styleSelectedData"
+      class="container-list_combo"
+      v-if="selected.length == 0 ? false : true"
     >
       <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        class="item-checked__combobox"
+        v-for="item in selected"
+        :key="item[valueField]"
+      >
+        <v-tooltip :content="item[displayField]" placement="bottom" right="bottom">
+          <div class="text-cbo">{{ item[displayField] }}</div>
+        </v-tooltip>
+        <div
+          class="app-icon ic-remove__cbo"
+          @click="handleRemoveItem(item[valueField])"
+        ></div>
+      </div>
+    </div>
+
+    <button class="combobox-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
+      <div
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
         v-if="leftIcon"
       ></div>
-      <div
-        class="container-list_combo"
-        v-if="selected.length == 0 ? false : true"
-      >
-        <div
-          class="item-checked__combobox"
-          v-for="item in selected"
-          :key="item[valueField]"
-        >
-          <v-tooltip
-            :content="item[displayField]"
-            placement="bottom"
-            right="bottom"
-          >
-            <div class="text-cbo">{{ item[displayField] }}</div>
-          </v-tooltip>
-          <div
-            class="app-icon ic-remove__cbo"
-            @click="handleRemoveItem(item[valueField])"
-          ></div>
-        </div>
-      </div>
+
       <input
         type="text"
         :placeholder="placeholder"
@@ -48,11 +38,7 @@
         :id="id"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
       ></div>
     </button>
@@ -78,9 +64,7 @@
                   ? 'selected'
                   : '',
               ]"
-              :selected="
-                selected?.some((x) => x[valueField] == item[valueField])
-              "
+              :selected="selected?.some((x) => x[valueField] == item[valueField])"
               @change-value="changeValue"
             >
             </v-combobox-detail>
@@ -214,6 +198,26 @@ export default {
       height: 0,
     });
 
+    /**
+     * Xet positon cho combobox Selected
+     * @param {top,left} type top: vị trí top,left: vị trí left
+     * Author: NNNinh (16/10/2022)
+     */
+    const offsetPosiSelectedData = reactive({
+      bottom: 0,
+      left: 0,
+    });
+
+    /**
+     * Xet positon cho combobox Selected
+     * @param {width,height} type width: chiều dài list-item, height: chiều cao list-item
+     * Author: NNNinh (18/10/2022)
+     */
+    const offsetDropdownSelectedData = reactive({
+      width: 0,
+      height: 0,
+    });
+
     //Biến show list item
     const isShowMenu = ref(false);
 
@@ -224,6 +228,15 @@ export default {
       arr.push(`left: ${offsetPosi.left}px`);
       arr.push(`width: ${offsetDropdown.width}px`);
       arr.push(`height: ${offsetDropdown.height}px`);
+      return arr.join("; ");
+    });
+    //Xét style cho list
+    const styleSelectedData = computed(() => {
+      let arr = [];
+      arr.push(`top: ${offsetPosiSelectedData.bottom}px`);
+      arr.push(`left: ${offsetPosiSelectedData.left}px`);
+      arr.push(`width: ${offsetDropdownSelectedData.width}px`);
+      arr.push(`max-width: ${offsetDropdownSelectedData.width}px`);
       return arr.join("; ");
     });
 
@@ -283,9 +296,10 @@ export default {
         }
       );
     });
-    
+
     onMounted(() => {
       proxy.setPosition();
+      proxy.setPositionSelectedData();
       proxy.setDropdown();
       proxy.initEvent();
     });
@@ -293,6 +307,13 @@ export default {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetPosi.top = offset.bottom;
       offsetPosi.left = offset.left;
+    }
+
+    function setPositionSelectedData() {
+      let offset = proxy.$refs.input.getBoundingClientRect();
+      offsetPosiSelectedData.bottom = offset.top - offset.height - 4;
+      offsetPosiSelectedData.left = offset.left;
+      offsetDropdownSelectedData.width = offset.width;
     }
 
     /**
@@ -306,11 +327,7 @@ export default {
     }
 
     const changeValue = function (item, select) {
-      if (
-        proxy.selected?.some(
-          (x) => x[proxy.valueField] == item[proxy.valueField]
-        )
-      ) {
+      if (proxy.selected?.some((x) => x[proxy.valueField] == item[proxy.valueField])) {
         return false;
       }
       // Kiểm tra select là true ỏ false
@@ -336,8 +353,7 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".combobox-menu") ||
-            target.closest(".combobox-menu-toggle");
+            target.closest(".combobox-menu") || target.closest(".combobox-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }
@@ -360,6 +376,10 @@ export default {
       handleRemoveItem,
       objSelected,
       autoHeight, // Xét style height auto khi tìm kiếm cho list
+      offsetPosiSelectedData,
+      offsetDropdownSelectedData,
+      setPositionSelectedData,
+      styleSelectedData,
     };
   },
 };

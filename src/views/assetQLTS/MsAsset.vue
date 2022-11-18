@@ -571,7 +571,7 @@ export default {
         field: ResourceTable.FieldAsset.STT,
         title: ResourceTable.lblTableAssets.STT,
         type: "Number",
-        width: 48,
+        width: 40,
         align: "Center",
       },
       {

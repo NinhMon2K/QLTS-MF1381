@@ -1,6 +1,6 @@
 <template>
   <el-pagination
-   :page-size="tableView"
+    :page-size="tableView"
     @current-change="handleCurrentChange"
     current-page.sync="currentPage"
     layout=" prev, pager, next"
@@ -13,7 +13,7 @@
 import {
   getCurrentInstance,
   onMounted,
-  ref, 
+  ref,
   watch,
   reactive,
   nextTick,
@@ -27,11 +27,11 @@ export default {
     modelValue: {
       default: null,
     },
-    dataTotal:{
-      default:{}
+    dataTotal: {
+      default: {},
     },
   },
-  emits: ['currentPage'],
+  emits: ["currentPage"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.page = proxy;
@@ -47,9 +47,9 @@ export default {
         emit("currentPage", proxy.currentPage);
       });
     };
-    onMounted(()=>{
+    onMounted(() => {
       emit("currentPage", proxy.currentPage);
-    })
+    });
     watch(
       () => proxy.modelValue,
       (newVal) => {
@@ -67,7 +67,7 @@ export default {
       currentPage,
       handleCurrentChange,
       tableView,
-      changeValue
+      changeValue,
     };
   },
 };
@@ -99,6 +99,9 @@ export default {
       &.is-active {
         font-weight: 700;
         color: #000;
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        overflow: hidden;
       }
       &:last-child {
         margin-left: 3px;

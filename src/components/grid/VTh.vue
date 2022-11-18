@@ -1,5 +1,5 @@
 <template>
-  <th :style="styles">
+  <th :style="styles" :class="styleAlign">
     <div class="th-inner">
       <template v-if="config.type == ColumnType.Checkbox">
         <v-checkbox v-model="allSelected"></v-checkbox>
@@ -127,4 +127,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.text-align__center{
+  text-align: center;
+}</style>
