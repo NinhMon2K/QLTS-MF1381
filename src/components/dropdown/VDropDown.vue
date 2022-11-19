@@ -323,9 +323,13 @@ export default {
       });
     });
 
-     const onBlur = (e) => {
-      emit('blur',proxy.disp)
-     };
+    const onBlur = (e) => {
+      nextTick(() => {
+        setTimeout(() => {
+          emit("blur", proxy.disp, proxy.valueField);
+        }, 100);
+      });
+    };
     const eventListsioner = computed(() => {
       const me = this;
       return {
@@ -335,7 +339,7 @@ export default {
         },
         blur: (e) => {
           // proxy.cancelEvent(e);
-           proxy.onBlur(e);
+          proxy.onBlur(e);
         },
         focus: (e) => {
           // proxy.cancelEvent(e);
@@ -343,7 +347,7 @@ export default {
         },
         change: (e) => {
           // proxy.cancelEvent(e);
-           proxy.changeValue(e);
+          proxy.changeValue(e);
         },
         keydown: (e) => {
           emit("keydown", e);
@@ -397,7 +401,7 @@ export default {
       data,
       disp, // Gán giá trị
       autoHeight,
-      onBlur
+      onBlur,
     };
   },
 };

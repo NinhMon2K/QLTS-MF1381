@@ -10,7 +10,11 @@
           bản ghi
         </div>
         <div class="total-page">
-          <select id="total-page_size" v-model="tableView" @change="handleChangeTab" >
+          <select
+            id="total-page_size"
+            v-model="tableView"
+            @change="handleChangeTab"
+          >
             <option
               class="item-total"
               v-for="item in dataTotalPage"
@@ -42,13 +46,13 @@
       {{ dataTotal.totalQuantity }}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{formatMoney(dataTotal.totalCost)}}
+      {{ commonFunction.formatNumber(dataTotal.totalCost) }}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{formatMoney(dataTotal.totalDepreciation)}}
+      {{ commonFunction.formatNumber(dataTotal.totalDepreciation) }}
     </td>
     <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{formatMoney(dataTotal.totalRemain)}}
+      {{ commonFunction.formatNumber(dataTotal.totalRemain) }}
     </td>
     <td></td>
   </tr>
@@ -67,19 +71,20 @@ import {
 import VPageding from "@/components/grid/VPageding.vue";
 import Resource from "@/assets/js/resource/resource.js";
 import ResourceTable from "@/assets/js/resource/resourceTable.js";
+import commonFunction from "@/assets/js/commons/commonFunction.js";
 export default {
   components: {
     VPageding,
   },
   props: {
-    dataTotal:{
-      default: {}
+    dataTotal: {
+      default: {},
     },
-    page:{
-      default:{}
-    }
+    page: {
+      default: {},
+    },
   },
-  emits: ['currentPage','changeTabView'],
+  emits: ["currentPage", "changeTabView"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.tfoot = proxy;
@@ -90,11 +95,9 @@ export default {
       emit("currentPage", proxy.tableView, val);
     };
 
-    const handleChangeTab = ()=>{
+    const handleChangeTab = () => {
       emit("changeTabView", proxy.tableView);
-
-    
-    }
+    };
 
     // format tiền
     function formatMoney(money) {
@@ -106,7 +109,8 @@ export default {
       tableView,
       handleTotalPage,
       handleChangeTab,
-      formatMoney
+      formatMoney,
+      commonFunction,
     };
   },
 };

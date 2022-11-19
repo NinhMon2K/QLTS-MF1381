@@ -3,40 +3,41 @@
     <div class="toobar-left">
       <div class="container__search">
         <v-input
-          :hasLabel="false"
-          leftIcon="ic-search"
           id="txt-search"
+          :hasLabel="false"
           :radius="true"
-          v-model="txtSearch"
-          @change="handleChangeSeach"
+          leftIcon="ic-search"
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
-          message=""
+          v-model="txtSearch"
+          @blur="handleChangeSeach"
         ></v-input>
       </div>
       <v-combobox
         leftIcon="ic-fillter"
-        valueField="fixed_asset_category_id"
-        displayField="fixed_asset_category_name"
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
         :heightCb="13"
+        v-model="selectedAssetCategory"
+        :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
+        :displayField="ResourceTable.FieldAssetCategory.fixedAssetCategoryName"
         :dataAll="DataAssetCategory.value"
       ></v-combobox>
       <v-combobox
         leftIcon="ic-fillter"
-        valueField="department_id"
-        :heightCb="13"
-        displayField="department_name"
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
+        :heightCb="13"
+        v-model="selectedAssetDepartment"
+        :valueField="ResourceTable.FieldDepartment.departmentId"
+        :displayField="ResourceTable.FieldDepartment.departmentName"
         :dataAll="DataDepartment.value"
       ></v-combobox>
     </div>
     <div class="toolbar-right">
       <v-tooltip content="Thêm mới tài sản" placement="bottom" right="bottom">
+        <!-- buttom thêm mới -->
         <v-button
-          ref="MsPopupAsset"
           text="Thêm tài sản"
           id="btn-add"
           leftIcon="ic-add"
@@ -45,6 +46,8 @@
         >
         </v-button>
       </v-tooltip>
+
+      <!-- buttom xuất excel -->
       <v-tooltip content="Xuất Excel" placement="bottom">
         <v-button
           leftIcon="ic-export"
@@ -53,6 +56,8 @@
           :radius="true"
         ></v-button>
       </v-tooltip>
+
+      <!-- buttom xóa -->
       <v-tooltip content="Xóa" placement="bottom">
         <v-button
           leftIcon="ic-delete__toolbar"
@@ -63,6 +68,8 @@
         >
         </v-button>
       </v-tooltip>
+
+      <!-- popup asset -->
       <v-popup-asset
         v-if="isShowPopup"
         :formModel="pram"
@@ -260,6 +267,9 @@ export default {
       disabledDelete: true,
     });
 
+    const selectedAssetCategory = ref([]);
+    const selectedAssetDepartment = ref([]);
+
     let pram = reactive({
       mode: 0,
       fixed_asset_id: "",
@@ -324,14 +334,23 @@ export default {
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
-        let res = await assetAPI.filters(
-          "Assets/Filters",
-          proxy.txtSearch,
-          " ",
-          " ",
-          proxy.tableView,
-          proxy.currentPage
-        );
+        let arrCategory = [];
+        let arrDepartment = [];
+        proxy.selectedAssetCategory.forEach((item) => {
+          arrCategory.push(item.fixed_asset_category_id);
+        });
+        proxy.selectedAssetDepartment.forEach((item) => {
+          arrDepartment.push(item.department_id);
+        });
+
+        let pagingAsset = {
+          keyword: proxy.txtSearch,
+          listDepartment: arrDepartment,
+          listCategory: arrCategory,
+          limit: proxy.tableView,
+          page: proxy.currentPage,
+        };
+        let res = await assetAPI.filters("Assets/Filters", pagingAsset);
         proxy.isLoading = false;
         proxy.dataTotal.totalCount = res.totalCount;
         proxy.dataTotal.totalQuantity = res.totalQuantity;
@@ -405,7 +424,7 @@ export default {
     }
 
     /**
-     * Hiện thị toast mesage 
+     * Hiện thị toast mesage
      * @param {string} mode xác định form thêm mới ,nhân bản hay sử dữ liệu
      * @param {string} isShowMessage xác định xóa thành công hay thất bại
      * Author: NNNinh (13/11/2022)
@@ -462,11 +481,15 @@ export default {
       } else {
         //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
         if (proxy.dataSelected.length == 1) {
-          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+          proxy.valueMessageBox = proxy.customValueMessBox(
+            proxy.dataSelected.length
+          );
           proxy.isDialogMessDelete = true;
         } else {
           //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+          proxy.valueMessageBox = proxy.customValueMessBox(
+            proxy.dataSelected.length
+          );
           proxy.isDialogMessDeleMultiple = true;
         }
       }
@@ -502,7 +525,6 @@ export default {
     // Sự kiện xóa dữ liệu 1 dòng
     const handleMultiDelete = async () => {
       let result = await proxy.deleteMultiAsset();
-      console.log(result);
       if (result) {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
@@ -516,7 +538,8 @@ export default {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
         proxy.confirmMessage.textMessage =
-          proxy.customValueMessBox(proxy.dataSelected.length) + " Xóa dữ liệu thất bại!";
+          proxy.customValueMessBox(proxy.dataSelected.length) +
+          " Xóa dữ liệu thất bại!";
         proxy.confirmMessage.isShow = true;
         proxy.loadDataAsset();
         proxy.$refs.table.reset();
@@ -647,13 +670,13 @@ export default {
       isDialogMessDeleMultiple, // show message xóa nhiều dữ liệu
       isDialogMessDelete, // Hiển thị dialog xóa hay không
       isDialogMessCancelDelete, // Hiển thị thông báo không thể xóa
-      isDialogMessCancelDeleMultiple,// Hiển thị thông báo không thể xóa nhiều khi có chứng từ phát sinh
+      isDialogMessCancelDeleMultiple, // Hiển thị thông báo không thể xóa nhiều khi có chứng từ phát sinh
       isShowPopup, // Có hiện show popup hay không
       isDialogMessDeleNoData, // show message chưa chọn dữ liệu để xóa
       disabledButton, // disabled buttom hay không
       txtSearch, // Từ khóa để tìm kiếm (theo mã và tên tài sản )
       tableView, // Số bản ghi muốn hiện lên trong 1 trang
-      currentPage, // Trang đang chọn, đang đứng hiện tại 
+      currentPage, // Trang đang chọn, đang đứng hiện tại
       columns, // Mảng xác định các cột, trường dữ liệu của table
       allData, // Mảng lưu toàn bộ dữ liệu tài sản
       pram, // Đối tượng xác định là thêm mới, nhân bản, sử tài sản
@@ -665,7 +688,7 @@ export default {
       DataDepartment, // dữ liệu data bộ phận
       ResourceTable, // Resource table
       Resource, // Resource
-      confirmMessage, // Hiển thị cảnh báo 
+      confirmMessage, // Hiển thị cảnh báo
       valueMessageBox, // title của messagebox
       clickMenu, // Xử lý sự kiện click menu
       loadDataAsset, // Lấy dữ liệu toàn bộ tài sản
@@ -676,12 +699,14 @@ export default {
       handleTotalPage, // Sự kiện change trang trong pageding
       handleShowMessBox, // Sự kiện show mesagebox
       handlClosePopup, // Sự kiện close popup
-      handleShowMess, // Hiện thị toast mesage 
+      handleShowMess, // Hiện thị toast mesage
       deleteAsset, // Xử lý sự kiện xóa dữ liệu tài sản
       handleMultiDelete, // Xử lý sự kiện xóa nhiều dữ liệu dữ liệu tài sản
       deleteMultiAsset, // API xóa nhiều tài sản
       handleChangeSeach, // Xử lý sự kiện change tìm kiếm
       handleChangeTab, // Xử lý sự kiện change dữ liệu tabview
+      selectedAssetCategory,
+      selectedAssetDepartment,
     };
   },
 };

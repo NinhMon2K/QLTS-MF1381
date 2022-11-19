@@ -63,15 +63,13 @@ import {
   onUpdated,
   defineComponent,
 } from "vue";
-import ColumnType from "@/commons/constant/ColumnType";
 import VTh from "./VTh.vue";
 import VTr from "./VTr.vue";
-import Enum from "@/assets/js/enums/enum.js";
 import VPopupAsset from "@/components/popup/VPopupAsset.vue";
-import Resource from "@/assets/js/resource/resource.js";
-import commonFunction from "@/assets/js/commons/commonFunction.js";
 import VCheckbox from "@/components/input/VCheckbox.vue";
 import VTfoot from "@/components/grid/VTfoot.vue";
+import Resource from "@/assets/js/resource/resource.js";
+import Enum from "@/assets/js/enums/enum.js";
 
 export default defineComponent({
   name: "MsGrid",

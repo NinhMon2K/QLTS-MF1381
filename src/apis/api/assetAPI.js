@@ -6,29 +6,24 @@ class AssetApi extends BaseAPI {
 
   async delete(action, payload) {
     let request = {
-      url: this.getBaseURL() + "/" + action + '/' + payload,
+      url: this.getBaseURL() + "/" + action + "/" + payload,
     };
     return httpclient.deleteAsync(request);
   }
-  async put(action,recordId, payload) {
+  async put(action, recordId, payload) {
     let request = {
-      url: this.getBaseURL() + "/" + action + '/' + recordId,
+      url: this.getBaseURL() + "/" + action + "/" + recordId,
       data: payload,
     };
     return httpclient.pushAsync(request);
   }
 
-  async filters(action,keyword,departmentId,categoryId,limit,page) {
+  async filters(action, payload) {
     let request = {
-      url: this.getBaseURL() 
-      + "/" + action 
-      + "?limit="+limit 
-      + "&page="+page 
-      + "&departmentId=" +departmentId 
-      +"&categoryId="+categoryId
-      + "&keyword="+keyword,
+      url: this.getBaseURL() + "/" + action,
+      data: payload,
     };
-    return httpclient.getAsync(request);
+    return httpclient.postAsync(request);
   }
 }
 
