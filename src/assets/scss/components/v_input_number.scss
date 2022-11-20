@@ -155,3 +155,8 @@ input:disabled {
 // .disabled-icon {
 //   pointer-events: none;
 // }
+.flex-row{
+  &:hover{
+    // border: #000 1px solid !important;
+  }
+}

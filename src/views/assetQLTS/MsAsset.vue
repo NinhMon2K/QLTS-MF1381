@@ -189,6 +189,8 @@
     :dataTotal="dataTotal"
     ref="table"
     v-model:selectedData="dataSelected"
+    @handle-close="handlClosePopup"
+    @show-message="handleShowMess"
     @currentPage="handleTotalPage"
     @changeTabView="handleChangeTab"
   >
@@ -270,9 +272,7 @@ export default {
     const selectedAssetCategory = ref([]);
     const selectedAssetDepartment = ref([]);
 
-    let pram = reactive({
-      mode: 0,
-      fixed_asset_id: "",
+    let pram = ref({
     });
 
     const dataTotal = ref({
@@ -481,15 +481,11 @@ export default {
       } else {
         //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
         if (proxy.dataSelected.length == 1) {
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
+          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
           proxy.isDialogMessDelete = true;
         } else {
           //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
+          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
           proxy.isDialogMessDeleMultiple = true;
         }
       }
@@ -538,8 +534,7 @@ export default {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
         proxy.confirmMessage.textMessage =
-          proxy.customValueMessBox(proxy.dataSelected.length) +
-          " Xóa dữ liệu thất bại!";
+          proxy.customValueMessBox(proxy.dataSelected.length) + " Xóa dữ liệu thất bại!";
         proxy.confirmMessage.isShow = true;
         proxy.loadDataAsset();
         proxy.$refs.table.reset();

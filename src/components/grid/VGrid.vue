@@ -48,6 +48,8 @@
       v-if="isShowPopup"
       :formModel="pram"
       :allData="pramData"
+      @handle-close="handlClosePopup"
+      @show-message="handleShowMess"
     ></v-popup-asset>
   </div>
 </template>
@@ -130,6 +132,11 @@ export default defineComponent({
       mode: 0,
     });
     let pramData = ref({});
+    const confirmMessage = reactive({
+      iconMessage: "",
+      textMessage: "",
+      isShow: false,
+    });
 
     const allSelected = ref(false);
     // Lấy ra những vị trí checked
@@ -138,6 +145,15 @@ export default defineComponent({
     const dataSelected = computed(() =>
       selectedIndex.value.map((x, i) => x && proxy.allData[i]).filter((x) => x)
     );
+
+    // Reset lại giá trị show toast message
+    onUpdated(() => {
+      if (proxy.confirmMessage.isShow == true) {
+        setTimeout(() => {
+          proxy.confirmMessage.isShow = false;
+        }, 2500);
+      }
+    });
 
     // Cập nhật dataSelected vào selectedData
     onMounted(() => {
@@ -187,11 +203,15 @@ export default defineComponent({
       }
     };
 
-    // format tiền
-    function formatMoney(money) {
-      money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
-      return money;
-    }
+     //Sự kiện đóng popup
+     const handlClosePopup = (value) => {
+      proxy.isShowPopup = value;
+    };
+
+    const handleShowMess = (mode, isShowMessage) => {
+     emit('show-message',mode,isShowMessage)
+    };
+   
     const handleChangeTab = (val) => {
       emit("changeTabView", val);
     };
@@ -216,6 +236,9 @@ export default defineComponent({
       allSelected,
       selectedIndex,
       handleClick,
+      handlClosePopup,
+      confirmMessage,
+      handleShowMess,
       reset,
     };
   },

@@ -12,6 +12,7 @@
       class="dropdown-menu-toggle"
       ref="dropdown"
       :class="disabledMessage ? 'error__message' : ''"
+      
     >
       <div
         :class="[
@@ -31,6 +32,7 @@
         v-on="eventListsioner"
         @keyup="search"
         @click="isShowMenu = true"
+       
       />
       <div
         :class="[
@@ -266,7 +268,7 @@ export default {
     const itemClick = (item) => {
       emit("update:modelValue", item[proxy.valueField]);
       nextTick(() => {
-        emit("item-click", item);
+        emit("item-click", item, proxy.valueField);
       });
     };
 
@@ -322,6 +324,20 @@ export default {
         }
       });
     });
+    const onFocus = (e)=>{
+      proxy.isShowMenu = true;
+      document.addEventListener("focus", (e) => {
+        let target = e.target;
+        let cont = target.closest(".filter-dropdown");
+        if (cont && cont.isEqualNode(proxy.$refs.container)) {
+          e.preventDefault();
+          e.stopPropagation();
+          proxy.isShowMenu = true;
+        } else {
+          isShowMenu.value = false;
+        }
+      });
+    }
 
     const onBlur = (e) => {
       nextTick(() => {
@@ -342,8 +358,8 @@ export default {
           proxy.onBlur(e);
         },
         focus: (e) => {
-          // proxy.cancelEvent(e);
-          // proxy.onFocus(e);
+          proxy.cancelEvent(e);
+          proxy.onFocus(e);
         },
         change: (e) => {
           // proxy.cancelEvent(e);
@@ -402,6 +418,7 @@ export default {
       disp, // Gán giá trị
       autoHeight,
       onBlur,
+      onFocus
     };
   },
 };

@@ -15,7 +15,7 @@
         :id="id ? id : ''"
         class="input-text"
         format="DD/MM/YYYY"
-        value-format="YYYY-MM-DDTHH:mm:ss"
+        value-format="YYYY-MM-DD"
         type="date"
         ref="inputdate"
         :tabindex="tabindex"
