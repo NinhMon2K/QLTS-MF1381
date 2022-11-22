@@ -300,7 +300,7 @@ export default {
       if (proxy.confirmMessage.isShow == true) {
         setTimeout(() => {
           proxy.confirmMessage.isShow = false;
-        }, 2500);
+        }, 2000);
       }
     });
 
@@ -322,6 +322,19 @@ export default {
         }
       }
     );
+
+    watch(()=>selectedAssetCategory.value,
+    (newVal)=>{
+      proxy.selectedAssetCategory = newVal
+        proxy.loadDataAsset();
+    })
+    onUpdated(()=>{
+      watch(()=>selectedAssetDepartment.value,
+    (newVal)=>{
+        proxy.loadDataAsset();
+    })
+    })
+   
 
     //Load dữ liệu tài sản
     async function loadDataAsset() {
@@ -510,9 +523,7 @@ export default {
 
     // Xử lý sự kiện change input tìm kiếm
     const handleChangeSeach = () => {
-      setTimeout(() => {
         proxy.loadDataAsset();
-      }, 2000);
     };
 
     // Sự kiện xóa dữ liệu 1 dòng

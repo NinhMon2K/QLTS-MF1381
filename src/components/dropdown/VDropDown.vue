@@ -425,40 +425,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/v_dropdown.scss";
-.container-title {
-  width: 100%;
-  padding: 3px 6px;
-  width: 100%;
-  height: 36px;
 
-  .title-list {
-    display: flex;
-    width: 100%;
-    height: 36px;
-    min-height: 36px;
-    align-items: center;
-    border-radius: 3px;
-    background-color: #96c6ee;
-    z-index: 9999;
-    position: relative;
-    .text__title {
-      font-size: 13px;
-      font-weight: 700;
-      &:first-child {
-        width: 86px;
-        text-align: center;
-      }
-    }
-  }
-}
-.selected {
-  transition: 0.2s;
-  background-color: #c7e0f5;
-  cursor: pointer;
-  border-radius: 4px;
-  .inline-block {
-    .item-dropdown {
-    }
-  }
-}
 </style>

@@ -358,3 +358,10 @@ td {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.container_no--data{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

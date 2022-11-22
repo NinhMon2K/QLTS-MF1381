@@ -2,14 +2,12 @@
   <div class="m-toast">
     <div class="m-toast-main">
       <div class="left-toast">
-        <div
-          class="icon-message"
-          :class="[
-            'app-icon icon--left',
-            iconMessage,
-            disabled ? 'disabled-icon' : '',
-          ]"
-        ></div>
+        <div class="box" :class="disabled ? 'disabled-icon' : ''">
+          <div class="box_icon">
+            <div :class="['app-icon icon--left', iconMessage]"></div>
+          </div>
+        </div>
+
         <div class="toast-content">
           <div class="title-toast">
             {{ textMessage }}
@@ -69,16 +67,35 @@ export default {
     animation: toastLeft ease 0.3s, toastOut linear 1s 3s forwards;
     .left-toast {
       display: flex;
-      .icon-message {
+      .box {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #baeed4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin-right: 14px;
+        .box_icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #1ac871;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
+      }
+      
       .toast-content {
+        display: flex;
         align-items: center;
         flex-direction: column;
         justify-content: start;
+        justify-content: center;
         .title-toast {
           display: block;
-          font-size: 16px;
+          font-size: 14px;
         }
       }
     }

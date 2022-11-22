@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <th :colspan="span">
+    <th :colspan="spanCol">
       <div class="container-tfooter-left">
         <div class="tfooter--left" style="font-size: 11px">
           Tổng số:

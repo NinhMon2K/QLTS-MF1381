@@ -25,6 +25,10 @@
   background-image: url("@/assets/images/icons/checked.png");
   background-repeat: no-repeat;
 }
+@mixin commonAppNoData() {
+  background-image: url("@/assets/images/icons/img-EmptyData-L.svg");
+  background-repeat: no-repeat;
+}
 .app-icon {
   @include commonApp();
   @include setSquare(24);
@@ -189,16 +193,22 @@
     @include commonAppIcCheckBox();
   }
   &.ic-success {
-    @include commonAppIcToastSuccess();
-    @include setSquare(20);
+    @include setSquare(10);
+    background-position: -72px -511px;
+    scale: 1.5;
   }
   &.ic-close {
     @include setSquare(18);
     background-position: -375px -287px;
+    
   }
   &.ic-remove__cbo {
     @include setSquare(10);
     background-position: -291px -247px;
+  }
+  &.ic-no__data {
+    @include commonAppNoData();
+    @include setSquare(183);
   }
 }
 .menu-group {

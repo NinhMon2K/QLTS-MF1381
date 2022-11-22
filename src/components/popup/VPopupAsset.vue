@@ -133,14 +133,13 @@
                 </v-input-number>
               </div>
               <div class="form-group__right">
-                
                 <v-number
                   label="Nguyên giá"
                   tabindex="106"
                   hasLabel
                   hasInput
                   leftIcon
-                  disabledRight       
+                  disabledRight
                   :valueField="ResourceTable.FieldAsset.cost"
                   v-model="dataForm.cost"
                   :radius="true"
@@ -209,7 +208,7 @@
                   }"
                   @blur="onBlurInputNumber"
                 ></v-number>
-                
+
                 <v-input-number
                   label="Năm theo dõi"
                   hasLabel
@@ -554,7 +553,7 @@ export default {
           //Kiểm tra giá trị mode là thêm
           case Enum.Mode.Add:
             proxy.title = Resource.TitleFormPopup.FormAddAsset.VI;
-            
+
             proxy.defaultValueDate();
             proxy.getAssetNextCode();
             proxy.setValueDateYear();
@@ -861,9 +860,9 @@ export default {
           proxy.titleErrValidate.push(Resource.ErrorValidate.PurchaseDate.VI);
         }
         if (proxy.dataForm.production_date == null) {
+          proxy.errorMessage.ProductionDate = true;
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
         }
-
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
@@ -882,7 +881,15 @@ export default {
         proxy.titleErrorMess.DepreciationRate =
           Resource.ErrorInput.DepreciationRateVali.VI;
         return false;
-      } else {
+      }
+      else if(proxy.dataForm.purchase_date > proxy.dataForm.production_date){
+        proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
+        proxy.titleErrValidate.push(Resource.ErrorInput.ProductionGreaterDate);
+        proxy.titleErrorMess.DepreciationRate =
+        Resource.ErrorInput.DepreciationRateVali.VI;
+      }
+       else {
         proxy.errorMessage = {};
         return true;
       }

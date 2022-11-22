@@ -24,7 +24,7 @@
         </table>
       </div>
       <div class="grid-body">
-        <table id="tbl_tbody">
+        <table id="tbl_tbody" v-if="allData.length > 0">
           <tbody>
             <v-tr
               v-for="(item, i) in allData"
@@ -40,6 +40,11 @@
             </v-tr>
           </tbody>
         </table>
+        <div class="container_no--data" v-else>
+          <div class="no-data app-icon ic-no__data">
+
+          </div>
+        </div>
       </div>
 
       <div class="grid-footer">

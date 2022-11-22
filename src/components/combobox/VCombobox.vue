@@ -4,43 +4,31 @@
       {{ label ? label : "" }}
       <span v-if="hasInput">*</span>
     </label>
-    <div
-      :style="styleSelectedData"
-      class="container-list_combo"
-      v-if="selected.length == 0 ? false : true"
-    >
-      <div
-        class="item-checked__combobox"
-        v-for="item in selected"
-        :key="item[valueField]"
-      >
-        <v-tooltip
-          :content="item[displayField]"
-          placement="bottom"
-          right="bottom"
-        >
-          <div class="text-cbo">{{ item[displayField] }}</div>
-        </v-tooltip>
-        <div
-          class="app-icon ic-remove__cbo"
-          @click="handleRemoveItem(item[valueField])"
-        ></div>
-      </div>
-    </div>
 
-    <button
-      class="combobox-menu-toggle"
-      ref="input"
-      @click="isShowMenu = !isShowMenu"
-    >
+    <button class="combobox-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
       <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
         v-if="leftIcon"
       ></div>
+      <div
+        :style="styleSelectedData"
+        class="container-list_combo"
+        v-if="selected.length == 0 ? false : true"
+      >
+        <div
+          class="item-checked__combobox"
+          v-for="item in selected"
+          :key="item[valueField]"
+        >
+          <v-tooltip :content="item[displayField]" placement="bottom" right="bottom">
+            <div class="text-cbo">{{ item[displayField] }}</div>
+          </v-tooltip>
+          <div
+            class="app-icon ic-remove__cbo"
+            @click="handleRemoveItem(item[valueField])"
+          ></div>
+        </div>
+      </div>
 
       <input
         type="text"
@@ -50,11 +38,7 @@
         :id="id"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
       ></div>
     </button>
@@ -80,9 +64,7 @@
                   ? 'selected'
                   : '',
               ]"
-              :selected="
-                selected?.some((x) => x[valueField] == item[valueField])
-              "
+              :selected="selected?.some((x) => x[valueField] == item[valueField])"
               @change-value="changeValue"
             >
             </v-combobox-detail>
@@ -97,6 +79,7 @@ import {
   computed,
   getCurrentInstance,
   onMounted,
+  onUpdated,
   reactive,
   ref,
   watch,
@@ -286,6 +269,8 @@ export default {
       }
     );
 
+   
+
     /**
      * Tìm kiếm dữ liệu khi nhập input
      * NNNinh (01/11/2022)
@@ -347,9 +332,7 @@ export default {
     const changeValue = function (item, select) {
       if (
         select &&
-        proxy.selected?.some(
-          (x) => x[proxy.valueField] == item[proxy.valueField]
-        )
+        proxy.selected?.some((x) => x[proxy.valueField] == item[proxy.valueField])
       ) {
         return false;
       }
@@ -376,8 +359,7 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".combobox-menu") ||
-            target.closest(".combobox-menu-toggle");
+            target.closest(".combobox-menu") || target.closest(".combobox-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }

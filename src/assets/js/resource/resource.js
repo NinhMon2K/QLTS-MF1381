@@ -82,6 +82,9 @@ export default {
     ProductionDate: {
       VI: "Ngày bắt đầu sử dụng không được để trống!",
     },
+    ProductionGreaterDate: {
+      VI: "Ngày sử dụng phải lớn hơn hơn hoặc bằng ngày mua!",
+    },
     LifeTime: {
       VI: "Số năm sử dụng không được để trống!",
     },
