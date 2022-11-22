@@ -1,48 +1,60 @@
 <template>
   <div class="grid-container">
     <div class="grid-view">
-      <table>
-        <thead>
-          <tr>
-            <th v-if="selectedCol" style="width: 50px">
-              <div class="th-inner">
-                <v-checkbox v-model="allSelected"></v-checkbox>
-              </div>
-            </th>
-
-            <v-th
-              ref="th"
-              v-for="col in columns"
-              :key="col"
-              :config="col"
-              :allData="allData"
+      <div class="grid-header" :class="allData.length < 20 ? 'mg' : ''">
+        <table>
+          <thead>
+            <tr>
+              <th v-if="selectedCol" style="width: 50px">
+                <div class="th-inner">
+                  <v-checkbox v-model="allSelected"></v-checkbox>
+                </div>
+              </th>
+              <v-th
+                ref="th"
+                v-for="col in columns"
+                :key="col"
+                :config="col"
+                :allData="allData"
+              >
+                {{ col.title }}
+              </v-th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="grid-body">
+        <table id="tbl_tbody">
+          <tbody>
+            <v-tr
+              v-for="(item, i) in allData"
+              :class="selectedIndex[i] ? 'active-tr' : ''"
+              :key="item"
+              :data="item"
+              :columns="columns"
+              :selectedCol="selectedCol"
+              v-model:selected="selectedIndex[i]"
+              @click="handleClick(i)"
+              @dblclick="handleDoubleClick(item)"
             >
-              {{ col.title }}
-            </v-th>
-          </tr>
-        </thead>
-        <tbody>
-          <v-tr
-            v-for="(item, i) in allData"
-            :class="selectedIndex[i] ? 'active-tr' : ''"
-            :key="item"
-            :data="item"
-            :columns="columns"
-            :selectedCol="selectedCol"
-            v-model:selected="selectedIndex[i]"
-            @click="handleClick(i)"
-            @dblclick="handleDoubleClick(item)"
-          >
-          </v-tr>
-        </tbody>
-        <tfoot>
-          <v-tfoot
-            :dataTotal="dataTotal"
-            @currentPage="handleTotalPage"
-            @changeTabView="handleChangeTab"
-          ></v-tfoot>
-        </tfoot>
-      </table>
+            </v-tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-footer">
+        <table class="gr-footer">
+          <tfoot>
+            <v-tfoot
+              :columns="columns"
+              :spanCol="4"
+              :dataTotal="dataTotal"
+              @currentPage="handleTotalPage"
+              @changeTabView="handleChangeTab"
+            ></v-tfoot>
+          </tfoot>
+        </table>
+      </div>
     </div>
     <v-popup-asset
       v-if="isShowPopup"
@@ -203,15 +215,15 @@ export default defineComponent({
       }
     };
 
-     //Sự kiện đóng popup
-     const handlClosePopup = (value) => {
+    //Sự kiện đóng popup
+    const handlClosePopup = (value) => {
       proxy.isShowPopup = value;
     };
 
     const handleShowMess = (mode, isShowMessage) => {
-     emit('show-message',mode,isShowMessage)
+      emit("show-message", mode, isShowMessage);
     };
-   
+
     const handleChangeTab = (val) => {
       emit("changeTabView", val);
     };
@@ -248,5 +260,19 @@ export default defineComponent({
 @import "../../assets/scss/components/v_gid.scss";
 .active-tr {
   background-color: rgba(26, 164, 200, 0.2);
+}
+
+#tbl_tbody {
+  tbody {
+    tr {
+      .text-center {
+        &:first-child {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
 }
 </style>

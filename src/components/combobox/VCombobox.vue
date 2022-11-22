@@ -346,6 +346,7 @@ export default {
 
     const changeValue = function (item, select) {
       if (
+        select &&
         proxy.selected?.some(
           (x) => x[proxy.valueField] == item[proxy.valueField]
         )

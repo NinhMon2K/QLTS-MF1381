@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td colspan="6">
+    <th :colspan="span">
       <div class="container-tfooter-left">
         <div class="tfooter--left" style="font-size: 11px">
           Tổng số:
@@ -40,21 +40,19 @@
           ></v-pageding>
         </div>
       </div>
-    </td>
+    </th>
 
-    <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ dataTotal.totalQuantity }}
-    </td>
-    <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ commonFunction.formatNumber(dataTotal.totalCost) }}
-    </td>
-    <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ commonFunction.formatNumber(dataTotal.totalDepreciation) }}
-    </td>
-    <td style="font-size: 13px; font-weight: 700; text-align: right">
-      {{ commonFunction.formatNumber(dataTotal.totalRemain) }}
-    </td>
-    <td></td>
+    <th
+      class="th-foot"
+      v-for="col in column"
+      :key="col.field"
+      :style="{
+        width: col.width + 'px',
+      }"
+    >
+      {{ getValue(col) }}
+    </th>
+    <th></th>
   </tr>
 </template>
 <script>
@@ -72,11 +70,18 @@ import VPageding from "@/components/grid/VPageding.vue";
 import Resource from "@/assets/js/resource/resource.js";
 import ResourceTable from "@/assets/js/resource/resourceTable.js";
 import commonFunction from "@/assets/js/commons/commonFunction.js";
+import { columns } from "element-plus/es/components/table-v2/src/common";
 export default {
   components: {
     VPageding,
   },
   props: {
+    columns: {
+      default: [],
+    },
+    spanCol: {
+      default: 0,
+    },
     dataTotal: {
       default: {},
     },
@@ -95,22 +100,32 @@ export default {
       emit("currentPage", proxy.tableView, val);
     };
 
+    const column = computed(() =>
+      proxy.columns?.filter((x, i) => i >= proxy.spanCol)
+    );
+
     const handleChangeTab = () => {
       emit("changeTabView", proxy.tableView);
     };
 
-    // format tiền
-    function formatMoney(money) {
-      money = new Intl.NumberFormat(Resource.LanguageCode.VN, {}).format(money);
-      return money;
+    function getValue(col) {
+      switch (col.summary) {
+        case "sum":
+          return commonFunction.formatNumber(proxy.dataTotal[col.field] || 0);
+
+        case "number":
+          return proxy.dataTotal[col.field] || 0;
+      }
     }
+
     return {
       dataTotalPage,
       tableView,
       handleTotalPage,
       handleChangeTab,
-      formatMoney,
       commonFunction,
+      getValue,
+      column,
     };
   },
 };
@@ -148,5 +163,9 @@ export default {
   padding-left: 13px;
   outline: none;
   -webkit-appearance: none;
+}
+.th-foot {
+  font-size: 13px;
+  text-align: right;
 }
 </style>

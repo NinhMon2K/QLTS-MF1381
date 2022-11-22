@@ -23,8 +23,6 @@
   margin: 0 20px;
   border: 1px solid #afafaf;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
-  height: 630px;
-  overflow: auto;
 }
 
 .row--selected {
@@ -32,13 +30,13 @@
 }
 
 table {
-  width: 100%;
-  height: 100%;
   background-color: #ffffff;
   border-collapse: collapse;
   border-top-left-radius: 3.5px;
   border-top-right-radius: 3.5px;
   position: relative;
+  min-width: 100%;
+
   thead {
     border-bottom: 1px solid #e9ebee;
     position: sticky;
@@ -251,12 +249,17 @@ th {
   height: 100%;
   //@at-root overflow: hidden;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+
   .grid-view {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+
+    .grid-body {
+      flex: 1;
+      overflow: auto;
+    }
   }
 }
 /* scrollbar */
@@ -339,4 +342,19 @@ tbody {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #cdd3d6;
+}
+
+.grid-view {
+}
+.grid-header {
+  padding-right: 8px;
+}
+.mg {
+  padding-right: 0px;
+}
+th,
+td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

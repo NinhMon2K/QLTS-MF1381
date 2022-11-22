@@ -272,16 +272,9 @@ export default {
     const selectedAssetCategory = ref([]);
     const selectedAssetDepartment = ref([]);
 
-    let pram = ref({
-    });
+    let pram = ref({});
 
-    const dataTotal = ref({
-      totalCount: 0, // Tổng số bản ghi
-      totalQuantity: 0, // Tổng số lượng
-      totalCost: 0, // Tổng số nguyên giá
-      totalDepreciation: 0, // Tổng số hao mòn lũy kế
-      totalRemain: 0, // Tổng số còn lại
-    });
+    const dataTotal = ref({});
 
     /**
      * Hiện thi giá trị cảnh báo
@@ -353,10 +346,10 @@ export default {
         let res = await assetAPI.filters("Assets/Filters", pagingAsset);
         proxy.isLoading = false;
         proxy.dataTotal.totalCount = res.totalCount;
-        proxy.dataTotal.totalQuantity = res.totalQuantity;
-        proxy.dataTotal.totalCost = res.totalCost;
-        proxy.dataTotal.totalDepreciation = res.totalDepreciation;
-        proxy.dataTotal.totalRemain = res.totalRemain;
+        proxy.dataTotal.quantity = res.totalQuantity;
+        proxy.dataTotal.cost = res.totalCost;
+        proxy.dataTotal.depreciation_residual = res.totalDepreciation;
+        proxy.dataTotal.depreciation_residual = res.totalRemain;
         let data = res?.data;
         let o = (proxy.currentPage - 1) * proxy.tableView;
         data.forEach((x, i) => {
@@ -481,11 +474,15 @@ export default {
       } else {
         //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
         if (proxy.dataSelected.length == 1) {
-          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+          proxy.valueMessageBox = proxy.customValueMessBox(
+            proxy.dataSelected.length
+          );
           proxy.isDialogMessDelete = true;
         } else {
           //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-          proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+          proxy.valueMessageBox = proxy.customValueMessBox(
+            proxy.dataSelected.length
+          );
           proxy.isDialogMessDeleMultiple = true;
         }
       }
@@ -534,7 +531,8 @@ export default {
         proxy.isDialogMessDeleMultiple = false;
         proxy.confirmMessage.iconMessage = "ic-success";
         proxy.confirmMessage.textMessage =
-          proxy.customValueMessBox(proxy.dataSelected.length) + " Xóa dữ liệu thất bại!";
+          proxy.customValueMessBox(proxy.dataSelected.length) +
+          " Xóa dữ liệu thất bại!";
         proxy.confirmMessage.isShow = true;
         proxy.loadDataAsset();
         proxy.$refs.table.reset();
@@ -620,24 +618,28 @@ export default {
         field: ResourceTable.FieldAsset.quantity,
         title: ResourceTable.lblTableAssets.lblQuantity,
         type: "Number",
+        summary: "number",
         width: 60,
       },
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
+        summary: "sum",
         width: 110,
       },
       {
         field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
+        summary: "sum",
         width: 110,
       },
       {
         field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
+        summary: "sum",
         width: 110,
       },
       {

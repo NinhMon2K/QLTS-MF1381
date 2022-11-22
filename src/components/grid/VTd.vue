@@ -198,9 +198,6 @@ input[type="checkbox"] {
 }
 .ms-tr {
   .text-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     height: 100%;
     &:first-child {
       margin-left: -3px;
