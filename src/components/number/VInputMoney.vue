@@ -35,7 +35,10 @@
         v-on="eventListsioner"
         style="text-align: right"
       />
-      <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']" v-if="disabledRight">
+      <div
+        :class="['icon--right', disabledRight ? 'disabled-icon' : '']"
+        v-if="disabledRight"
+      >
         <v-tooltip content="Lên" placement="bottom">
           <div
             :class="[
@@ -81,9 +84,9 @@ import { useCurrencyInput } from "vue-currency-input";
 import { watchDebounced } from "@vueuse/core";
 import VTooltip from "../tooltip/VTooltip.vue";
 export default {
-  name: "VInputNumber",
-  components:{
-    VTooltip
+  name: "VInputMoney",
+  components: {
+    VTooltip,
   },
   props: {
     modelValue: {
@@ -183,7 +186,7 @@ export default {
       default: {},
     },
   },
-  emits: ["update:modelValue",'blur','focus','changeValue'],
+  emits: ["update:modelValue", "blur", "focus", "changeValue", "change"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.iNumbers = proxy;
@@ -193,7 +196,6 @@ export default {
       false
     );
     watchDebounced(numberValue, (value) => {
-    
       proxy.isValue = value;
       emit("update:modelValue", isValue),
         {
@@ -230,7 +232,6 @@ export default {
           cancelEvent(e);
           proxy.onFocus(e);
         },
-       
       };
     });
     const less = () => {
@@ -247,9 +248,7 @@ export default {
      * Xử lý cập nhật modelValue cho isValue
      *  @author NNNinh(18/10/2021)
      */
-     const changeValue = function (val) {
-     
-
+    const changeValue = function (val) {
       // Chờ thay đổi trạng thái thì cập lại giá trị
       nextTick(() => {
         emit("changeValue", proxy.isValue, proxy.valueField);
@@ -283,7 +282,7 @@ export default {
       onFocus,
       less,
       plus,
-      changeValue
+      changeValue,
     };
   },
 };

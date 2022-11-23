@@ -126,6 +126,7 @@ export default defineComponent({
       type: [Number, String],
     },
   },
+  emits: ["changeValue", "update:modelValue"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.ipdate = proxy;

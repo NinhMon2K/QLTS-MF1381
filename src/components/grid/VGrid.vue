@@ -28,22 +28,23 @@
           <tbody>
             <v-tr
               v-for="(item, i) in allData"
-              :class="selectedIndex[i] ? 'active-tr' : ''"
+              :class="[
+                selectedIndex[i] ? 'active-tr' : '',
+                active == i ? 'active-row' : '',
+              ]"
               :key="item"
               :data="item"
               :columns="columns"
               :selectedCol="selectedCol"
               v-model:selected="selectedIndex[i]"
               @click="handleClick(i)"
-              @dblclick="handleDoubleClick(item)"
+              @dblclick="handleDoubleClick(item, i)"
             >
             </v-tr>
           </tbody>
         </table>
         <div class="container_no--data" v-else>
-          <div class="no-data app-icon ic-no__data">
-
-          </div>
+          <div class="no-data app-icon ic-no__data"></div>
         </div>
       </div>
 
@@ -123,6 +124,9 @@ export default defineComponent({
     page: {
       default: {},
     },
+    active: {
+      default: 0,
+    },
     // filters: {
     //   default: [],
     //   type: Array,
@@ -139,6 +143,7 @@ export default defineComponent({
     "changeTabView",
     "update:selected",
     "update:selectedData",
+    "update:active",
   ],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -202,10 +207,11 @@ export default defineComponent({
      *  @author NNNinh(01/11/2022)
      * @pram {object} item dữ liệu asset khi click tr
      */
-    const handleDoubleClick = (item) => {
+    const handleDoubleClick = (item, i) => {
       proxy.pram.mode = Enum.Mode.Update;
       proxy.pramData = item;
       proxy.isShowPopup = true;
+      emit("update:active", i);
     };
 
     /**
@@ -218,6 +224,8 @@ export default defineComponent({
       } else {
         proxy.selectedIndex[index] = true;
       }
+
+      emit("update:active", index);
     };
 
     //Sự kiện đóng popup
@@ -263,7 +271,8 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import "../../assets/scss/components/v_gid.scss";
-.active-tr {
+.active-tr,
+.active-row {
   background-color: rgba(26, 164, 200, 0.2);
 }
 

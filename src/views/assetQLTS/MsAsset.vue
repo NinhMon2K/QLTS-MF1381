@@ -2,6 +2,8 @@
   <div class="contrainer-toolbar">
     <div class="toobar-left">
       <div class="container__search">
+        <!-- Nhập dữ liệu tìm kiếm theo mã tài sản hoặc bộ phận sử dụng
+             @author NNNINH (22/11/2022) -->
         <v-input
           id="txt-search"
           :hasLabel="false"
@@ -11,8 +13,12 @@
           :disabledMessage="false"
           v-model="txtSearch"
           @blur="handleChangeSeach"
+          @change="handleChangeSeach"
         ></v-input>
       </div>
+
+      <!-- combobox dữ liệu loại tài sản
+            @author NNNINH (22/11/2022) -->
       <v-combobox
         leftIcon="ic-fillter"
         rightIcon="ic-angle-downs"
@@ -23,6 +29,8 @@
         :displayField="ResourceTable.FieldAssetCategory.fixedAssetCategoryName"
         :dataAll="DataAssetCategory.value"
       ></v-combobox>
+      <!-- combobox dữ liệu bộ phận sử dụng
+            @author NNNINH (22/11/2022) -->
       <v-combobox
         leftIcon="ic-fillter"
         rightIcon="ic-angle-downs"
@@ -187,6 +195,7 @@
     :allData="allData"
     :selectedCol="true"
     :dataTotal="dataTotal"
+    v-model:active="active"
     ref="table"
     v-model:selectedData="dataSelected"
     @handle-close="handlClosePopup"
@@ -263,6 +272,8 @@ export default {
     const DataAssetCategory = ref([]);
     const DataDepartment = ref([]);
     const dataAssetID = ref({});
+    const active = ref(-1);
+
     const dataSelected = ref([]);
     const disabledButton = reactive({
       disabledExport: true,
@@ -323,24 +334,33 @@ export default {
       }
     );
 
-    watch(()=>selectedAssetCategory.value,
-    (newVal)=>{
-      proxy.selectedAssetCategory = newVal
-        proxy.loadDataAsset();
-    })
-    onUpdated(()=>{
-      watch(()=>selectedAssetDepartment.value,
-    (newVal)=>{
-        proxy.loadDataAsset();
-    })
-    })
-   
+    onMounted(() => {
+      watch(
+        () => proxy.selectedAssetCategory,
+        (newVal) => {
+          proxy.loadDataAsset();
+        },
+        { deep: true }
+      );
+    });
+
+    onMounted(() => {
+      watch(
+        () => proxy.selectedAssetDepartment,
+        (newVal) => {    
+          proxy.loadDataAsset();
+        },
+        { deep: true }
+      );
+    });
 
     //Load dữ liệu tài sản
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
+        // Mảng lưu dữ liệu mã loại tài sản
         let arrCategory = [];
+        // Mảng lưu dữ liệu mã bộ phận sử dụng
         let arrDepartment = [];
         proxy.selectedAssetCategory.forEach((item) => {
           arrCategory.push(item.fixed_asset_category_id);
@@ -349,20 +369,23 @@ export default {
           arrDepartment.push(item.department_id);
         });
 
+        // Đối tượng paging tài sản
         let pagingAsset = {
-          keyword: proxy.txtSearch,
-          listDepartment: arrDepartment,
-          listCategory: arrCategory,
-          limit: proxy.tableView,
-          page: proxy.currentPage,
+          keyword: proxy.txtSearch, // Giá trị tìm kiếm tài sản
+          listDepartment: arrDepartment, // Mảng dữ liệu mã bộ phận sử dụng
+          listCategory: arrCategory, // Mảng dữ liệu mã loại tài sản
+          limit: proxy.tableView, // Số bản ghi hiện lên một trang
+          page: proxy.currentPage, // Trang hiện tại
         };
+
+        // Gọi API lấy dữ liệu tài sản
         let res = await assetAPI.filters("Assets/Filters", pagingAsset);
         proxy.isLoading = false;
-        proxy.dataTotal.totalCount = res.totalCount;
-        proxy.dataTotal.quantity = res.totalQuantity;
-        proxy.dataTotal.cost = res.totalCost;
-        proxy.dataTotal.depreciation_residual = res.totalDepreciation;
-        proxy.dataTotal.depreciation_residual = res.totalRemain;
+        proxy.dataTotal.totalCount = res.totalCount; // Lấy giá trị tổng số bản ghi
+        proxy.dataTotal.quantity = res.totalQuantity; // Lấy giá trị tổng số lượng
+        proxy.dataTotal.cost = res.totalCost; // Lấy giá trị tổng số nguyên giá
+        proxy.dataTotal.depreciation_residual = res.totalDepreciation; // Lấy tổng số khấu hao hao mòn lũy kế
+        proxy.dataTotal.depreciation_residual = res.totalRemain; // Lấy tổng số giá trị còn lại
         let data = res?.data;
         let o = (proxy.currentPage - 1) * proxy.tableView;
         data.forEach((x, i) => {
@@ -435,17 +458,23 @@ export default {
      * @param {string} isShowMessage xác định xóa thành công hay thất bại
      * Author: NNNinh (13/11/2022)
      */
-    const handleShowMess = (mode, isShowMessage) => {
+    const handleShowMess = async (mode, res, isShowMessage) => {
+      console.log(res);
       if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
-        proxy.loadDataAsset();
+        await proxy.loadDataAsset();
+        proxy.$refs.table.reset();
+
         proxy.confirmMessage.iconMessage = "ic-success";
         proxy.confirmMessage.textMessage = "Thêm mới thành công!";
         proxy.confirmMessage.isShow = true;
+        proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
       } else {
         proxy.loadDataAsset();
+        proxy.$refs.table.reset();
         proxy.confirmMessage.iconMessage = "ic-success";
         proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
         proxy.confirmMessage.isShow = true;
+        proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
       }
     };
 
@@ -523,7 +552,7 @@ export default {
 
     // Xử lý sự kiện change input tìm kiếm
     const handleChangeSeach = () => {
-        proxy.loadDataAsset();
+      proxy.loadDataAsset();
     };
 
     // Sự kiện xóa dữ liệu 1 dòng
@@ -715,6 +744,7 @@ export default {
       handleChangeTab, // Xử lý sự kiện change dữ liệu tabview
       selectedAssetCategory,
       selectedAssetDepartment,
+      active,
     };
   },
 };

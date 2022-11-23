@@ -83,7 +83,7 @@ export default {
       VI: "Ngày bắt đầu sử dụng không được để trống!",
     },
     ProductionGreaterDate: {
-      VI: "Ngày sử dụng phải lớn hơn hơn hoặc bằng ngày mua!",
+      VI: "Ngày sử dụng lớn hơn hoặc bằng ngày mua!",
     },
     LifeTime: {
       VI: "Số năm sử dụng không được để trống!",
@@ -168,8 +168,8 @@ export default {
     // Hoa kỳ
     US: "en-US",
   },
-  Version:{
-    Major: "v1"
+  Version: {
+    Major: "v1",
   },
   Method: {
     GET: "GET",
@@ -185,6 +185,6 @@ export default {
     // Error 405
     405: "Phương thức yêu cầu của bạn không hợp lệ hoặc không được cho phép tại server",
     // Error 500
-    500: "Lỗi phía Server"
-},
+    500: "Lỗi phía Server",
+  },
 };

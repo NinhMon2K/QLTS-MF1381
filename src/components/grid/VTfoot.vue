@@ -137,7 +137,6 @@ export default {
   align-items: center;
   .tfooter--left {
     width: 150px;
-    padding-left: 17px;
   }
   .total-page {
     display: flex;

@@ -30,7 +30,7 @@
     "scrollparent": "2.0.1",
     "socket.io-client": "4.5.2",
     "tiny-emitter": "2.1.0",
-    "vue": "^3.2.13",
+    "vue": "^3.4.9",
     "vue-3-socket.io": "1.0.5",
     "vue-currency-input": "^3.0.2",
     "vue-draggable-next": "^2.1.1",

@@ -18,6 +18,7 @@
             v-if="leftIcon"
           ></div>
         </div>
+
         <div class="toast-content__right" v-if="!disabledMultiple">
           <div class="text-message">
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>

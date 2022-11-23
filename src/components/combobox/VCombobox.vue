@@ -5,9 +5,17 @@
       <span v-if="hasInput">*</span>
     </label>
 
-    <button class="combobox-menu-toggle" ref="input" @click="isShowMenu = !isShowMenu">
+    <button
+      class="combobox-menu-toggle"
+      ref="input"
+      @click="isShowMenu = !isShowMenu"
+    >
       <div
-        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
+        :class="[
+          'app-icon icon--left',
+          leftIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
         v-if="leftIcon"
       ></div>
       <div
@@ -20,7 +28,11 @@
           v-for="item in selected"
           :key="item[valueField]"
         >
-          <v-tooltip :content="item[displayField]" placement="bottom" right="bottom">
+          <v-tooltip
+            :content="item[displayField]"
+            placement="bottom"
+            right="bottom"
+          >
             <div class="text-cbo">{{ item[displayField] }}</div>
           </v-tooltip>
           <div
@@ -32,13 +44,17 @@
 
       <input
         type="text"
-        :placeholder="placeholder"
+        :placeholder="displayPlaceholder"
         ref="inputCbo"
         @keyup="search"
         :id="id"
       />
       <div
-        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
+        :class="[
+          'app-icon icon--right',
+          rightIcon,
+          disabled ? 'disabled-icon' : '',
+        ]"
         v-if="rightIcon"
       ></div>
     </button>
@@ -64,7 +80,9 @@
                   ? 'selected'
                   : '',
               ]"
-              :selected="selected?.some((x) => x[valueField] == item[valueField])"
+              :selected="
+                selected?.some((x) => x[valueField] == item[valueField])
+              "
               @change-value="changeValue"
             >
             </v-combobox-detail>
@@ -82,6 +100,7 @@ import {
   onUpdated,
   reactive,
   ref,
+  toRef,
   watch,
 } from "@vue/runtime-core";
 import VComboboxDetail from "./VComboboxDetail.vue";
@@ -155,6 +174,8 @@ export default {
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+
+    const displayPlaceholder = ref(props.placeholder);
 
     const selected = ref([]);
     const data = ref(props.dataAll);
@@ -269,8 +290,6 @@ export default {
       }
     );
 
-   
-
     /**
      * Tìm kiếm dữ liệu khi nhập input
      * NNNinh (01/11/2022)
@@ -298,6 +317,12 @@ export default {
           search();
         }
       );
+    });
+
+    onUpdated(() => {
+      if (proxy.selected.length != 0) {
+        proxy.displayPlaceholder = "";
+      } else proxy.displayPlaceholder = props.placeholder;
     });
 
     onMounted(() => {
@@ -332,7 +357,9 @@ export default {
     const changeValue = function (item, select) {
       if (
         select &&
-        proxy.selected?.some((x) => x[proxy.valueField] == item[proxy.valueField])
+        proxy.selected?.some(
+          (x) => x[proxy.valueField] == item[proxy.valueField]
+        )
       ) {
         return false;
       }
@@ -359,7 +386,8 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".combobox-menu") || target.closest(".combobox-menu-toggle");
+            target.closest(".combobox-menu") ||
+            target.closest(".combobox-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }
@@ -386,6 +414,7 @@ export default {
       offsetDropdownSelectedData,
       setPositionSelectedData,
       styleSelectedData,
+      displayPlaceholder,
     };
   },
 };

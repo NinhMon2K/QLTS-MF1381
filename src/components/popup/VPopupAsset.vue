@@ -17,6 +17,8 @@
           <div class="form-asset__body">
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu mã tài sản
+                @author NNNINH (22/11/2022) -->
                 <v-input
                   label="Mã tài sản"
                   tabindex="101"
@@ -32,6 +34,8 @@
                 ></v-input>
               </div>
               <div class="form-group__right">
+                <!-- Nhập dữ liệu tên tài sản
+                @author NNNINH (22/11/2022) -->
                 <v-input
                   label="Tên tài sản"
                   tabindex="102"
@@ -50,6 +54,8 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu mã bộ phận sử dụng
+                @author NNNINH (22/11/2022) -->
                 <v-drop-down
                   label="Mã bộ phận sử dụng"
                   tabindex="103"
@@ -71,6 +77,8 @@
                 ></v-drop-down>
               </div>
               <div class="form-group__right">
+                <!-- Nhập dữ liệu tên bộ phận sử dụng
+                @author NNNINH (22/11/2022) -->
                 <v-input
                   label="Tên bộ phận sử dụng"
                   hasLabel
@@ -83,6 +91,8 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu mã loại tài sản
+                @author NNNINH (22/11/2022) -->
                 <v-drop-down
                   label="Mã loại tài sản"
                   ref="hu"
@@ -91,7 +101,9 @@
                   hasInput
                   :heightCb="-25"
                   v-model="dataForm.fixed_asset_category_id"
-                  :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.fixedAssetCategoryId
+                  "
                   displayField="fixed_asset_category_code"
                   @blur="onBlurDropdown"
                   rightIcon="ic-angle-downs"
@@ -99,11 +111,15 @@
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="onClickDataDropDown"
-                  :disabledMessage="errorMessage.AssetCategoryCode && isSubmited"
+                  :disabledMessage="
+                    errorMessage.AssetCategoryCode && isSubmited
+                  "
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></v-drop-down>
               </div>
               <div class="form-group__right">
+                <!-- Nhập dữ liệu tên loại tài sản
+                @author NNNINH (22/11/2022) -->
                 <v-input
                   label="Tên loại tài sản"
                   :hasReadonly="true"
@@ -116,6 +132,8 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu số lượng
+                @author NNNINH (22/11/2022) -->
                 <v-input-number
                   label="Số lượng"
                   tabindex="105"
@@ -133,6 +151,8 @@
                 </v-input-number>
               </div>
               <div class="form-group__right">
+                <!-- Nhập dữ liệu nguyên giá
+                @author NNNINH (22/11/2022) -->
                 <v-number
                   label="Nguyên giá"
                   tabindex="106"
@@ -155,6 +175,9 @@
                   }"
                 >
                 </v-number>
+
+                <!-- Nhập dữ liệu số năm sử dụng
+                @author NNNINH (22/11/2022) -->
                 <v-input-number
                   label="Số năm sử dụng"
                   tabindex="107"
@@ -171,6 +194,8 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu tỉ lệ hao mòn
+                @author NNNINH (22/11/2022) -->
                 <v-input-number
                   label="Tỉ lệ hao mòn (%)"
                   tabindex="108"
@@ -179,7 +204,9 @@
                   leftIcon
                   disabledRight
                   v-model="dataForm.depreciation_rate"
-                  :valueField="ResourceTable.FieldAssetCategory.depreciationRate"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.depreciationRate
+                  "
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -190,10 +217,12 @@
                 </v-input-number>
               </div>
               <div class="form-group__right">
+                <!-- Nhập dữ liệu giá trị hao mòn năm
+                @author NNNINH (22/11/2022) -->
                 <v-number
                   label="Giá trị hao mòn năm"
-                  hasLabel
-                  hasInput
+                  :hasLabel="true"
+                  :hasInput="true"
                   v-model="dataForm.depreciation_year"
                   :valueField="ResourceTable.FieldAsset.depreciationYear"
                   :radius="true"
@@ -209,6 +238,8 @@
                   @blur="onBlurInputNumber"
                 ></v-number>
 
+                <!-- Nhập dữ liệu năm theo dõi
+                @author NNNINH (22/11/2022) -->
                 <v-input-number
                   label="Năm theo dõi"
                   hasLabel
@@ -221,6 +252,8 @@
             </div>
             <div class="form-group">
               <div class="form-group__left">
+                <!-- Nhập dữ liệu ngày mua
+                @author NNNINH (22/11/2022) -->
                 <v-input-date
                   label="Ngày mua"
                   hasLabel
@@ -231,10 +264,15 @@
                   :valueField="ResourceTable.FieldAsset.purchaseDate"
                   rightIcon="ic-date"
                   :radius="true"
+                  :disabledMessage="errorMessage.purchase_date && isSubmited"
+                  :message="titleErrorMess.purchaseDate"
+                  @changeValue="handleChangeDate"
                 ></v-input-date>
               </div>
               <div class="form-group__right">
                 <div class="form-group__right__1">
+                  <!-- Nhập dữ liệu ngày bắt đầu sử dụng
+                @author NNNINH (22/11/2022) -->
                   <v-input-date
                     label="Ngày bắt đầu sử dụng"
                     hasLabel
@@ -248,7 +286,8 @@
                     bottomIcon="ic-angle_down"
                     :radius="true"
                     :disabledMessage="errorMessage.ProductionDate && isSubmited"
-                    message="Ngày sử dụng lớn hơn hoặc bằng ngày mua"
+                    :message="titleErrorMess.production_date"
+                    @changeValue="handleChangeDate"
                   ></v-input-date>
                 </div>
                 <div class="right-center"></div>
@@ -259,6 +298,8 @@
         </div>
         <div class="footer-popup">
           <div class="form-asset__footer">
+            <!-- Buttom hủy
+                @author NNNINH (22/11/2022) -->
             <v-tooltip content="Hủy" placement="top" right="top">
               <v-button
                 text="Hủy"
@@ -269,8 +310,17 @@
               >
               </v-button>
             </v-tooltip>
+
+            <!-- Buttom lưu dữ liệu
+                @author NNNINH (22/11/2022) -->
             <v-tooltip content="Lưu và cất" placement="top" right="top">
-              <v-button text="Lưu" @click="saveData" tabindex="111" radius></v-button>
+              <v-button
+                text="Lưu"
+                @click="saveData"
+                tabindex="111"
+                radius
+                :disabled="disabledBtn"
+              ></v-button>
             </v-tooltip>
           </div>
         </div>
@@ -278,7 +328,8 @@
     </div>
   </teleport>
 
-  <!-- Dialog messagebox hủy bỏ khai báo -->
+  <!-- Dialog messagebox hủy bỏ khai báo
+   @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
       leftIcon="ic-warning"
@@ -301,7 +352,8 @@
     </v-message-box>
   </teleport>
 
-  <!-- Dialog messagebox cập nhật -->
+  <!-- Hiển thị thông báo cập nhât
+       @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
       leftIcon="ic-warning"
@@ -313,7 +365,7 @@
       <v-button
         :text="Resource.TitleBtnDialog.Save.VI"
         radius
-        @click="handleUpdate"
+        @click="saveData"
       ></v-button>
       <v-button
         :text="Resource.TitleBtnDialog.NoSave.VI"
@@ -330,7 +382,8 @@
     </v-message-box>
   </teleport>
 
-  <!-- Toast message thông báo error multiple -->
+  <!-- Hiển thị thông báo error multiple
+       @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
       :disabledTop="false"
@@ -382,7 +435,7 @@ import Resource from "@/assets/js/resource/resource.js";
 import ResourceTable from "@/assets/js/resource/resourceTable";
 import Enum from "@/assets/js/enums/enum.js";
 import assetAPI from "@/apis/api/assetAPI.js";
-import vNumber from "@/components/number/VInputNumbers.vue";
+import vNumber from "@/components/number/VInputMoney.vue";
 import _ from "lodash";
 
 export default {
@@ -404,6 +457,7 @@ export default {
     statePopup: {
       default: false,
     },
+    // Xác định là form thêm, sửa, xóa
     formModel: {
       default: {},
     },
@@ -463,10 +517,10 @@ export default {
     const isEdited = ref(false);
     const oldDataForm = ref({});
     const ctrlPressed = ref(false);
+    const disabledBtn = ref(false);
 
     // Lưu dữ liệu 1 tài sản
-    const dataForm = ref({
-    });
+    const dataForm = ref({});
     // Kiểm tra dữ liệu 1 tài sản đã chỉnh sữa hay không
     const EqualData = computed(() => {
       return _.isEqual(proxy.dataForm, proxy.oldDataForm);
@@ -546,7 +600,7 @@ export default {
           case Enum.Mode.Update:
             proxy.title = Resource.TitleFormPopup.FormUpdateAsset.VI;
             // Lấy dữ liệu tài sản theo id tài sản
-            proxy.dataForm = proxy.allData;
+            proxy.dataForm = _.cloneDeep(proxy.allData);
             proxy.setValueDateYear();
             proxy.oldDataForm = _.cloneDeep(proxy.dataForm);
             break;
@@ -620,7 +674,8 @@ export default {
     function updateValDepYear() {
       proxy.dataForm.depreciation_year =
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
-      if (proxy.dataForm.depreciation_rate > 100) proxy.dataForm.depreciation_rate = 100;
+      if (proxy.dataForm.depreciation_rate > 100)
+        proxy.dataForm.depreciation_rate = 100;
     }
 
     // focus vào input dầu tiên
@@ -648,7 +703,6 @@ export default {
     // Xét giá trị năm theo dõi mặc định là năm hiện tại
     function setValueDateYear() {
       proxy.dataForm.tracked_year = new Date().getFullYear();
-
     }
 
     /**
@@ -693,12 +747,14 @@ export default {
       switch (valueField) {
         case ResourceTable.FieldAsset.fixedAssetCategoryId:
           if (item.length != 0) {
-            proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
+            proxy.dataForm.fixed_asset_category_name =
+              item.fixed_asset_category_name;
             proxy.dataForm.life_time = item.life_time;
             proxy.dataForm.depreciation_rate = item.depreciation_rate
               ? item.depreciation_rate * 100
               : null;
-            proxy.dataForm.fixed_asset_category_code = item.fixed_asset_category_code;
+            proxy.dataForm.fixed_asset_category_code =
+              item.fixed_asset_category_code;
             proxy.errorMessage.AssetCategoryCode = false;
           } else {
             proxy.errorMessage.AssetCategoryCode = true;
@@ -716,41 +772,42 @@ export default {
       }
     };
 
+    // Xử lý xự kiện blur input số, tiền
     const onBlurInputNumber = (isValue, valueField) => {
       switch (valueField) {
         case "quantity":
           if (isValue != "") {
-            proxy.errorMessage.AssetName = false;
-            proxy.dataForm.fixed_asset_name = isValue;
+            proxy.errorMessage.Quantity = false;
+            proxy.dataForm.quantity = isValue;
           } else {
-            proxy.errorMessage.AssetName = true;
+            proxy.errorMessage.Quantity = true;
           }
           break;
 
         case "life_time":
           if (isValue != "") {
-            proxy.errorMessage.AssetCode = false;
-            proxy.dataForm.fixed_asset_code = isValue;
+            proxy.errorMessage.LifeTime = false;
+            proxy.dataForm.life_time = isValue;
           } else {
-            proxy.errorMessage.AssetCode = true;
+            proxy.errorMessage.LifeTime = true;
           }
 
           break;
         case "depreciation_rate":
           if (isValue != "") {
-            proxy.errorMessage.AssetCode = false;
-            proxy.dataForm.fixed_asset_code = isValue;
+            proxy.errorMessage.DepreciationRate = false;
+            proxy.dataForm.depreciation_rate = isValue;
           } else {
-            proxy.errorMessage.AssetCode = true;
+            proxy.errorMessage.DepreciationRate = true;
           }
 
           break;
         case "cost":
           if (isValue != "") {
-            proxy.errorMessage.AssetCode = false;
-            proxy.dataForm.fixed_asset_code = isValue;
+            proxy.errorMessage.Cost = false;
+            proxy.dataForm.cost = isValue;
           } else {
-            proxy.errorMessage.AssetCode = true;
+            proxy.errorMessage.Cost = true;
           }
 
           break;
@@ -830,7 +887,9 @@ export default {
         }
 
         if (proxy.dataForm.fixed_asset_category_code == null) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCategoryCode.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.AssetCategoryCode.VI
+          );
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.dataForm.quantity == null) {
@@ -844,7 +903,8 @@ export default {
         if (proxy.dataForm.life_time == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
-          proxy.titleErrorMess.DepreciationRate = Resource.ErrorInput.DepreciationYear.VI;
+          proxy.titleErrorMess.DepreciationRate =
+            Resource.ErrorInput.DepreciationYear.VI;
         }
         if (proxy.dataForm.depreciation_year == null) {
           proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationRate.VI);
@@ -852,22 +912,31 @@ export default {
         }
 
         if (proxy.dataForm.depreciation_rate == null) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.DepreciationRate.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.DepreciationRate.VI
+          );
           proxy.errorMessage.DepreciationRate = true;
         }
 
         if (proxy.dataForm.purchase_date == null) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.PurchaseDate.VI);
+          proxy.titleErrorMess.purchaseDate =
+            Resource.ErrorInput.PurchaseDate.VI;
+          proxy.errorMessage.purchase_date = true;
         }
         if (proxy.dataForm.production_date == null) {
-          proxy.errorMessage.ProductionDate = true;
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
+          proxy.titleErrorMess.production_date =
+            Resource.ErrorInput.ProductionDate.VI;
+          proxy.errorMessage.ProductionDate = true;
         }
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(Resource.ErrorValidate.CompareDepreciationYear.VI);
+        proxy.titleErrValidate.push(
+          Resource.ErrorValidate.CompareDepreciationYear.VI
+        );
 
         return false;
       } else if (
@@ -881,17 +950,39 @@ export default {
         proxy.titleErrorMess.DepreciationRate =
           Resource.ErrorInput.DepreciationRateVali.VI;
         return false;
-      }
-      else if(proxy.dataForm.purchase_date > proxy.dataForm.production_date){
+      } else if (
+        proxy.dataForm.purchase_date > proxy.dataForm.production_date
+      ) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(Resource.ErrorInput.ProductionGreaterDate);
-        proxy.titleErrorMess.DepreciationRate =
-        Resource.ErrorInput.DepreciationRateVali.VI;
-      }
-       else {
+        proxy.titleErrValidate.push(
+          Resource.ErrorInput.ProductionGreaterDate.VI
+        );
+        proxy.titleErrorMess.production_date =
+          Resource.ErrorInput.ProductionGreaterDate.VI;
+        proxy.errorMessage.ProductionDate = true;
+
+        return false;
+      } else {
         proxy.errorMessage = {};
         return true;
+      }
+    };
+
+    const handleChangeDate = (val, field) => {
+      switch (field) {
+        case "purchase_date":
+          if (val != null || val != "") {
+            proxy.errorMessage.purchase_date = false;
+          } else proxy.errorMessage.purchase_date = true;
+          break;
+        case "production_date":
+          if (val != null || val != "") {
+            proxy.errorMessage.ProductionDate = false;
+          } else {
+            proxy.errorMessage.ProductionDate = true;
+          }
+          break;
       }
     };
 
@@ -919,7 +1010,7 @@ export default {
         let result = await assetAPI.post("Assets", val);
         if (result != null || result != "") {
           proxy.titleErrValidate = [];
-          return true;
+          return result;
         } else return false;
       } catch (error) {
         switch (error.response.status) {
@@ -945,7 +1036,7 @@ export default {
       try {
         let result = await assetAPI.put("Assets", recordId, val);
         if (result != null || result != "") {
-          return true;
+          return result;
         } else return false;
       } catch (error) {
         switch (error.response.status) {
@@ -971,11 +1062,9 @@ export default {
       );
       if (res && proxy.titleErrValidate.length == 0) {
         emit("handle-close", false);
-        emit("show-message", proxy.formModel.mode, true);
-        console.log("ok");
+        emit("show-message", proxy.formModel.mode, res, true);
       } else {
         proxy.isShowDialogDetail = true;
-        console.log("false");
       }
     };
 
@@ -986,12 +1075,14 @@ export default {
           proxy.isShowDialogDetail = true;
         } else {
           if (proxy.formModel.mode == Enum.Mode.Update) {
-            proxy.handleUpdate();
+            if (proxy.EqualData == false) {
+              proxy.handleUpdate();
+            }
           } else {
             let res = await proxy.handleInsertAsset(proxy.dataForm);
             if (res && proxy.titleErrValidate.length == 0) {
               emit("handle-close", false);
-              emit("show-message", proxy.formModel.mode, true);
+              emit("show-message", proxy.formModel.mode, res, true);
               console.log("ok");
             } else {
               proxy.isShowDialogDetail = true;
@@ -1070,6 +1161,8 @@ export default {
       v$,
       onClickDataDropDown,
       onBlurInputNumber,
+      handleChangeDate,
+      disabledBtn, // Disable button
     };
   },
 };
