@@ -44,10 +44,16 @@
 
       <input
         type="text"
+        :id="'input' + tabindex"
         :placeholder="displayPlaceholder"
+        @keydown.down="
+          open();
+          focusFirstItem();
+        "
+        @keydown.esc="close()"
+        :tabindex="tabindex"
         ref="inputCbo"
         @keyup="search"
-        :id="id"
       />
       <div
         :class="[
@@ -70,15 +76,25 @@
         <div class="combobox-content">
           <ul class="list-item--combobox">
             <v-combobox-detail
-              v-for="item in data"
+              :id="tabindex + index"
+              :tabindex="tabindex"
+              v-for="(item, index) in data"
               :key="item"
               :dataItem="item"
               :displayField="displayField"
               :valueField="valueField"
+              @keydown.up="prevItem"
+              @keydown.down="nextItem"
+              @focus="
+                open();
+                isFocus = index;
+              "
+              @blur="isFocus = -1"
               :class="[
                 selected?.find((x) => x[valueField] == item[valueField])
                   ? 'selected'
                   : '',
+                active == index ? 'active-row' : '',
               ]"
               :selected="
                 selected?.some((x) => x[valueField] == item[valueField])
@@ -171,15 +187,20 @@ export default {
     heightCb: {
       default: 0,
     },
+    tabindex: {
+      default: null,
+      type: [String, Number],
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
     const displayPlaceholder = ref(props.placeholder);
-
+    const isFocus = ref(false);
     const selected = ref([]);
     const data = ref(props.dataAll);
     const autoHeight = ref(false);
+    const active = ref(0);
     window.cb = proxy;
     const display = computed(() =>
       proxy.selected.map((x) => x[props.displayField]).join("; ")
@@ -198,6 +219,14 @@ export default {
       proxy.isShowMenu = true;
       let i = proxy.selected.findIndex((x) => x[proxy.valueField] == item);
       proxy.selected.splice(i, 1);
+    };
+
+    /**
+     * Focus vào item đầu tiên
+     * NNNINH (25/11/2022)
+     */
+    const focusFirstItem = () => {
+      document.getElementById(`${proxy.tabindex}0`).focus();
     };
 
     /**
@@ -309,6 +338,34 @@ export default {
       emit("item-click", item);
     };
 
+    /**
+     * Focus vào item trước đó
+     * NNNINH (24/11/2022)
+     */
+    const prevItem = (e) => {
+      if (e.target.previousElementSibling) {
+        e.target.previousElementSibling.focus();
+      }
+    };
+
+    /**
+     * Focus vào item tiếp theo
+     * NNNINH (24/11/2022)
+     */
+    const nextItem = (e) => {
+      if (e.target.nextElementSibling) {
+        e.target.nextElementSibling.focus();
+      }
+    };
+
+    const open = () => {
+      proxy.isShowMenu = true;
+    };
+
+    const close = () => {
+      proxy.isShowMenu = false;
+    };
+
     onMounted(() => {
       proxy.data = proxy.dataAll;
       watch(
@@ -415,6 +472,13 @@ export default {
       setPositionSelectedData,
       styleSelectedData,
       displayPlaceholder,
+      prevItem,
+      nextItem,
+      isFocus,
+      close,
+      open,
+      active,
+      focusFirstItem,
     };
   },
 };

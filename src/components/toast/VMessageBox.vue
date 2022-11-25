@@ -4,12 +4,13 @@
       <div class="toast-top" v-if="disabledTop">
         <div class="toast-title">{{ title }}</div>
         <div class="toast-close">
-          <div class="app-icon" :class="icClose"></div>
+          <div tabindex="201" class="app-icon" :class="icClose"></div>
         </div>
       </div>
       <div class="toast-content">
         <div class="toast-content__left">
           <div
+            ref="first"
             :class="[
               'app-icon icon--left',
               leftIcon,
@@ -29,7 +30,7 @@
         </div>
         <div class="toast-content__right" v-if="disabledMultiple">
           <div class="text-message" v-for="text in valueMultiple" :key="text">
-            <span v-if="disabledLeftMultiple" class="span__left">- </span>
+            <!-- <span v-if="disabledLeftMultiple" class="span__left">- </span> -->
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>
             {{ text }}
             <span v-if="disabledValueRight">{{ valueMessageBox }}</span>
@@ -44,6 +45,18 @@
 </template>
 <script>
 // import MsButton from "@/components/tooltip/MsTooltip.vue";
+import {
+  getCurrentInstance,
+  onMounted,
+  ref,
+  watch,
+  computed,
+  onUnmounted,
+  onBeforeMount,
+  onUpdated,
+  nextTick,
+  reactive,
+} from "vue";
 export default {
   name: "VMessageBox",
   components: {
@@ -98,8 +111,21 @@ export default {
       type: Boolean,
     },
   },
-  setup() {
-    return {};
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
+
+    onMounted(() => {
+      proxy.focusFirst();
+    });
+    /**
+     * Focus vào phần tử đầu tiên
+     * NNNINH (24/11/2022)
+     */
+    const focusFirst = () => {
+      proxy.$refs.first.focus();
+    };
+
+    return { focusFirst };
   },
 };
 </script>

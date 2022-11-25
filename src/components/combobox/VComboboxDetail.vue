@@ -1,8 +1,8 @@
 <template>
   <v-tooltip :content="dataItem[displayField]" placement="right">
     <li
+      :tabindex="tabindex"
       class="item-combobox"
-      tabindex="-1"
       :class="select ? 'active' : ''"
       @click="emitClick"
       @keyup.enter="emitClick"
@@ -59,6 +59,10 @@ export default {
     selected: {
       type: Boolean,
       default: false,
+    },
+    tabindex: {
+      default: null,
+      type: [String, Number],
     },
   },
   methods: {

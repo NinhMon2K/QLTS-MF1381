@@ -1,7 +1,14 @@
 <template>
   <div class="grid-container">
     <div class="grid-view">
-      <div class="grid-header" :class="allData.length < 20 ? 'mg' : ''">
+      <div
+        class="grid-header"
+        :class="allData.length < 20 ? 'mg' : ''"
+        :style="{
+          'padding-right': left + 'px',
+          left: leftWidth + 'px',
+        }"
+      >
         <table>
           <thead>
             <tr>
@@ -48,8 +55,19 @@
         </div>
       </div>
 
-      <div class="grid-footer">
-        <table class="gr-footer">
+      <div
+        class="grid-footer"
+        :style="{
+          'padding-right': left - 2 + 'px',
+        }"
+      >
+        <table
+          class="gr-footer"
+          :style="{
+            left: leftWidth + 'px',
+            width: tableWidth + 'px',
+          }"
+        >
           <tfoot>
             <v-tfoot
               :columns="columns"
@@ -168,6 +186,8 @@ export default defineComponent({
       selectedIndex.value.map((x, i) => x && proxy.allData[i]).filter((x) => x)
     );
 
+    const scrl = ref(0);
+
     // Reset lại giá trị show toast message
     onUpdated(() => {
       if (proxy.confirmMessage.isShow == true) {
@@ -175,7 +195,41 @@ export default defineComponent({
           proxy.confirmMessage.isShow = false;
         }, 2500);
       }
+
+      // window.addEventListener("resize", resize);
+
+      proxy.$el.querySelector(".grid-body").addEventListener("scroll", scroll);
+
+      let body = proxy.$el.querySelector(".grid-body");
+
+      proxy.left = computed(() => {
+        return body.scrollHeight > body.clientHeight ? 8 : 0;
+      });
+
+      proxy.tableWidth = computed(() => body.scrollWidth);
+
+      left.value = body.scrollHeight > body.clientHeight ? 8 : 0;
+      tableWidth.value = body.scrollWidth;
     });
+
+    const scrollWidth = ref(0);
+    const leftWidth = ref(0);
+    const tableWidth = ref(0);
+
+    const left = ref(0);
+
+    window.o = proxy;
+
+    function resize() {
+      let body = proxy.$el.querySelector(".grid-body");
+      scrollWidth.value = body.scrollHeight > body.clientHeight ? 8 : 0;
+    }
+
+    function scroll() {
+      let body = proxy.$el.querySelector(".grid-body");
+      let header = proxy.$el.querySelector(".grid-header");
+      leftWidth.value = -body.scrollLeft;
+    }
 
     // Cập nhật dataSelected vào selectedData
     onMounted(() => {
@@ -265,6 +319,10 @@ export default defineComponent({
       confirmMessage,
       handleShowMess,
       reset,
+      scrollWidth,
+      leftWidth,
+      left,
+      tableWidth,
     };
   },
 });

@@ -96,9 +96,6 @@ table {
     .container-tfooter-left {
       display: flex;
       align-items: center;
-      .tfooter--left {
-        width: 138px;
-      }
     }
     .tfooter-left {
       display: flex;
@@ -346,9 +343,7 @@ tbody {
 
 .grid-view {
 }
-.grid-header {
-  padding-right: 8px;
-}
+
 .mg {
   padding-right: 0px;
 }
@@ -358,10 +353,14 @@ td {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.container_no--data{
+.container_no--data {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
+}
+
+.grid-header {
+  position: relative;
 }

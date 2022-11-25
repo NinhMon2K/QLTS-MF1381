@@ -12,7 +12,6 @@
       class="dropdown-menu-toggle"
       ref="dropdown"
       :class="disabledMessage ? 'error__message' : ''"
-      
     >
       <div
         :class="[
@@ -32,7 +31,6 @@
         v-on="eventListsioner"
         @keyup="search"
         @click="isShowMenu = true"
-       
       />
       <div
         :class="[
@@ -54,27 +52,38 @@
         v-if="isShowMenu"
       >
         <div class="dropdown-content">
-          <div class="container-title">
+          <!-- <div class="container-title">
             <div class="title-list">
               <div class="text__title" v-for="col in columns" :key="col">
                 {{ col.titleField }}
               </div>
             </div>
-          </div>
+          </div> -->
 
           <ul class="list-item--dropdown">
             <!-- <li>
               <div>Mã</div>
               <div>Bộ phận sử dụng</div>
             </li> -->
+            <li>
+              <div class="container-title">
+                <div class="title-list">
+                  <div class="text__title" v-for="col in columns" :key="col">
+                    {{ col.titleField }}
+                  </div>
+                </div>
+              </div>
+            </li>
+
             <dropdown-item
-              v-for="item in data"
+              v-for="(item, i) in data"
               :key="item"
               :dataItem="item"
               :columns="columns"
               :displayField="displayField"
               :class="[
                 modelValue && modelValue == item[valueField] ? 'selected' : '',
+                active == i ? 'active-row' : '',
               ]"
               @menu-item-click="itemClick"
             >
@@ -180,7 +189,7 @@ export default {
     const data = ref(props.dataAll);
     const disp = ref("");
     const autoHeight = ref(false);
-
+    const active = ref(0);
     window.dr = proxy;
 
     // Lấy dữ liệu những item selected
@@ -195,11 +204,12 @@ export default {
     });
     onMounted(() => {
       proxy.data = proxy.dataAll;
-      proxy.disp = display.value;
+
       watch(
         () => proxy.dataAll,
         () => {
           search();
+          proxy.disp = display.value;
         }
       );
     });
@@ -215,7 +225,7 @@ export default {
         if (val != "") {
           proxy.autoHeight = true;
         }
-        disp.value = display.value;
+        //disp.value = display.value;
       }, 100);
     };
 
@@ -244,7 +254,6 @@ export default {
       arr.push(`top: ${offsetPosi.top}px`);
       arr.push(`left: ${offsetPosi.left}px`);
       arr.push(`width: ${offsetDropdown.width}px`);
-      arr.push(`height: ${offsetDropdown.height}px`);
       return arr.join("; ");
     });
 
@@ -324,20 +333,18 @@ export default {
         }
       });
     });
-    const onFocus = (e)=>{
-      proxy.isShowMenu = true;
+    const onFocus = (e) => {
       document.addEventListener("focus", (e) => {
         let target = e.target;
         let cont = target.closest(".filter-dropdown");
         if (cont && cont.isEqualNode(proxy.$refs.container)) {
           e.preventDefault();
           e.stopPropagation();
-          proxy.isShowMenu = true;
         } else {
           isShowMenu.value = false;
         }
       });
-    }
+    };
 
     const onBlur = (e) => {
       nextTick(() => {
@@ -358,12 +365,12 @@ export default {
           proxy.onBlur(e);
         },
         focus: (e) => {
-          proxy.cancelEvent(e);
+          // proxy.cancelEvent(e);
           proxy.onFocus(e);
         },
         change: (e) => {
           // proxy.cancelEvent(e);
-          proxy.changeValue(e);
+          // proxy.changeValue(e);
         },
         keydown: (e) => {
           emit("keydown", e);
@@ -381,7 +388,7 @@ export default {
     function setDropdown() {
       let offset = proxy.$refs.dropdown.getBoundingClientRect();
       offsetDropdown.width = offset.width;
-      offsetDropdown.height = 200.5 - this.heightCb;
+      // offsetDropdown.height = 200.5 - this.heightCb;
     }
 
     /**
@@ -418,12 +425,12 @@ export default {
       disp, // Gán giá trị
       autoHeight,
       onBlur,
-      onFocus
+      onFocus,
+      active,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/components/v_dropdown.scss";
-
 </style>

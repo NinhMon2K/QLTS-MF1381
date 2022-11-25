@@ -8,8 +8,10 @@
           </div>
           <v-tooltip content="Hủy" placement="bottom" right="bottom">
             <div
+              ref="btnClose"
               class="form-asset__close app-icon ic-close"
               @click="handlePopupClose"
+              @keydown.enter="handlePopupClose"
             ></div>
           </v-tooltip>
         </div>
@@ -305,6 +307,9 @@
                 text="Hủy"
                 tabindex="112"
                 type="secodary"
+                ref="btnClosePopup"
+                @keydown.shift="focusWithShift"
+                @keydown.tab="focusBack"
                 @click="handlePopupClose"
                 radius
               >
@@ -332,6 +337,7 @@
    @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
+      v-on:keydown="keyboardEvent"
       leftIcon="ic-warning"
       :textMessageBox="Resource.TitleDialogMessage.AddAsset.VI"
       :disabledValueLeft="false"
@@ -339,11 +345,13 @@
       v-if="isDialogMessCancelAdd"
     >
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.Cancel.VI"
         radius
         @click="handleClosePop"
       ></v-button>
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
         @click="isDialogMessCancelAdd = false"
@@ -356,6 +364,7 @@
        @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
+      v-on:keydown="keyboardEvent"
       leftIcon="ic-warning"
       :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
       :disabledValueLeft="false"
@@ -363,20 +372,23 @@
       v-if="isDialogMessUpdate"
     >
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.Save.VI"
         radius
         @click="saveData"
       ></v-button>
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.NoSave.VI"
         type="abort"
         @click="handleClosePop"
         radius
       ></v-button>
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.Cancel.VI"
         type="secodary"
-        @click="isDialogMessUpdate = false"
+        @click="closeProValidate"
         radius
       ></v-button>
     </v-message-box>
@@ -386,6 +398,8 @@
        @author NNNINH (22/11/2022) -->
   <teleport to="body">
     <v-message-box
+      v-on:keydown="keyboardEvent"
+      leftIcon="ic-warning"
       :disabledTop="false"
       disabled
       disabledLeftMultiple
@@ -396,6 +410,7 @@
       v-if="isShowDialogDetail"
     >
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.Close.VI"
         radius
         @click="handleCloseErrorMultiple"
@@ -451,23 +466,15 @@ export default {
     vNumber,
   },
   props: {
-    configStyle: {
-      default: {},
-    },
-    statePopup: {
-      default: false,
-    },
     // Xác định là form thêm, sửa, xóa
     formModel: {
       default: {},
     },
+    // Đối tượng để lấy dữ liệu truyền từ table sang
     allData: {
       default: {},
     },
     modelValue: {
-      default: {},
-    },
-    dataPram: {
       default: {},
     },
   },
@@ -504,20 +511,24 @@ export default {
       },
     ]);
     // biến show popup
-    const isShowPopup = ref(false);
     const isDialogMessCancelAdd = ref(false);
     const titleErrorMess = reactive({
       DepreciationRate: "",
     });
-    const errorMessage = ref({});
-    const isDialogMessUpdate = ref(false);
-    const titleErrValidate = ref([]);
+    const isShowPopup = ref(false);
     const isShowDialogDetail = ref(false);
+    const isDialogMessUpdate = ref(false);
     const isSubmited = ref(false);
     const isEdited = ref(false);
-    const oldDataForm = ref({});
     const ctrlPressed = ref(false);
+    const shiftPressed = ref(false);
     const disabledBtn = ref(false);
+    const title = ref("");
+    const oldDataForm = ref({});
+    const errorMessage = ref({});
+    const titleErrValidate = ref([]);
+    const DataAssetCategory = ref([]);
+    const DataDepartment = ref([]);
 
     // Lưu dữ liệu 1 tài sản
     const dataForm = ref({});
@@ -525,6 +536,7 @@ export default {
     const EqualData = computed(() => {
       return _.isEqual(proxy.dataForm, proxy.oldDataForm);
     });
+
     // Validate form
     const dataFormValidate = computed(() => {
       return {
@@ -542,11 +554,6 @@ export default {
       };
     });
     const v$ = useValidate(dataFormValidate, dataForm);
-
-    const DataAssetCategory = ref([]);
-    const DataDepartment = ref([]);
-
-    const title = ref("");
 
     //Gọi sự kiện load bộ phận và loại tài sản
     onMounted(() => {
@@ -579,15 +586,15 @@ export default {
       proxy.updateValDepYear();
     });
 
-    onMounted(() => {
-      proxy.focusInput();
-    });
     watch(
       () => proxy.modelValue,
       (newVal) => {
         proxy.dataForm = newVal;
       }
     );
+    onMounted(() => {
+      proxy.focusFirst();
+    });
 
     onMounted(() => {
       try {
@@ -616,7 +623,7 @@ export default {
           //Kiểm tra giá trị mode là nhân bản
           case Enum.Mode.Duplicate:
             proxy.title = Resource.TitleFormPopup.FormDuplicateAsset.VI;
-            proxy.dataForm = proxy.allData;
+            proxy.dataForm = _.cloneDeep(proxy.allData);
             proxy.getAssetNextCode();
             proxy.setValueDateYear();
             break;
@@ -660,11 +667,20 @@ export default {
         proxy.isShowDialogDetail = false;
         proxy.isSubmited = true;
         proxy.isDialogMessUpdate = false;
-        proxy.focusInput();
+        proxy.focusFirst();
       }
       proxy.isShowDialogDetail = false;
       proxy.isSubmited = true;
-      proxy.focusInput();
+      proxy.focusFirst();
+    };
+
+    /**
+     * Xác nhận đóng cảnh báo validate nghiệp vụ
+     * NNNINH (25/11/2022)
+     */
+    const closeProValidate = () => {
+      proxy.isDialogMessUpdate = false;
+      proxy.focusFirst();
     };
 
     /**
@@ -679,7 +695,7 @@ export default {
     }
 
     // focus vào input dầu tiên
-    const focusInput = () => {
+    const focusFirst = () => {
       proxy.$refs.inputAssetCode.$el.getElementsByTagName("input")[0].focus();
     };
 
@@ -696,6 +712,15 @@ export default {
         // xét giá trị ban đầu cho ngày sử dụng
         if (proxy.dataForm.production_date == "") {
           proxy.dataForm.production_date = new Date().toDate();
+        }
+        if (proxy.dataForm.cost == null) {
+          proxy.dataForm.cost = 0;
+        }
+        if (proxy.dataForm.depreciation_year == null) {
+          proxy.dataForm.depreciation_year = 0;
+        }
+        if (proxy.dataForm.depreciation_rate == null) {
+          proxy.dataForm.depreciation_rate = 0;
         }
       });
     };
@@ -725,21 +750,42 @@ export default {
      */
     const keyboardEvent = (e) => {
       if (e.which == Enum.KeyCode.ESC) {
-        if (this.notifyShow == true) {
-          console.log("notifyShow");
-        } else if (this.validateShow == true) {
-          console.log("notifyShow");
-        } else if (this.validateProShow == true) {
-          console.log("notifyShow");
+        if (proxy.isShowDialogDetail == true) {
+          proxy.handleCloseErrorMultiple();
+        } else if (proxy.isDialogMessUpdate == true) {
+          proxy.closeProValidate();
         }
       } else if (e.which == Enum.KeyCode.Ctrl) {
         proxy.ctrlPressed = true;
       } else if (e.which == Enum.KeyCode.F8 && proxy.ctrlPressed == true) {
-        proxy.btnSaveOnClick();
+        proxy.saveData();
         proxy.ctrlPressed = false;
       } else if (e.which == Enum.KeyCode.F9 && proxy.ctrlPressed == true) {
-        proxy.btnCloseOnClick();
+        proxy.handlePopupClose();
         proxy.ctrlPressed = false;
+      }
+    };
+
+    /**
+     * Chuyển focus lên đầu sau khi đến cuối dialog tài sản
+     * NNNINH (25/11/2022)
+     */
+    const focusBack = () => {
+      if (!proxy.shiftPressed) {
+        proxy.$refs.btnClose.focus();
+      }
+      proxy.shiftPressed = false;
+    };
+
+    /**
+     * Focus ngược khi dùng Shift+Tab
+     * NNNINH (25/11/2022)
+     */
+    const focusWithShift = (e) => {
+      if (e.tab) {
+        proxy.$refs.btnClosePopup.focus();
+      } else {
+        proxy.shiftPressed = true;
       }
     };
 
@@ -775,7 +821,7 @@ export default {
     // Xử lý xự kiện blur input số, tiền
     const onBlurInputNumber = (isValue, valueField) => {
       switch (valueField) {
-        case "quantity":
+        case ResourceTable.FieldAsset.quantity:
           if (isValue != "") {
             proxy.errorMessage.Quantity = false;
             proxy.dataForm.quantity = isValue;
@@ -784,7 +830,7 @@ export default {
           }
           break;
 
-        case "life_time":
+        case ResourceTable.FieldAsset.lifeTime:
           if (isValue != "") {
             proxy.errorMessage.LifeTime = false;
             proxy.dataForm.life_time = isValue;
@@ -793,7 +839,7 @@ export default {
           }
 
           break;
-        case "depreciation_rate":
+        case ResourceTable.FieldAsset.depreciationRate:
           if (isValue != "") {
             proxy.errorMessage.DepreciationRate = false;
             proxy.dataForm.depreciation_rate = isValue;
@@ -802,16 +848,14 @@ export default {
           }
 
           break;
-        case "cost":
+        case ResourceTable.FieldAsset.cost:
           if (isValue != "") {
             proxy.errorMessage.Cost = false;
             proxy.dataForm.cost = isValue;
           } else {
             proxy.errorMessage.Cost = true;
           }
-
           break;
-
         default: {
           break;
         }
@@ -821,7 +865,7 @@ export default {
     //Sự kiện blur của input
     const onBlurInput = (isValue, valueField, e) => {
       switch (valueField) {
-        case "fixed_asset_name": {
+        case ResourceTable.FieldAsset.fixedAssetName: {
           if (isValue != "") {
             proxy.errorMessage.AssetName = false;
             proxy.dataForm.fixed_asset_name = isValue;
@@ -830,17 +874,15 @@ export default {
           }
           break;
         }
-        case "fixed_asset_code": {
+        case ResourceTable.FieldAsset.fixedAssetCode: {
           if (isValue != "") {
             proxy.errorMessage.AssetCode = false;
             proxy.dataForm.fixed_asset_code = isValue;
           } else {
             proxy.errorMessage.AssetCode = true;
           }
-
           break;
         }
-
         default: {
           break;
         }
@@ -872,64 +914,66 @@ export default {
       if (proxy.v$.$error) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        if (proxy.dataForm.fixed_asset_code == null) {
+        if (proxy.v$.fixed_asset_code.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
           proxy.errorMessage.AssetCode = true;
         }
-        if (proxy.dataForm.fixed_asset_name == null) {
+        if (proxy.v$.fixed_asset_name.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
           proxy.errorMessage.AssetName = true;
         }
-
-        if (proxy.dataForm.department_code == null) {
+        if (proxy.v$.department_code.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
           proxy.errorMessage.DepartmentCode = true;
         }
-
-        if (proxy.dataForm.fixed_asset_category_code == null) {
+        if (proxy.v$.fixed_asset_category_code.$error) {
           proxy.titleErrValidate.push(
             Resource.ErrorValidate.AssetCategoryCode.VI
           );
           proxy.errorMessage.AssetCategoryCode = true;
         }
-        if (proxy.dataForm.quantity == null) {
+        if (proxy.v$.quantity.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
           proxy.errorMessage.Quantity = true;
         }
-        if (proxy.dataForm.cost == null) {
+
+        if (proxy.dataForm.cost == 0) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
           proxy.errorMessage.Cost = true;
         }
-        if (proxy.dataForm.life_time == null) {
+
+        if (proxy.v$.life_time.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
           proxy.titleErrorMess.DepreciationRate =
-            Resource.ErrorInput.DepreciationYear.VI;
-        }
-        if (proxy.dataForm.depreciation_year == null) {
-          proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationRate.VI);
-          proxy.errorMessage.DepreciationYear = true;
+            Resource.ErrorInput.DepreciationRate.VI;
         }
 
-        if (proxy.dataForm.depreciation_rate == null) {
+        if (proxy.dataForm.depreciation_year == 0) {
+          proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationYear.VI);
+          proxy.errorMessage.DepreciationYear = true;
+          proxy.titleErrorMess.DepreciationYear =
+            Resource.ErrorInput.DepreciationYear.VI;
+        }
+        if (proxy.dataForm.depreciation_rate == 0) {
           proxy.titleErrValidate.push(
             Resource.ErrorValidate.DepreciationRate.VI
           );
           proxy.errorMessage.DepreciationRate = true;
         }
-
-        if (proxy.dataForm.purchase_date == null) {
+        if (proxy.v$.purchase_date.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.PurchaseDate.VI);
           proxy.titleErrorMess.purchaseDate =
             Resource.ErrorInput.PurchaseDate.VI;
           proxy.errorMessage.purchase_date = true;
         }
-        if (proxy.dataForm.production_date == null) {
+        if (proxy.v$.production_date.$error) {
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
           proxy.titleErrorMess.production_date =
             Resource.ErrorInput.ProductionDate.VI;
           proxy.errorMessage.ProductionDate = true;
         }
+
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
         proxy.titleErrValidate = [];
@@ -971,12 +1015,12 @@ export default {
 
     const handleChangeDate = (val, field) => {
       switch (field) {
-        case "purchase_date":
+        case ResourceTable.FieldAsset.purchaseDate:
           if (val != null || val != "") {
             proxy.errorMessage.purchase_date = false;
           } else proxy.errorMessage.purchase_date = true;
           break;
-        case "production_date":
+        case ResourceTable.FieldAsset.productionDate:
           if (val != null || val != "") {
             proxy.errorMessage.ProductionDate = false;
           } else {
@@ -1077,16 +1121,18 @@ export default {
           if (proxy.formModel.mode == Enum.Mode.Update) {
             if (proxy.EqualData == false) {
               proxy.handleUpdate();
+            // } else {
+            //   proxy.titleErrValidate = [];
+            //   proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa!");
+            //   proxy.isShowDialogDetail = true;
             }
           } else {
             let res = await proxy.handleInsertAsset(proxy.dataForm);
             if (res && proxy.titleErrValidate.length == 0) {
               emit("handle-close", false);
               emit("show-message", proxy.formModel.mode, res, true);
-              console.log("ok");
             } else {
               proxy.isShowDialogDetail = true;
-              console.log("false");
             }
           }
         }
@@ -1132,7 +1178,9 @@ export default {
       isShowDialogDetail, // show dialog validate popup
       loadDataCategory, // Lấy toàn bộ dữ liệu loại tài sản
       loadDataDepartment, // Lấy toàn bộ dữ liệu bộ phận sử dụng
-      focusInput, // Xử lý sự kiện focus của input
+      focusFirst, // Xử lý sự kiện focus của input
+      focusBack,
+      focusWithShift,
       setValueDateYear, // Xét giá trị năm theo dõi mặc định là năm hiện tại
       defaultValueDate, // Xét giá trị ban đầu cho ngày mua và ngày sử dụng
       updateValDepYear, // Cập nhật giá trị hao mòn năm
@@ -1158,11 +1206,13 @@ export default {
       backEndErrorNotify, //  Hiện thị cảnh báo lỗi truyền từ BackEnd
       keyboardEvent,
       ctrlPressed, // Nút Ctrl có đang được bấm hay không
+      shiftPressed,
       v$,
       onClickDataDropDown,
       onBlurInputNumber,
       handleChangeDate,
       disabledBtn, // Disable button
+      closeProValidate,
     };
   },
 };

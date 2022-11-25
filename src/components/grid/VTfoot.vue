@@ -3,11 +3,11 @@
     <th :colspan="spanCol">
       <div class="container-tfooter-left">
         <div class="tfooter--left" style="font-size: 11px">
-          Tổng số:
+          <span>Tổng số:</span>
           <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{
             dataTotal.totalCount
           }}</span>
-          bản ghi
+          <span>bản ghi</span>
         </div>
         <div class="total-page">
           <select
@@ -16,7 +16,8 @@
             @change="handleChangeTab"
           >
             <option
-              class="item-total"
+              v-show="true"
+              id="item-total"
               v-for="item in dataTotalPage"
               :key="item"
               :value="item"
@@ -137,6 +138,15 @@ export default {
   align-items: center;
   .tfooter--left {
     width: 150px;
+    span {
+      &:last-child {
+        font-weight: 500;
+      }
+      &:first-child {
+        font-weight: 500;
+        margin-left: -11px;
+      }
+    }
   }
   .total-page {
     display: flex;
@@ -162,9 +172,16 @@ export default {
   padding-left: 13px;
   outline: none;
   -webkit-appearance: none;
+  #item-total {
+    widows: 100%;
+    height: 36px !important;
+  }
 }
 .th-foot {
   font-size: 13px;
   text-align: right;
 }
+#total-page_size {
+}
+
 </style>

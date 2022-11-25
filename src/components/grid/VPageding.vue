@@ -3,6 +3,7 @@
     :page-size="tableView"
     @current-change="handleCurrentChange"
     current-page.sync="currentPage"
+    :default-current-page="currentPage"
     layout=" prev, pager, next"
     :total="dataTotal.totalCount"
   >
@@ -32,7 +33,7 @@ export default {
       default: {},
     },
   },
-  emits: ["currentPage"],
+  emits: ["currentPage", "update:modelValue", "changeValue"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.page = proxy;

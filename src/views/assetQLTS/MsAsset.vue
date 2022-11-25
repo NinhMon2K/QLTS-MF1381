@@ -5,6 +5,7 @@
         <!-- Nhập dữ liệu tìm kiếm theo mã tài sản hoặc bộ phận sử dụng
              @author NNNINH (22/11/2022) -->
         <v-input
+  
           id="txt-search"
           :hasLabel="false"
           :radius="true"
@@ -12,8 +13,11 @@
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
           v-model="txtSearch"
+          :tabindex="1"
           @blur="handleChangeSeach"
           @change="handleChangeSeach"
+          @kypress.enter="handleChangeSeach"
+          
         ></v-input>
       </div>
 
@@ -24,6 +28,7 @@
         rightIcon="ic-angle-downs"
         placeholder="Loại tài sản"
         :heightCb="13"
+        :tabindex="'2'"
         v-model="selectedAssetCategory"
         :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
         :displayField="ResourceTable.FieldAssetCategory.fixedAssetCategoryName"
@@ -347,7 +352,7 @@ export default {
     onMounted(() => {
       watch(
         () => proxy.selectedAssetDepartment,
-        (newVal) => {    
+        (newVal) => {
           proxy.loadDataAsset();
         },
         { deep: true }
@@ -384,13 +389,13 @@ export default {
         proxy.dataTotal.totalCount = res.totalCount; // Lấy giá trị tổng số bản ghi
         proxy.dataTotal.quantity = res.totalQuantity; // Lấy giá trị tổng số lượng
         proxy.dataTotal.cost = res.totalCost; // Lấy giá trị tổng số nguyên giá
-        proxy.dataTotal.depreciation_residual = res.totalDepreciation; // Lấy tổng số khấu hao hao mòn lũy kế
+        proxy.dataTotal.depreciation_year = res.totalDepreciation; // Lấy tổng số khấu hao hao mòn lũy kế
         proxy.dataTotal.depreciation_residual = res.totalRemain; // Lấy tổng số giá trị còn lại
         let data = res?.data;
         let o = (proxy.currentPage - 1) * proxy.tableView;
         data.forEach((x, i) => {
           x.STT = i + 1 + o;
-          x.depreciation_residual = x.depreciation_year * x.life_time;
+          x.depreciation_residual = x.cost - x.depreciation_year;
         });
         proxy.allData = data;
       } catch (error) {
@@ -669,7 +674,7 @@ export default {
         width: 110,
       },
       {
-        field: ResourceTable.FieldAsset.depreciationResidual,
+        field: ResourceTable.FieldAsset.depreciationYear,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
         summary: "sum",

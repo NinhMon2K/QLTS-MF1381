@@ -52,6 +52,10 @@
       background-color: $btn-primary-active-bg;
       border: solid 1px #d1edf4;
     }
+    &:focus {
+      background-color: #0582a2;
+      box-shadow: 0px 0px 3px 3px #cef6ff;
+    }
   }
   &.secodary {
     background-color: #fff;
@@ -75,6 +79,7 @@
     &:focus {
       background-color: #1aa4c8;
       border: solid 1px #d1edf4;
+      box-shadow: 0px 0px 3px 3px #cef6ff;
       .btn-text {
         color: #fff;
       }
