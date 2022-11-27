@@ -358,10 +358,12 @@ export default {
       }
     };
 
+    // Hiện list combobox
     const open = () => {
       proxy.isShowMenu = true;
     };
 
+    // Đóng combobox
     const close = () => {
       proxy.isShowMenu = false;
     };

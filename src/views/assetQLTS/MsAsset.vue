@@ -5,7 +5,6 @@
         <!-- Nhập dữ liệu tìm kiếm theo mã tài sản hoặc bộ phận sử dụng
              @author NNNINH (22/11/2022) -->
         <v-input
-  
           id="txt-search"
           :hasLabel="false"
           :radius="true"
@@ -13,11 +12,10 @@
           placeholder="Tìm kiếm tài sản"
           :disabledMessage="false"
           v-model="txtSearch"
-          :tabindex="1"
+          :tabindex="'1'"
           @blur="handleChangeSeach"
           @change="handleChangeSeach"
-          @kypress.enter="handleChangeSeach"
-          
+          @keypress.enter="handleChangeSeach"
         ></v-input>
       </div>
 
@@ -41,6 +39,7 @@
         rightIcon="ic-angle-downs"
         placeholder="Bộ phận sử dụng"
         :heightCb="13"
+        :tabindex="'3'"
         v-model="selectedAssetDepartment"
         :valueField="ResourceTable.FieldDepartment.departmentId"
         :displayField="ResourceTable.FieldDepartment.departmentName"
@@ -56,6 +55,7 @@
           leftIcon="ic-add"
           :radius="true"
           @click="handleClickAdd"
+          :tabindex="'4'"
         >
         </v-button>
       </v-tooltip>
@@ -65,8 +65,10 @@
         <v-button
           leftIcon="ic-export"
           id="btn-export"
+          :tabindex="'5'"
           :disabled="disabledButton.disabledExport"
           :radius="true"
+          @click="handleExportExcel"
         ></v-button>
       </v-tooltip>
 
@@ -76,6 +78,7 @@
           leftIcon="ic-delete__toolbar"
           id="btn-delete"
           :radius="true"
+          :tabindex="'6'"
           :disabled="disabledButton.disabledDelete"
           @click="handleShowMessBox"
         >
@@ -195,6 +198,8 @@
   <teleport to="body">
     <v-loading v-if="isLoading"></v-loading>
   </teleport>
+
+  <!-- Bảng dữ liệu tài sản -->
   <v-grid
     :columns="columns"
     :allData="allData"
@@ -209,6 +214,8 @@
     @changeTabView="handleChangeTab"
   >
   </v-grid>
+
+  <!-- Có hiện thông báo message hay không -->
   <teleport to="body">
     <v-message
       :iconMessage="confirmMessage.iconMessage"
@@ -227,6 +234,7 @@ import VGrid from "@/components/grid/VGrid.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VLoading from "@/components/loading/VLoading.vue";
 import VMessage from "@/components/toast/VToastMessage.vue";
+import axios from "axios";
 import {
   computed,
   getCurrentInstance,
@@ -320,6 +328,7 @@ export default {
       }
     });
 
+    // Theo dõi thay đổi mảng selected table thì disable button xóa và xuất excel hay không
     watch(
       () => dataSelected.value,
       (newVal) => {
@@ -339,6 +348,7 @@ export default {
       }
     );
 
+    // Theo dõi thay đổi mảng loại tài sản thì load lại dữ liệu
     onMounted(() => {
       watch(
         () => proxy.selectedAssetCategory,
@@ -349,6 +359,7 @@ export default {
       );
     });
 
+    // Theo dõi thay đổi mảng bộ phận sử dụng thì load lại dữ liệu
     onMounted(() => {
       watch(
         () => proxy.selectedAssetDepartment,
@@ -414,6 +425,26 @@ export default {
       }
     }
 
+    //Load dữ liệu data combobox loại tài sản
+    async function exportToExcel() {
+      try {
+        axios({
+              url: 'https://localhost:44375/api/v1/Assets/export',
+              method: 'GET',
+              responseType: 'blob',
+        }).then((res) => {
+               var FILE = window.URL.createObjectURL(new Blob([res.data]));
+               var docUrl = document.createElement('a');
+               docUrl.href = FILE;
+               docUrl.setAttribute('download', 'Danh_sach_nhan_vien.xlsx');
+               document.body.appendChild(docUrl);
+               docUrl.click();
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     //Load dữ liệu data combobox tên bộ phận
     async function loadDataComboDepartment() {
       try {
@@ -456,6 +487,9 @@ export default {
         console.log(error);
       }
     }
+    const handleExportExcel = ()=>{
+      proxy.exportToExcel();
+    }
 
     /**
      * Hiện thị toast mesage
@@ -464,22 +498,36 @@ export default {
      * Author: NNNinh (13/11/2022)
      */
     const handleShowMess = async (mode, res, isShowMessage) => {
-      console.log(res);
-      if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
-        await proxy.loadDataAsset();
-        proxy.$refs.table.reset();
-
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Thêm mới thành công!";
-        proxy.confirmMessage.isShow = true;
-        proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
-      } else {
-        proxy.loadDataAsset();
-        proxy.$refs.table.reset();
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
-        proxy.confirmMessage.isShow = true;
-        proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
+      try {
+        if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
+          await proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage = "Thêm mới thành công!";
+          proxy.confirmMessage.isShow = true;
+          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
+        } else {
+          proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
+          proxy.confirmMessage.isShow = true;
+          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
+        }
+      } catch (error) {
+        console.log(error);
+        switch (error.response.status) {
+          case 400:
+            proxy.backEndErrorNotify(error.response.data.moreInfo);
+            break;
+          case 405:
+            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
+            break;
+          case 500:
+            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
+            break;
+          default:
+        }
       }
     };
 
@@ -515,46 +563,49 @@ export default {
      *  @author NNNinh(20/10/2021)
      */
     const handleShowMessBox = () => {
-      //kiểm tra dataSelected bằng 0 => Hiển thị message : Bạn chưa chọn dữ liệu để xóa
-      if (proxy.dataSelected.length == 0) {
-        proxy.isDialogMessDeleNoData = true;
-      } else {
-        //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
-        if (proxy.dataSelected.length == 1) {
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
-          proxy.isDialogMessDelete = true;
+      try {
+        //kiểm tra dataSelected bằng 0 => Hiển thị message : Bạn chưa chọn dữ liệu để xóa
+        if (proxy.dataSelected.length == 0) {
+          proxy.isDialogMessDeleNoData = true;
         } else {
-          //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-          proxy.valueMessageBox = proxy.customValueMessBox(
-            proxy.dataSelected.length
-          );
-          proxy.isDialogMessDeleMultiple = true;
+          //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
+          if (proxy.dataSelected.length == 1) {
+            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+            proxy.isDialogMessDelete = true;
+          } else {
+            //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
+            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+            proxy.isDialogMessDeleMultiple = true;
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
     };
 
     // Sự kiện xóa dữ liệu 1 dòng
     const handleDelete = async () => {
-      let result = await proxy.deleteAsset();
-      if (result) {
-        proxy.isDialogMessDelete = false;
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
-        proxy.confirmMessage.isShow = true;
-        proxy.loadDataAsset();
-        proxy.$refs.table.reset();
-      } else {
-        proxy.isDialogMessDelete = false;
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
-        proxy.confirmMessage.isShow = true;
-        proxy.loadDataAsset();
-        proxy.$refs.table.reset();
+      try {
+        let result = await proxy.deleteAsset();
+        if (result) {
+          proxy.isDialogMessDelete = false;
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
+          proxy.confirmMessage.isShow = true;
+          proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+        } else {
+          proxy.isDialogMessDelete = false;
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
+          proxy.confirmMessage.isShow = true;
+          proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
-
     // Xử lý sự kiện change input tìm kiếm
     const handleChangeSeach = () => {
       proxy.loadDataAsset();
@@ -562,25 +613,29 @@ export default {
 
     // Sự kiện xóa dữ liệu 1 dòng
     const handleMultiDelete = async () => {
-      let result = await proxy.deleteMultiAsset();
-      if (result) {
-        proxy.isDialogMessDeleMultiple = false;
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage =
-          proxy.customValueMessBox(proxy.dataSelected.length) +
-          " Xóa dữ liệu thành công!";
-        proxy.confirmMessage.isShow = true;
-        proxy.loadDataAsset();
-        proxy.$refs.table.reset();
-      } else {
-        proxy.isDialogMessDeleMultiple = false;
-        proxy.confirmMessage.iconMessage = "ic-success";
-        proxy.confirmMessage.textMessage =
-          proxy.customValueMessBox(proxy.dataSelected.length) +
-          " Xóa dữ liệu thất bại!";
-        proxy.confirmMessage.isShow = true;
-        proxy.loadDataAsset();
-        proxy.$refs.table.reset();
+      try {
+        let result = await proxy.deleteMultiAsset();
+        if (result) {
+          proxy.isDialogMessDeleMultiple = false;
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage =
+            proxy.customValueMessBox(proxy.dataSelected.length) +
+            " Xóa dữ liệu thành công!";
+          proxy.confirmMessage.isShow = true;
+          proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+        } else {
+          proxy.isDialogMessDeleMultiple = false;
+          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.textMessage =
+            proxy.customValueMessBox(proxy.dataSelected.length) +
+            " Xóa dữ liệu thất bại!";
+          proxy.confirmMessage.isShow = true;
+          proxy.loadDataAsset();
+          proxy.$refs.table.reset();
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
@@ -651,7 +706,7 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCategoryName,
         title: ResourceTable.lblTableAssets.lblAssetCategoryName,
         type: "Text",
-        width: 250,
+        width: 260,
       },
       {
         field: ResourceTable.FieldDepartment.departmentName,
@@ -750,6 +805,8 @@ export default {
       selectedAssetCategory,
       selectedAssetDepartment,
       active,
+      exportToExcel,
+      handleExportExcel
     };
   },
 };

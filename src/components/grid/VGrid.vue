@@ -5,7 +5,7 @@
         class="grid-header"
         :class="allData.length < 20 ? 'mg' : ''"
         :style="{
-          'padding-right': left + 'px',
+          'padding-right': left  + 'px',
           left: leftWidth + 'px',
         }"
       >

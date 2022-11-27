@@ -103,9 +103,7 @@
                   hasInput
                   :heightCb="-25"
                   v-model="dataForm.fixed_asset_category_id"
-                  :valueField="
-                    ResourceTable.FieldAssetCategory.fixedAssetCategoryId
-                  "
+                  :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
                   displayField="fixed_asset_category_code"
                   @blur="onBlurDropdown"
                   rightIcon="ic-angle-downs"
@@ -113,9 +111,7 @@
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="onClickDataDropDown"
-                  :disabledMessage="
-                    errorMessage.AssetCategoryCode && isSubmited
-                  "
+                  :disabledMessage="errorMessage.AssetCategoryCode && isSubmited"
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></v-drop-down>
               </div>
@@ -206,9 +202,7 @@
                   leftIcon
                   disabledRight
                   v-model="dataForm.depreciation_rate"
-                  :valueField="
-                    ResourceTable.FieldAssetCategory.depreciationRate
-                  "
+                  :valueField="ResourceTable.FieldAssetCategory.depreciationRate"
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -690,8 +684,7 @@ export default {
     function updateValDepYear() {
       proxy.dataForm.depreciation_year =
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
-      if (proxy.dataForm.depreciation_rate > 100)
-        proxy.dataForm.depreciation_rate = 100;
+      if (proxy.dataForm.depreciation_rate > 100) proxy.dataForm.depreciation_rate = 100;
     }
 
     // focus vào input dầu tiên
@@ -789,76 +782,83 @@ export default {
       }
     };
 
+    // Xử lý sự kiện click item dropdown
     const onClickDataDropDown = (item, valueField) => {
-      switch (valueField) {
-        case ResourceTable.FieldAsset.fixedAssetCategoryId:
-          if (item.length != 0) {
-            proxy.dataForm.fixed_asset_category_name =
-              item.fixed_asset_category_name;
-            proxy.dataForm.life_time = item.life_time;
-            proxy.dataForm.depreciation_rate = item.depreciation_rate
-              ? item.depreciation_rate * 100
-              : null;
-            proxy.dataForm.fixed_asset_category_code =
-              item.fixed_asset_category_code;
-            proxy.errorMessage.AssetCategoryCode = false;
-          } else {
-            proxy.errorMessage.AssetCategoryCode = true;
-          }
-          break;
-        case ResourceTable.FieldAsset.departmentId:
-          if (item.length != 0) {
-            proxy.dataForm.department_name = item.department_name;
-            proxy.dataForm.department_code = item.department_code;
-            proxy.errorMessage.DepartmentCode = false;
-          } else {
-            proxy.errorMessage.DepartmentCode = true;
-          }
-          break;
+      try {
+        switch (valueField) {
+          case ResourceTable.FieldAsset.fixedAssetCategoryId: // Kiểm tra có phải mã loại tài sản hay không
+            if (item.length != 0) {
+              proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
+              proxy.dataForm.life_time = item.life_time;
+              proxy.dataForm.depreciation_rate = item.depreciation_rate
+                ? item.depreciation_rate * 100
+                : null;
+              proxy.dataForm.fixed_asset_category_code = item.fixed_asset_category_code;
+              proxy.errorMessage.AssetCategoryCode = false;
+            } else {
+              proxy.errorMessage.AssetCategoryCode = true;
+            }
+            break;
+          case ResourceTable.FieldAsset.departmentId: // Kiểm tra có phải mã bộ phận sử dụng hay không
+            if (item.length != 0) {
+              proxy.dataForm.department_name = item.department_name;
+              proxy.dataForm.department_code = item.department_code;
+              proxy.errorMessage.DepartmentCode = false;
+            } else {
+              proxy.errorMessage.DepartmentCode = true;
+            }
+            break;
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
     // Xử lý xự kiện blur input số, tiền
     const onBlurInputNumber = (isValue, valueField) => {
-      switch (valueField) {
-        case ResourceTable.FieldAsset.quantity:
-          if (isValue != "") {
-            proxy.errorMessage.Quantity = false;
-            proxy.dataForm.quantity = isValue;
-          } else {
-            proxy.errorMessage.Quantity = true;
-          }
-          break;
+      try {
+        switch (valueField) {
+          case ResourceTable.FieldAsset.quantity: // Kiểm tra có phải là số lượng hay không
+            if (isValue != "") {
+              proxy.errorMessage.Quantity = false;
+              proxy.dataForm.quantity = isValue;
+            } else {
+              proxy.errorMessage.Quantity = true;
+            }
+            break;
 
-        case ResourceTable.FieldAsset.lifeTime:
-          if (isValue != "") {
-            proxy.errorMessage.LifeTime = false;
-            proxy.dataForm.life_time = isValue;
-          } else {
-            proxy.errorMessage.LifeTime = true;
-          }
+          case ResourceTable.FieldAsset.lifeTime: // Kiểm tra có phải là số năm sử dụng hay không
+            if (isValue != "") {
+              proxy.errorMessage.LifeTime = false;
+              proxy.dataForm.life_time = isValue;
+            } else {
+              proxy.errorMessage.LifeTime = true;
+            }
 
-          break;
-        case ResourceTable.FieldAsset.depreciationRate:
-          if (isValue != "") {
-            proxy.errorMessage.DepreciationRate = false;
-            proxy.dataForm.depreciation_rate = isValue;
-          } else {
-            proxy.errorMessage.DepreciationRate = true;
-          }
+            break;
+          case ResourceTable.FieldAsset.depreciationRate: // Kiểm tra có phải là tỉ lệ hao mòn hay không
+            if (isValue != "") {
+              proxy.errorMessage.DepreciationRate = false;
+              proxy.dataForm.depreciation_rate = isValue;
+            } else {
+              proxy.errorMessage.DepreciationRate = true;
+            }
 
-          break;
-        case ResourceTable.FieldAsset.cost:
-          if (isValue != "") {
-            proxy.errorMessage.Cost = false;
-            proxy.dataForm.cost = isValue;
-          } else {
-            proxy.errorMessage.Cost = true;
+            break;
+          case ResourceTable.FieldAsset.cost: // Kiểm tra có phải là nguyên giá hay không
+            if (isValue != "") {
+              proxy.errorMessage.Cost = false;
+              proxy.dataForm.cost = isValue;
+            } else {
+              proxy.errorMessage.Cost = true;
+            }
+            break;
+          default: {
+            break;
           }
-          break;
-        default: {
-          break;
         }
+      } catch (error) {
+        console.log(error);
       }
     };
 
@@ -866,6 +866,7 @@ export default {
     const onBlurInput = (isValue, valueField, e) => {
       switch (valueField) {
         case ResourceTable.FieldAsset.fixedAssetName: {
+          // Kiểm tra có phải là tên tài sản hay không
           if (isValue != "") {
             proxy.errorMessage.AssetName = false;
             proxy.dataForm.fixed_asset_name = isValue;
@@ -875,6 +876,7 @@ export default {
           break;
         }
         case ResourceTable.FieldAsset.fixedAssetCode: {
+          // Kiểm tra có phải là mã tài sản hay không
           if (isValue != "") {
             proxy.errorMessage.AssetCode = false;
             proxy.dataForm.fixed_asset_code = isValue;
@@ -889,6 +891,7 @@ export default {
       }
     };
 
+    // Xử lý sự kiện blur dropdown
     const onBlurDropdown = (val, valueField) => {
       switch (valueField) {
         case ResourceTable.FieldAsset.fixedAssetCategoryId:
@@ -915,77 +918,78 @@ export default {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
         if (proxy.v$.fixed_asset_code.$error) {
+          // Kiểm tra giá trị mã tài sản null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCode.VI);
           proxy.errorMessage.AssetCode = true;
         }
         if (proxy.v$.fixed_asset_name.$error) {
+          // Kiểm tra giá trị tên tài sản null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.AssetName.VI);
           proxy.errorMessage.AssetName = true;
         }
         if (proxy.v$.department_code.$error) {
+          // Kiểm tra giá trị mã bộ phận null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.DepartmentCode.VI);
           proxy.errorMessage.DepartmentCode = true;
         }
         if (proxy.v$.fixed_asset_category_code.$error) {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.AssetCategoryCode.VI
-          );
+          // Kiểm tra giá trị mã loại tài sản null hay không
+          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCategoryCode.VI);
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.v$.quantity.$error) {
+          // Kiểm tra giá trị số lượng null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.Quantity.VI);
           proxy.errorMessage.Quantity = true;
         }
 
         if (proxy.dataForm.cost == 0) {
+          // Kiểm tra giá trị nguyên giá null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.Cost.VI);
           proxy.errorMessage.Cost = true;
         }
 
         if (proxy.v$.life_time.$error) {
+          // Kiểm tra giá trị số năm sử dụng null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
-          proxy.titleErrorMess.DepreciationRate =
-            Resource.ErrorInput.DepreciationRate.VI;
+          proxy.titleErrorMess.DepreciationRate = Resource.ErrorInput.DepreciationRate.VI;
         }
 
         if (proxy.dataForm.depreciation_year == 0) {
+          // Kiểm tra giá trị hao mòn năm null hay không
           proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationYear.VI);
           proxy.errorMessage.DepreciationYear = true;
-          proxy.titleErrorMess.DepreciationYear =
-            Resource.ErrorInput.DepreciationYear.VI;
+          proxy.titleErrorMess.DepreciationYear = Resource.ErrorInput.DepreciationYear.VI;
         }
         if (proxy.dataForm.depreciation_rate == 0) {
-          proxy.titleErrValidate.push(
-            Resource.ErrorValidate.DepreciationRate.VI
-          );
+          proxy.titleErrValidate.push(Resource.ErrorValidate.DepreciationRate.VI);
           proxy.errorMessage.DepreciationRate = true;
         }
         if (proxy.v$.purchase_date.$error) {
+          // Kiểm tra giá trị ngày mua null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.PurchaseDate.VI);
-          proxy.titleErrorMess.purchaseDate =
-            Resource.ErrorInput.PurchaseDate.VI;
+          proxy.titleErrorMess.purchaseDate = Resource.ErrorInput.PurchaseDate.VI;
           proxy.errorMessage.purchase_date = true;
         }
         if (proxy.v$.production_date.$error) {
+          // Kiểm tra giá trị ngày bắt đầu sử dụng null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
-          proxy.titleErrorMess.production_date =
-            Resource.ErrorInput.ProductionDate.VI;
+          proxy.titleErrorMess.production_date = Resource.ErrorInput.ProductionDate.VI;
           proxy.errorMessage.ProductionDate = true;
         }
 
         return false;
       } else if (proxy.dataForm.depreciation_year > proxy.dataForm.cost) {
+        // kiểm tra giá trị hao mòn lớn hơn nguyên giá
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(
-          Resource.ErrorValidate.CompareDepreciationYear.VI
-        );
+        proxy.titleErrValidate.push(Resource.ErrorValidate.CompareDepreciationYear.VI);
 
         return false;
       } else if (
         proxy.dataForm.depreciation_rate !=
-        parseFloat(100 / proxy.dataForm.life_time).toFixed(2)
+        parseFloat(100 / proxy.dataForm.life_time).toFixed(2) // Kiểm tra tỉ lệ hao mòn phải bằng 1/Số năm sử dụng
       ) {
         console.log(parseFloat(100 / proxy.dataForm.life_time).toFixed(2));
         proxy.titleErrValidate = [];
@@ -995,24 +999,24 @@ export default {
           Resource.ErrorInput.DepreciationRateVali.VI;
         return false;
       } else if (
-        proxy.dataForm.purchase_date > proxy.dataForm.production_date
+        proxy.dataForm.purchase_date > proxy.dataForm.production_date // kiểm tra ngày mua nhỏ hơn ngày mua
       ) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(
-          Resource.ErrorInput.ProductionGreaterDate.VI
-        );
+        proxy.titleErrValidate.push(Resource.ErrorInput.ProductionGreaterDate.VI);
         proxy.titleErrorMess.production_date =
           Resource.ErrorInput.ProductionGreaterDate.VI;
         proxy.errorMessage.ProductionDate = true;
 
         return false;
       } else {
+        proxy.titleErrValidate = [];
         proxy.errorMessage = {};
         return true;
       }
     };
 
+    // Xử lý sự kiện change value của ngày mua và ngày sử dụng
     const handleChangeDate = (val, field) => {
       switch (field) {
         case ResourceTable.FieldAsset.purchaseDate:
@@ -1053,7 +1057,7 @@ export default {
       try {
         let result = await assetAPI.post("Assets", val);
         if (result != null || result != "") {
-          proxy.titleErrValidate = [];
+          proxy.titleErrValidate = []; // reset lại title error validate
           return result;
         } else return false;
       } catch (error) {
@@ -1062,10 +1066,10 @@ export default {
             proxy.backEndErrorNotify(error.response.data.moreInfo);
             break;
           case 405:
-            // this.backEndErrorNotify(Resource.ErrorCode[405]);
+            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
             break;
           case 500:
-            // this.backEndErrorNotify(Resource.ErrorCode[500]);
+            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
             break;
           default:
         }
@@ -1088,10 +1092,10 @@ export default {
             proxy.backEndErrorNotify(error.response.data.moreInfo);
             break;
           case 405:
-            this.backEndErrorNotify(Resource.ErrorCode[405]);
+            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
             break;
           case 500:
-            this.backEndErrorNotify(Resource.ErrorCode[500]);
+            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
             break;
           default:
         }
@@ -1121,10 +1125,10 @@ export default {
           if (proxy.formModel.mode == Enum.Mode.Update) {
             if (proxy.EqualData == false) {
               proxy.handleUpdate();
-            // } else {
-            //   proxy.titleErrValidate = [];
-            //   proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa!");
-            //   proxy.isShowDialogDetail = true;
+            } else {
+              proxy.titleErrValidate = [];
+              proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa!");
+              proxy.isShowDialogDetail = true;
             }
           } else {
             let res = await proxy.handleInsertAsset(proxy.dataForm);

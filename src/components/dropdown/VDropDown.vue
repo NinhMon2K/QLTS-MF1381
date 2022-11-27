@@ -30,6 +30,8 @@
         :readonly="readonly"
         v-on="eventListsioner"
         @keyup="search"
+        @keydown.down="open()"
+        @keydown.esc="close()"
         @click="isShowMenu = true"
       />
       <div
@@ -381,6 +383,16 @@ export default {
       };
     });
 
+    // Hiện list combobox
+    const open = () => {
+      proxy.isShowMenu = true;
+    };
+
+    // Đóng combobox
+    const close = () => {
+      proxy.isShowMenu = false;
+    };
+
     /**
      * Set width,height cho dropdown
      * Author: NNNinh (16/10/2022)
@@ -427,6 +439,8 @@ export default {
       onBlur,
       onFocus,
       active,
+      open,
+      close
     };
   },
 };
