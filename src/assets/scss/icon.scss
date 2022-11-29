@@ -211,6 +211,9 @@
     @include commonAppNoData();
     @include setSquare(183);
   }
+  &.ic-error {
+    background-position: -416px -66px;
+  }
 }
 .menu-group {
   .menu-item:hover,

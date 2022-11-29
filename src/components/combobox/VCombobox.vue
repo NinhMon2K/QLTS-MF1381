@@ -5,11 +5,7 @@
       <span v-if="hasInput">*</span>
     </label>
 
-    <button
-      class="combobox-menu-toggle"
-      ref="input"
-      @click="isShowMenu = !isShowMenu"
-    >
+    <button class="combobox-menu-toggle" ref="input">
       <div
         :class="[
           'app-icon icon--left',
@@ -46,12 +42,10 @@
         type="text"
         :id="'input' + tabindex"
         :placeholder="displayPlaceholder"
-        @keydown.down="
-          open();
-          focusFirstItem();
-        "
-        @keydown.esc="close()"
+        v-on="eventListsioner"
+        @keydown.down="open()"
         :tabindex="tabindex"
+        @click="isShowMenu = true"
         ref="inputCbo"
         @keyup="search"
       />
@@ -62,6 +56,7 @@
           disabled ? 'disabled-icon' : '',
         ]"
         v-if="rightIcon"
+        @click="isShowMenu = !isShowMenu"
       ></div>
     </button>
 
@@ -76,6 +71,7 @@
         <div class="combobox-content">
           <ul class="list-item--combobox">
             <v-combobox-detail
+              ref="item"
               :id="tabindex + index"
               :tabindex="tabindex"
               v-for="(item, index) in data"
@@ -115,12 +111,14 @@ import {
   onMounted,
   onUpdated,
   reactive,
+  nextTick,
   ref,
   toRef,
   watch,
 } from "@vue/runtime-core";
 import VComboboxDetail from "./VComboboxDetail.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
+import Enums from "@/assets/js/enums/enum.js";
 export default {
   name: "MsCombobox",
   components: {
@@ -200,7 +198,7 @@ export default {
     const selected = ref([]);
     const data = ref(props.dataAll);
     const autoHeight = ref(false);
-    const active = ref(0);
+    const active = ref(-1);
     window.cb = proxy;
     const display = computed(() =>
       proxy.selected.map((x) => x[props.displayField]).join("; ")
@@ -307,6 +305,79 @@ export default {
           }
         }
       });
+    });
+
+    const onFocus = (e) => {
+      document.addEventListener("focus", (e) => {
+        let target = e.target;
+        let cont = target.closest(".filter-combobox");
+        if (cont && cont.isEqualNode(proxy.$refs.container)) {
+          e.preventDefault();
+          e.stopPropagation();
+        } else {
+          isShowMenu.value = false;
+        }
+      });
+    };
+
+    const eventListsioner = computed(() => {
+      const me = this;
+      return {
+        click: (e) => {
+          // proxy.cancelEvent(e);
+          proxy.isShowMenu = !proxy.isShowMenu;
+        },
+        blur: (e) => {
+          // proxy.cancelEvent(e);
+        },
+        focus: (e) => {
+          // proxy.cancelEvent(e);
+          // proxy.onFocus(e);
+        },
+        change: (e) => {
+          // proxy.cancelEvent(e);
+          // proxy.changeValue(e);
+        },
+        keydown: (e) => {
+          switch (e.which) {
+            case Enums.KeyCode.Up:
+              proxy.active > 0 && proxy.active--;
+              nextTick(() => {
+                proxy.$refs.item[proxy.active]?.$el.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              });
+              break;
+
+            case Enums.KeyCode.Down:
+              proxy.active < proxy.data.length - 1 && proxy.active++;
+
+              break;
+
+            case Enums.KeyCode.ENTER:
+              emit(
+                "update:modelValue",
+                proxy.data[proxy.active][proxy.valueField]
+              );
+              nextTick(() => {
+                let item = proxy.data[proxy.active];
+                changeValue(
+                  item,
+                  !proxy.selected.some(
+                    (x) => x[proxy.valueField] == item[proxy.valueField]
+                  )
+                );
+              });
+              break;
+          }
+
+          emit("keydown", e);
+        },
+        keyup: (e) => {
+          emit("keyup", e);
+        },
+      };
     });
 
     //Theo dõi show list
@@ -481,6 +552,8 @@ export default {
       open,
       active,
       focusFirstItem,
+      eventListsioner,
+      onFocus,
     };
   },
 };

@@ -108,11 +108,13 @@
       v-if="isDialogMessDeleMultiple"
     >
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.Delete.VI"
         radius
         @click="handleMultiDelete"
       ></v-button>
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
         @click="isDialogMessDeleMultiple = false"
@@ -136,8 +138,10 @@
         :text="Resource.TitleBtnDialog.Delete.VI"
         @click="handleDelete"
         radius
+        tabindex="201"
       ></v-button>
       <v-button
+        tabindex="201"
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
         @click="isDialogMessDelete = false"
@@ -207,6 +211,7 @@
     :dataTotal="dataTotal"
     v-model:active="active"
     ref="table"
+    @deleteOnKey="handleShowMessBox"
     v-model:selectedData="dataSelected"
     @handle-close="handlClosePopup"
     @show-message="handleShowMess"
@@ -313,13 +318,19 @@ export default {
       isShow: false,
     });
 
-    // Thực hiện gọi dữ liệu api bộ phận sử dụng và loại tài sản
+    /**
+     * Thực hiện gọi dữ liệu api bộ phận sử dụng và loại tài sản
+     * @Author: NNNinh (19/11/2022)
+     */
     onMounted(() => {
       proxy.loadDataCombotCategory();
       proxy.loadDataComboDepartment();
     });
 
-    // Reset lại giá trị show toast message
+    /**
+     * Reset lại giá trị show toast message
+     * @Author: NNNinh (19/11/2022)
+     */
     onUpdated(() => {
       if (proxy.confirmMessage.isShow == true) {
         setTimeout(() => {
@@ -328,7 +339,10 @@ export default {
       }
     });
 
-    // Theo dõi thay đổi mảng selected table thì disable button xóa và xuất excel hay không
+    /**
+     * Theo dõi thay đổi mảng selected table thì disable button xóa và xuất excel hay không
+     * @Author: NNNinh (19/11/2022)
+     */
     watch(
       () => dataSelected.value,
       (newVal) => {
@@ -348,7 +362,10 @@ export default {
       }
     );
 
-    // Theo dõi thay đổi mảng loại tài sản thì load lại dữ liệu
+    /**
+     * Theo dõi thay đổi mảng loại tài sản thì load lại dữ liệu
+     * @Author: NNNinh (13/11/2022)
+     */
     onMounted(() => {
       watch(
         () => proxy.selectedAssetCategory,
@@ -359,7 +376,10 @@ export default {
       );
     });
 
-    // Theo dõi thay đổi mảng bộ phận sử dụng thì load lại dữ liệu
+    /**
+     * Theo dõi thay đổi mảng bộ phận sử dụng thì load lại dữ liệu
+     * @Author: NNNinh (13/11/2022)
+     */
     onMounted(() => {
       watch(
         () => proxy.selectedAssetDepartment,
@@ -370,7 +390,10 @@ export default {
       );
     });
 
-    //Load dữ liệu tài sản
+    /**
+     * Lấy dữ liệu tài sản
+     * @Author: NNNinh (13/11/2022)
+     */
     async function loadDataAsset() {
       try {
         proxy.isLoading = true;
@@ -415,7 +438,10 @@ export default {
       }
     }
 
-    //Load dữ liệu data combobox loại tài sản
+    /**
+     * Lấy dữ liệu data combobox loại tài sản
+     * @Author: NNNinh (13/11/2022)
+     */
     async function loadDataCombotCategory() {
       try {
         let res = await assetAPI.get("Categories", {});
@@ -425,27 +451,37 @@ export default {
       }
     }
 
-    //Load dữ liệu data combobox loại tài sản
+    /**
+     * API xuất dữ liệu excel
+     * @Author: NNNinh (13/11/2022)
+     */
     async function exportToExcel() {
       try {
+        proxy.isLoading = true;
         axios({
-              url: 'https://localhost:44375/api/v1/Assets/export',
-              method: 'GET',
-              responseType: 'blob',
+          url: "https://localhost:44375/api/v1/Assets/export",
+          data: proxy.dataSelected,
+          method: "POST",
+          responseType: "blob",
         }).then((res) => {
-               var FILE = window.URL.createObjectURL(new Blob([res.data]));
-               var docUrl = document.createElement('a');
-               docUrl.href = FILE;
-               docUrl.setAttribute('download', 'Danh_sach_nhan_vien.xlsx');
-               document.body.appendChild(docUrl);
-               docUrl.click();
-        })
+          var FILE = window.URL.createObjectURL(new Blob([res.data]));
+          var docUrl = document.createElement("a");
+          docUrl.href = FILE;
+          docUrl.setAttribute("download", "Danh_sach_tai_san.xlsx");
+          document.body.appendChild(docUrl);
+          docUrl.click();
+          proxy.isLoading = false;
+        });
       } catch (error) {
+        proxy.isLoading = false;
         console.log(error);
       }
     }
 
-    //Load dữ liệu data combobox tên bộ phận
+    /**
+     *  Load dữ liệu data combobox tên bộ phận
+     * @Author: NNNinh (13/11/2022)
+     */
     async function loadDataComboDepartment() {
       try {
         let res = await assetAPI.get("Departments", {});
@@ -455,7 +491,10 @@ export default {
       }
     }
 
-    // API Xóa 1 dòng dữ liệu
+    /**
+     *  API Xóa 1 dòng dữ liệu
+     * @Author: NNNinh (13/11/2022)
+     */
     async function deleteAsset() {
       try {
         let fixed_asset_id = proxy.dataSelected[0].fixed_asset_id;
@@ -470,7 +509,10 @@ export default {
       }
     }
 
-    //API Xóa nhiều dữ liệu
+    /**
+     * API Xóa nhiều dữ liệu
+     * @Author: NNNinh (13/11/2022)
+     */
     async function deleteMultiAsset() {
       try {
         let arr = [];
@@ -487,9 +529,14 @@ export default {
         console.log(error);
       }
     }
-    const handleExportExcel = ()=>{
+
+    /**
+     * Xuất dữ liệu excel
+     * @Author: NNNinh (13/11/2022)
+     */
+    const handleExportExcel = () => {
       proxy.exportToExcel();
-    }
+    };
 
     /**
      * Hiện thị toast mesage
@@ -503,16 +550,20 @@ export default {
           await proxy.loadDataAsset();
           proxy.$refs.table.reset();
           proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Thêm mới thành công!";
+          proxy.confirmMessage.textMessage = "Thêm mới thành công";
           proxy.confirmMessage.isShow = true;
-          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
+          proxy.active = proxy.allData.findIndex(
+            (x) => x.fixed_asset_id == res
+          );
         } else {
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
           proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công!";
+          proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công";
           proxy.confirmMessage.isShow = true;
-          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
+          proxy.active = proxy.allData.findIndex(
+            (x) => x.fixed_asset_id == res
+          );
         }
       } catch (error) {
         console.log(error);
@@ -570,11 +621,15 @@ export default {
         } else {
           //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
           if (proxy.dataSelected.length == 1) {
-            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+            proxy.valueMessageBox = proxy.customValueMessBox(
+              proxy.dataSelected.length
+            );
             proxy.isDialogMessDelete = true;
           } else {
             //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
+            proxy.valueMessageBox = proxy.customValueMessBox(
+              proxy.dataSelected.length
+            );
             proxy.isDialogMessDeleMultiple = true;
           }
         }
@@ -590,14 +645,14 @@ export default {
         if (result) {
           proxy.isDialogMessDelete = false;
           proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công!";
+          proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công";
           proxy.confirmMessage.isShow = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
         } else {
           proxy.isDialogMessDelete = false;
-          proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại!";
+          proxy.confirmMessage.iconMessage = "ic-error";
+          proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại";
           proxy.confirmMessage.isShow = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
@@ -626,7 +681,7 @@ export default {
           proxy.$refs.table.reset();
         } else {
           proxy.isDialogMessDeleMultiple = false;
-          proxy.confirmMessage.iconMessage = "ic-success";
+          proxy.confirmMessage.iconMessage = "ic-error";
           proxy.confirmMessage.textMessage =
             proxy.customValueMessBox(proxy.dataSelected.length) +
             " Xóa dữ liệu thất bại!";
@@ -680,7 +735,7 @@ export default {
      * @param {string} title text hiện thị lên giao diện
      * @param {string} width độ rộng của cột
      * @param {string} align vị trí bên trái, phải, center
-     * Author: NNNinh (16/10/2022)
+     * @Author: NNNinh (16/10/2022)
      */
     const columns = ref([
       {
@@ -806,7 +861,7 @@ export default {
       selectedAssetDepartment,
       active,
       exportToExcel,
-      handleExportExcel
+      handleExportExcel,
     };
   },
 };

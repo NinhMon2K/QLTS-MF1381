@@ -14,9 +14,9 @@ export default class BaseAPI {
     };
     return httpclient.getAsync(request);
   }
-  async put(action,recordId, payload) {
+  async put(action, recordId, payload) {
     let request = {
-      url: this.getBaseURL() + "/" + action + '/' + recordId,
+      url: this.getBaseURL() + "/" + action + "/" + recordId,
       data: payload,
     };
     return httpclient.pushAsync(request);

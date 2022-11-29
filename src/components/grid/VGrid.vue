@@ -5,7 +5,7 @@
         class="grid-header"
         :class="allData.length < 20 ? 'mg' : ''"
         :style="{
-          'padding-right': left  + 'px',
+          'padding-right': left + 'px',
           left: leftWidth + 'px',
         }"
       >
@@ -34,6 +34,7 @@
         <table id="tbl_tbody" v-if="allData.length > 0">
           <tbody>
             <v-tr
+              tabindex="7"
               v-for="(item, i) in allData"
               :class="[
                 selectedIndex[i] ? 'active-tr' : '',
@@ -45,7 +46,13 @@
               :selectedCol="selectedCol"
               v-model:selected="selectedIndex[i]"
               @click="handleClick(i)"
-              @dblclick="handleDoubleClick(item, i)"
+              @dblclick="handleEdit(item, i)"
+              @keydown.f2="handleEdit(item, i)"
+              @keydown.insert="handleDuplicate(item, i)"
+              @keydown.delete="handleDelete"
+              @keydown.up="prevItem"
+              @keydown.down="nextItem"
+              @keyup.enter="handleClick(i)"
             >
             </v-tr>
           </tbody>
@@ -118,9 +125,11 @@ export default defineComponent({
       type: Boolean,
     },
 
+    // Xác định cột cho table
     columns: {
       default: [],
     },
+    // Mảng dữ liệu table
     allData: {
       default: [],
     },
@@ -261,11 +270,27 @@ export default defineComponent({
      *  @author NNNinh(01/11/2022)
      * @pram {object} item dữ liệu asset khi click tr
      */
-    const handleDoubleClick = (item, i) => {
+    const handleEdit = (item, i) => {
       proxy.pram.mode = Enum.Mode.Update;
       proxy.pramData = item;
       proxy.isShowPopup = true;
       emit("update:active", i);
+    };
+
+    /**
+     * Xử lý sự kiện double click tr
+     *  @author NNNinh(01/11/2022)
+     * @pram {object} item dữ liệu asset khi click tr
+     */
+    const handleDuplicate = (item, i) => {
+      proxy.pram.mode = Enum.Mode.Duplicate;
+      proxy.pramData = item;
+      proxy.isShowPopup = true;
+      emit("update:active", i);
+    };
+
+    const handleDelete = () => {
+      emit("deleteOnKey");
     };
 
     /**
@@ -299,16 +324,40 @@ export default defineComponent({
       emit("currentPage", tableView, val);
     };
 
+    /**
+     * Focus vào item trước đó
+     * NNNINH (28/11/2022)
+     */
+    const prevItem = (e) => {
+      if (e.target.previousElementSibling) {
+        e.target.previousElementSibling.focus();
+      }
+    };
+
+    /**
+     * Focus vào item trước đó
+     * NNNINH (28/11/2022)
+     */
+    const nextItem = (e) => {
+      if (e.target.nextElementSibling) {
+        e.target.nextElementSibling.focus();
+      }
+    };
+
     function reset() {
       proxy.selectedIndex = [];
     }
 
     return {
+      prevItem,
+      nextItem,
       handleTotalPage,
       selected,
       handleChangeTab,
       dataSelected,
-      handleDoubleClick,
+      handleEdit,
+      handleDuplicate,
+      handleDelete,
       dataPageging,
       pram,
       isShowPopup,

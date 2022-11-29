@@ -24,9 +24,24 @@
       </template>
 
       <template v-else-if="config.align == ColumnType.AlignCenter">
-        {{ text }}
+        <v-tooltip
+          :content="text.length > 32 ? text : ''"
+          placement="bottom"
+          right="bottom"
+        >
+          {{ text }}
+        </v-tooltip>
       </template>
-      <template v-else> {{ text }} </template>
+
+      <template v-else>
+        <v-tooltip
+          :content="text.length > 32 ? text : ''"
+          placement="bottom"
+          right="bottom"
+        >
+          {{ text }}
+        </v-tooltip></template
+      >
     </div>
   </td>
 </template>
@@ -214,5 +229,10 @@ input[type="checkbox"] {
 }
 .text-align__center {
   text-align: center;
+}
+.inline-block {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>

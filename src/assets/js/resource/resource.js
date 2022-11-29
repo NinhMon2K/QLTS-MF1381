@@ -13,41 +13,41 @@ export default {
   },
   ErrorValidate: {
     AssetName: {
-      VI: "Cần phải nhập tên tài sản!",
+      VI: "Cần phải nhập tên tài sản",
       EN: "Asset name is not empty",
     },
     AssetCode: {
-      VI: "Cần phải nhập mã tài sản!",
+      VI: "Cần phải nhập mã tài sản",
       EN: "Asset code is not empty",
     },
     DepartmentCode: {
-      VI: "Cần phải nhập mã bộ phận sử dụng!",
+      VI: "Cần phải nhập mã bộ phận sử dụng",
       EN: "Department code is not empty",
     },
     AssetCategoryCode: {
-      VI: "Cần phải nhập mã loại tài sản!",
+      VI: "Cần phải nhập mã loại tài sản",
       EN: "Asset category code number is not empty",
     },
     Quantity: {
-      VI: "Cần phải nhập số lượng!",
+      VI: "Cần phải nhập số lượng",
     },
     Cost: {
-      VI: "Cần phải nhập nguyên giá!",
+      VI: "Cần phải nhập nguyên giá",
     },
     DepreciationRate: {
-      VI: "Cần phải nhập tỷ lệ hao mòn!",
+      VI: "Cần phải nhập tỷ lệ hao mòn",
     },
     PurchaseDate: {
-      VI: "Cần phải nhập ngày mua!",
+      VI: "Cần phải nhập ngày mua",
     },
     ProductionDate: {
-      VI: "Cần phải nhập ngày bắt đầu sử dụng!",
+      VI: "Cần phải nhập ngày bắt đầu sử dụng",
     },
     LifeTime: {
-      VI: "Cần phải nhập số năm sử dụng!",
+      VI: "Cần phải nhập số năm sử dụng",
     },
     DepreciationYear: {
-      VI: "Cần phải nhập giá trị hao mòn năm!",
+      VI: "Cần phải nhập giá trị hao mòn năm",
     },
   },
   ErrorInput: {
@@ -186,5 +186,7 @@ export default {
     405: "Phương thức yêu cầu của bạn không hợp lệ hoặc không được cho phép tại server",
     // Error 500
     500: "Lỗi phía Server",
+    // Error 404
+    404: "error lỗi kết nối",
   },
 };

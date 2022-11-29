@@ -1,5 +1,4 @@
 export default {
-  
   Mode: {
     Add: 1,
     Duplicate: 3,
@@ -22,6 +21,9 @@ export default {
     F9: 120,
     // Phím `
     SelectTable: 115,
-},
-
+    //Lên
+    Up: 38,
+    // Xuống
+    Down: 40,
+  },
 };

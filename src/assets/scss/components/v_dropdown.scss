@@ -170,3 +170,9 @@
     }
   }
 }
+.active-row {
+  transition: 0.2s;
+  background-color: #c7e0f5;
+  cursor: pointer;
+  border-radius: 4px;
+}

@@ -54,19 +54,7 @@
         v-if="isShowMenu"
       >
         <div class="dropdown-content">
-          <!-- <div class="container-title">
-            <div class="title-list">
-              <div class="text__title" v-for="col in columns" :key="col">
-                {{ col.titleField }}
-              </div>
-            </div>
-          </div> -->
-
           <ul class="list-item--dropdown">
-            <!-- <li>
-              <div>Mã</div>
-              <div>Bộ phận sử dụng</div>
-            </li> -->
             <li>
               <div class="container-title">
                 <div class="title-list">
@@ -79,10 +67,15 @@
 
             <dropdown-item
               v-for="(item, i) in data"
+              ref="item"
               :key="item"
               :dataItem="item"
               :columns="columns"
               :displayField="displayField"
+              @keydown.enter="handleKeyUp"
+              @keydown.up="prevItem"
+              @keydown.down="nextItem"
+              @keydown.esc="focusInput"
               :class="[
                 modelValue && modelValue == item[valueField] ? 'selected' : '',
                 active == i ? 'active-row' : '',
@@ -110,6 +103,7 @@ import {
   watch,
 } from "@vue/runtime-core";
 import DropdownItem from "./VDropDownDetail.vue";
+import Enums from "@/assets/js/enums/enum.js";
 export default {
   name: "MsDropdown",
   components: {
@@ -191,8 +185,11 @@ export default {
     const data = ref(props.dataAll);
     const disp = ref("");
     const autoHeight = ref(false);
-    const active = ref(0);
+    const active = ref(-1);
     window.dr = proxy;
+    const handleKeyUp = () => {
+      console.log("sdasd");
+    };
 
     // Lấy dữ liệu những item selected
     const selected = computed(() => {
@@ -348,6 +345,30 @@ export default {
       });
     };
 
+    const focusInput = () => {
+      proxy.$refs.input.focus();
+    };
+
+    /**
+     * Focus vào item trước đó
+     * NNNINH (28/11/2022)
+     */
+    const prevItem = (e) => {
+      if (e.target.previousElementSibling) {
+        e.target.previousElementSibling.focus();
+      }
+    };
+
+    /**
+     * Focus vào item trước đó
+     * NNNINH (28/11/2022)
+     */
+    const nextItem = (e) => {
+      if (e.target.nextElementSibling) {
+        e.target.nextElementSibling.focus();
+      }
+    };
+
     const onBlur = (e) => {
       nextTick(() => {
         setTimeout(() => {
@@ -375,6 +396,37 @@ export default {
           // proxy.changeValue(e);
         },
         keydown: (e) => {
+          switch (e.which) {
+            case Enums.KeyCode.Up:
+              proxy.active > 0 && proxy.active--;
+              nextTick(() => {
+                proxy.$refs.item[proxy.active]?.$el.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              });
+              break;
+
+            case Enums.KeyCode.Down:
+              proxy.active < proxy.data.length - 1 && proxy.active++;
+
+              nextTick(() => {
+                proxy.$refs.item[proxy.active]?.$el.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                });
+              });
+              break;
+
+            case Enums.KeyCode.ENTER:
+              emit(
+                "update:modelValue",
+                proxy.data[proxy.active][proxy.valueField]
+              );
+              close();
+              break;
+          }
+
           emit("keydown", e);
         },
         keyup: (e) => {
@@ -386,6 +438,10 @@ export default {
     // Hiện list combobox
     const open = () => {
       proxy.isShowMenu = true;
+
+      if (!proxy.active) {
+        proxy.active = 0;
+      }
     };
 
     // Đóng combobox
@@ -440,7 +496,11 @@ export default {
       onFocus,
       active,
       open,
-      close
+      close,
+      handleKeyUp,
+      prevItem,
+      nextItem,
+      focusInput,
     };
   },
 };

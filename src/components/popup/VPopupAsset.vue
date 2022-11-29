@@ -103,7 +103,9 @@
                   hasInput
                   :heightCb="-25"
                   v-model="dataForm.fixed_asset_category_id"
-                  :valueField="ResourceTable.FieldAssetCategory.fixedAssetCategoryId"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.fixedAssetCategoryId
+                  "
                   displayField="fixed_asset_category_code"
                   @blur="onBlurDropdown"
                   rightIcon="ic-angle-downs"
@@ -111,7 +113,9 @@
                   placeholder="Chọn mã loại tài sản"
                   :dataAll="DataAssetCategory.value"
                   @item-click="onClickDataDropDown"
-                  :disabledMessage="errorMessage.AssetCategoryCode && isSubmited"
+                  :disabledMessage="
+                    errorMessage.AssetCategoryCode && isSubmited
+                  "
                   :message="Resource.ErrorInput.AssetCategoryCode.VI"
                 ></v-drop-down>
               </div>
@@ -202,7 +206,9 @@
                   leftIcon
                   disabledRight
                   v-model="dataForm.depreciation_rate"
-                  :valueField="ResourceTable.FieldAssetCategory.depreciationRate"
+                  :valueField="
+                    ResourceTable.FieldAssetCategory.depreciationRate
+                  "
                   topIcon="ic-angle_up"
                   bottomIcon="ic-angle_down"
                   :radius="true"
@@ -468,6 +474,7 @@ export default {
     allData: {
       default: {},
     },
+    // Đối tượng lấy dữ liệu và cập nhật lại dữ liệu
     modelValue: {
       default: {},
     },
@@ -655,7 +662,10 @@ export default {
       }
     }
 
-    //Sự kiện close error message Multiple
+    /**
+     * Sự kiện close error message Multiple
+     *  @author NNNinh(18/10/2021)
+     */
     const handleCloseErrorMultiple = () => {
       if (proxy.formModel.mode == Enum.Mode.Update) {
         proxy.isShowDialogDetail = false;
@@ -670,7 +680,7 @@ export default {
 
     /**
      * Xác nhận đóng cảnh báo validate nghiệp vụ
-     * NNNINH (25/11/2022)
+     * @author NNNINH (25/11/2022)
      */
     const closeProValidate = () => {
       proxy.isDialogMessUpdate = false;
@@ -684,10 +694,14 @@ export default {
     function updateValDepYear() {
       proxy.dataForm.depreciation_year =
         (proxy.dataForm.depreciation_rate * proxy.dataForm.cost) / 100;
-      if (proxy.dataForm.depreciation_rate > 100) proxy.dataForm.depreciation_rate = 100;
+      if (proxy.dataForm.depreciation_rate > 100)
+        proxy.dataForm.depreciation_rate = 100;
     }
 
-    // focus vào input dầu tiên
+    /**
+     * focus vào input dầu tiên
+     *  @author NNNinh(21/10/2021)
+     */
     const focusFirst = () => {
       proxy.$refs.inputAssetCode.$el.getElementsByTagName("input")[0].focus();
     };
@@ -706,19 +720,25 @@ export default {
         if (proxy.dataForm.production_date == "") {
           proxy.dataForm.production_date = new Date().toDate();
         }
+        // xét giá trị ban đầu cho nguyên giá
         if (proxy.dataForm.cost == null) {
           proxy.dataForm.cost = 0;
         }
+        // xét giá trị ban đầu cho giá trị hao mòn năm
         if (proxy.dataForm.depreciation_year == null) {
           proxy.dataForm.depreciation_year = 0;
         }
+        // xét giá trị ban đầu cho tỉ lệ hao mòn năm
         if (proxy.dataForm.depreciation_rate == null) {
           proxy.dataForm.depreciation_rate = 0;
         }
       });
     };
 
-    // Xét giá trị năm theo dõi mặc định là năm hiện tại
+    /**
+     * Xét giá trị năm theo dõi mặc định là năm hiện tại
+     *  @author NNNinh(21/10/2021)
+     */
     function setValueDateYear() {
       proxy.dataForm.tracked_year = new Date().getFullYear();
     }
@@ -761,7 +781,7 @@ export default {
 
     /**
      * Chuyển focus lên đầu sau khi đến cuối dialog tài sản
-     * NNNINH (25/11/2022)
+     * @author NNNINH (25/11/2022)
      */
     const focusBack = () => {
       if (!proxy.shiftPressed) {
@@ -772,7 +792,7 @@ export default {
 
     /**
      * Focus ngược khi dùng Shift+Tab
-     * NNNINH (25/11/2022)
+     * @author NNNINH (25/11/2022)
      */
     const focusWithShift = (e) => {
       if (e.tab) {
@@ -782,18 +802,23 @@ export default {
       }
     };
 
-    // Xử lý sự kiện click item dropdown
+    /**
+     * Xử lý sự kiện click item dropdown
+     * @author NNNINH (25/11/2022)
+     */
     const onClickDataDropDown = (item, valueField) => {
       try {
         switch (valueField) {
           case ResourceTable.FieldAsset.fixedAssetCategoryId: // Kiểm tra có phải mã loại tài sản hay không
             if (item.length != 0) {
-              proxy.dataForm.fixed_asset_category_name = item.fixed_asset_category_name;
+              proxy.dataForm.fixed_asset_category_name =
+                item.fixed_asset_category_name;
               proxy.dataForm.life_time = item.life_time;
               proxy.dataForm.depreciation_rate = item.depreciation_rate
                 ? item.depreciation_rate * 100
                 : null;
-              proxy.dataForm.fixed_asset_category_code = item.fixed_asset_category_code;
+              proxy.dataForm.fixed_asset_category_code =
+                item.fixed_asset_category_code;
               proxy.errorMessage.AssetCategoryCode = false;
             } else {
               proxy.errorMessage.AssetCategoryCode = true;
@@ -814,7 +839,10 @@ export default {
       }
     };
 
-    // Xử lý xự kiện blur input số, tiền
+    /**
+     *  Xử lý xự kiện blur input số, tiền
+     * @author NNNINH (25/11/2022)
+     */
     const onBlurInputNumber = (isValue, valueField) => {
       try {
         switch (valueField) {
@@ -862,7 +890,10 @@ export default {
       }
     };
 
-    //Sự kiện blur của input
+    /**
+     *  Sự kiện blur của input
+     * @author NNNINH (25/11/2022)
+     */
     const onBlurInput = (isValue, valueField, e) => {
       switch (valueField) {
         case ResourceTable.FieldAsset.fixedAssetName: {
@@ -891,7 +922,10 @@ export default {
       }
     };
 
-    // Xử lý sự kiện blur dropdown
+    /**
+     *  Xử lý sự kiện blur dropdown
+     * @author NNNINH (25/11/2022)
+     */
     const onBlurDropdown = (val, valueField) => {
       switch (valueField) {
         case ResourceTable.FieldAsset.fixedAssetCategoryId:
@@ -911,7 +945,10 @@ export default {
       }
     };
 
-    // Validate dữ liệu
+    /**
+     *  Validate dữ liệu
+     * @author NNNINH (25/11/2022)
+     */
     const validateData = () => {
       proxy.v$.$validate();
       if (proxy.v$.$error) {
@@ -934,7 +971,9 @@ export default {
         }
         if (proxy.v$.fixed_asset_category_code.$error) {
           // Kiểm tra giá trị mã loại tài sản null hay không
-          proxy.titleErrValidate.push(Resource.ErrorValidate.AssetCategoryCode.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.AssetCategoryCode.VI
+          );
           proxy.errorMessage.AssetCategoryCode = true;
         }
         if (proxy.v$.quantity.$error) {
@@ -953,29 +992,35 @@ export default {
           // Kiểm tra giá trị số năm sử dụng null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.LifeTime.VI);
           proxy.errorMessage.LifeTime = true;
-          proxy.titleErrorMess.DepreciationRate = Resource.ErrorInput.DepreciationRate.VI;
+          proxy.titleErrorMess.DepreciationRate =
+            Resource.ErrorInput.DepreciationRate.VI;
         }
 
         if (proxy.dataForm.depreciation_year == 0) {
           // Kiểm tra giá trị hao mòn năm null hay không
           proxy.titleErrValidate.push(Resource.ErrorInput.DepreciationYear.VI);
           proxy.errorMessage.DepreciationYear = true;
-          proxy.titleErrorMess.DepreciationYear = Resource.ErrorInput.DepreciationYear.VI;
+          proxy.titleErrorMess.DepreciationYear =
+            Resource.ErrorInput.DepreciationYear.VI;
         }
         if (proxy.dataForm.depreciation_rate == 0) {
-          proxy.titleErrValidate.push(Resource.ErrorValidate.DepreciationRate.VI);
+          proxy.titleErrValidate.push(
+            Resource.ErrorValidate.DepreciationRate.VI
+          );
           proxy.errorMessage.DepreciationRate = true;
         }
         if (proxy.v$.purchase_date.$error) {
           // Kiểm tra giá trị ngày mua null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.PurchaseDate.VI);
-          proxy.titleErrorMess.purchaseDate = Resource.ErrorInput.PurchaseDate.VI;
+          proxy.titleErrorMess.purchaseDate =
+            Resource.ErrorInput.PurchaseDate.VI;
           proxy.errorMessage.purchase_date = true;
         }
         if (proxy.v$.production_date.$error) {
           // Kiểm tra giá trị ngày bắt đầu sử dụng null hay không
           proxy.titleErrValidate.push(Resource.ErrorValidate.ProductionDate.VI);
-          proxy.titleErrorMess.production_date = Resource.ErrorInput.ProductionDate.VI;
+          proxy.titleErrorMess.production_date =
+            Resource.ErrorInput.ProductionDate.VI;
           proxy.errorMessage.ProductionDate = true;
         }
 
@@ -984,7 +1029,9 @@ export default {
         // kiểm tra giá trị hao mòn lớn hơn nguyên giá
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(Resource.ErrorValidate.CompareDepreciationYear.VI);
+        proxy.titleErrValidate.push(
+          Resource.ErrorValidate.CompareDepreciationYear.VI
+        );
 
         return false;
       } else if (
@@ -1003,7 +1050,9 @@ export default {
       ) {
         proxy.titleErrValidate = [];
         proxy.errorMessage = {};
-        proxy.titleErrValidate.push(Resource.ErrorInput.ProductionGreaterDate.VI);
+        proxy.titleErrValidate.push(
+          Resource.ErrorInput.ProductionGreaterDate.VI
+        );
         proxy.titleErrorMess.production_date =
           Resource.ErrorInput.ProductionGreaterDate.VI;
         proxy.errorMessage.ProductionDate = true;
@@ -1016,7 +1065,10 @@ export default {
       }
     };
 
-    // Xử lý sự kiện change value của ngày mua và ngày sử dụng
+    /**
+     *  Xử lý sự kiện change value của ngày mua và ngày sử dụng
+     * @author NNNINH (25/11/2022)
+     */
     const handleChangeDate = (val, field) => {
       switch (field) {
         case ResourceTable.FieldAsset.purchaseDate:
@@ -1050,7 +1102,7 @@ export default {
     };
 
     /**
-     * Thêm mới tài sản
+     * Gọi API thêm mới tài sản
      *  @author NNNinh(21/10/2021)
      */
     async function handleInsertAsset(val) {
@@ -1064,6 +1116,9 @@ export default {
         switch (error.response.status) {
           case 400:
             proxy.backEndErrorNotify(error.response.data.moreInfo);
+            break;
+          case 404:
+            proxy.backEndErrorNotify(Resource.ErrorCode[404]);
             break;
           case 405:
             proxy.backEndErrorNotify(Resource.ErrorCode[405]);
@@ -1090,6 +1145,9 @@ export default {
         switch (error.response.status) {
           case 400:
             proxy.backEndErrorNotify(error.response.data.moreInfo);
+            break;
+          case 404:
+            proxy.backEndErrorNotify(Resource.ErrorCode[404]);
             break;
           case 405:
             proxy.backEndErrorNotify(Resource.ErrorCode[405]);
@@ -1127,7 +1185,7 @@ export default {
               proxy.handleUpdate();
             } else {
               proxy.titleErrValidate = [];
-              proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa!");
+              proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa");
               proxy.isShowDialogDetail = true;
             }
           } else {

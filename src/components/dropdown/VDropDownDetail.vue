@@ -1,5 +1,10 @@
 <template>
-  <v-tooltip :content="dataItem[columns[1].field]" placement="right">
+  <v-tooltip
+    :content="
+      dataItem[columns[1].field].length > 20 ? dataItem[columns[1].field] : ''
+    "
+    placement="right"
+  >
     <li
       class="item-dropdown"
       tabindex="-1"
@@ -42,6 +47,7 @@ export default {
       default: null,
       type: String,
     },
+    // 
     columns: {
       default: [],
     },
@@ -51,15 +57,18 @@ export default {
     },
   },
   methods: {
-    emitClick(e) {
-      this.$emit("menu-item-click", this.dataItem);
-    },
+    // emitClick(e) {
+    //   this.$emit("menu-item-click", this.dataItem);
+    // },
   },
+  emit: ["menu-item-click"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-
+    const emitClick = (e) => {
+      emit("menu-item-click", proxy.dataItem);
+    };
     window.drpdetail = proxy;
-    return {};
+    return { emitClick };
   },
 };
 </script>

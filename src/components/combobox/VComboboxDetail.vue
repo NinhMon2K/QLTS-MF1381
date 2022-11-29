@@ -1,5 +1,8 @@
 <template>
-  <v-tooltip :content="dataItem[displayField]" placement="right">
+  <v-tooltip
+    :content="dataItem[displayField].length > 25 ? dataItem[displayField] : ''"
+    placement="right"
+  >
     <li
       :tabindex="tabindex"
       class="item-combobox"
@@ -80,6 +83,13 @@ export default {
     onMounted(() => {
       proxy.select = proxy.selected;
     });
+
+    watch(
+      () => props.selected,
+      (newVal) => {
+        proxy.select = proxy.selected;
+      }
+    );
 
     watch(
       () => select.value,

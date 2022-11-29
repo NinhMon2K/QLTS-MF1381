@@ -30,7 +30,7 @@
         </div>
         <div class="toast-content__right" v-if="disabledMultiple">
           <div class="text-message" v-for="text in valueMultiple" :key="text">
-            <!-- <span v-if="disabledLeftMultiple" class="span__left">- </span> -->
+            <span v-if="disabledLeftMultiple" class="span__left">- </span>
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>
             {{ text }}
             <span v-if="disabledValueRight">{{ valueMessageBox }}</span>

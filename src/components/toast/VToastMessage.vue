@@ -2,7 +2,7 @@
   <div class="m-toast">
     <div class="m-toast-main">
       <div class="left-toast">
-        <div class="box" :class="disabled ? 'disabled-icon' : ''">
+        <div class="box" :class="[disabled ? 'disabled-icon' : '',iconMessage == 'ic-error'? 'box-error': '']">
           <div class="box_icon">
             <div :class="['app-icon icon--left', iconMessage]"></div>
           </div>
@@ -81,6 +81,25 @@ export default {
         height: 24px;
         border-radius: 50%;
         background-color: #1ac871;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      }
+      .box-error{
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #eebac7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 14px;
+        .box_icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #c81a1a;
         display: flex;
         justify-content: center;
         align-items: center;
