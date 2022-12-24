@@ -1,4 +1,5 @@
 export default {
+  // Text cho left menu
   LeftMenu: {
     TitleLogo: "MISA QLTC",
     Control: "Control",
@@ -11,6 +12,8 @@ export default {
     HTDBAsset: "Tài sản HT-ĐB",
     HTDBAssetTT: "Tài sản hạ tầng đường bộ",
   },
+
+  // title error cho validate
   ErrorValidate: {
     AssetName: {
       VI: "Cần phải nhập tên tài sản",
@@ -50,6 +53,8 @@ export default {
       VI: "Cần phải nhập giá trị hao mòn năm",
     },
   },
+
+  // error input khi validate
   ErrorInput: {
     AssetName: {
       VI: "Tên tài sản không được để trống!",

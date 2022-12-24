@@ -92,6 +92,7 @@
         :allData="dataAssetID[0]"
         @handle-close="handlClosePopup"
         @show-message="handleShowMess"
+        :dataAll="dataAllAsset.value"
       ></v-popup-asset>
     </div>
   </div>
@@ -210,6 +211,7 @@
     :selectedCol="true"
     :dataTotal="dataTotal"
     v-model:active="active"
+    :disableFooter="true"
     ref="table"
     @deleteOnKey="handleShowMessBox"
     v-model:selectedData="dataSelected"
@@ -446,6 +448,19 @@ export default {
       try {
         let res = await assetAPI.get("Categories", {});
         proxy.DataAssetCategory.value = res;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    onMounted(()=>{
+      proxy.loadDataAllAsset()
+    })
+    const dataAllAsset = ref([])
+    async function loadDataAllAsset() {
+      try {
+        let res = await assetAPI.get("Assets", {});
+        proxy.dataAllAsset.value = res;
       } catch (error) {
         console.log(error);
       }
@@ -862,6 +877,8 @@ export default {
       active,
       exportToExcel,
       handleExportExcel,
+      loadDataAllAsset,
+      dataAllAsset
     };
   },
 };

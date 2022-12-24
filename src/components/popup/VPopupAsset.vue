@@ -478,6 +478,10 @@ export default {
     modelValue: {
       default: {},
     },
+    dataAll:{
+      default:[],
+    
+    }
   },
   emits: ["handle-close", "show-message"],
   methods: {
@@ -578,7 +582,12 @@ export default {
         }
       );
     });
+    const assetDataAll = ref([])
 
+    onMounted(()=>{
+
+      proxy.assetDataAll = proxy.dataAll; 
+    })
     /**
      * Tự động cập nhật giá trị hao mòn năm
      *  @author NNNinh(21/10/2021)
@@ -1035,7 +1044,7 @@ export default {
 
         return false;
       } else if (
-        proxy.dataForm.depreciation_rate !=
+        proxy.dataForm.depreciation_rate >
         parseFloat(100 / proxy.dataForm.life_time).toFixed(2) // Kiểm tra tỉ lệ hao mòn phải bằng 1/Số năm sử dụng
       ) {
         console.log(parseFloat(100 / proxy.dataForm.life_time).toFixed(2));
@@ -1192,7 +1201,7 @@ export default {
             let res = await proxy.handleInsertAsset(proxy.dataForm);
             if (res && proxy.titleErrValidate.length == 0) {
               emit("handle-close", false);
-              emit("show-message", proxy.formModel.mode, res, true);
+              emit("show-message", proxy.formModel.mode, res);
             } else {
               proxy.isShowDialogDetail = true;
             }
@@ -1275,6 +1284,7 @@ export default {
       handleChangeDate,
       disabledBtn, // Disable button
       closeProValidate,
+      assetDataAll
     };
   },
 };

@@ -107,7 +107,7 @@
       -ms-user-select: none; /* IE 10 and IE 11 */
       user-select: all; /* Standard syntax */
       &::placeholder {
-        font-style: italic;
+        font-style: unset;
       }
     }
   }

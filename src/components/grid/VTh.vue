@@ -7,11 +7,7 @@
       <!--  -->
       <template v-else>
         <v-tooltip
-          :content="
-            config.title == ResourceTable.lblTableAssets.lblAccumulated
-              ? 'Hao mòn khấu hao lũy kế'
-              : ''
-          "
+          :content="displayTootip(config.title)"
           placement="bottom"
           right="bottom"
         >
@@ -68,6 +64,20 @@ export default {
     onMounted(() => {
       proxy.allSelected = proxy.selected;
     });
+    function displayTootip (val){
+      let tilteTooltip = '';
+      switch(val){
+        case "STT":
+        tilteTooltip = 'Số thứ tự'
+          break;
+        case 'HM/KH lũy kế':
+        tilteTooltip = 'Hao mòn khấu hao lũy kế'
+        break;
+        default :
+        tilteTooltip = ''
+      }
+      return tilteTooltip;
+    }
     watch(
       () => allSelected.value,
       () => {
@@ -123,6 +133,7 @@ export default {
       selectedData,
       ResourceTable,
       styleAlign,
+      displayTootip
     };
   },
 };

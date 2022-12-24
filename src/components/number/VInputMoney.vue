@@ -9,6 +9,7 @@
       :class="[
         leftIcon ? 'has-icon' : '',
         disabledMessage ? 'input__error' : '',
+        radius ? 'row-radius' : ''
       ]"
     >
       <div class="icon-filter">
@@ -185,6 +186,10 @@ export default {
     options: {
       default: {},
     },
+    radius : {
+      default: false,
+      type: Boolean,
+    }
   },
   emits: ["update:modelValue", "blur", "focus", "changeValue", "change"],
   setup(props, { emit }) {
@@ -289,4 +294,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "./../../assets/scss/components/v_input_number.scss";
+.input-text{
+  padding-right: 10px !important;
+}
 </style>

@@ -124,6 +124,9 @@
   &.ic-angle-down {
     background-position: -150px -284px;
   }
+  &.ic-angle-down__black {
+    background-position: -150px -239px;
+  }
   &.ic-angle-up {
     background-position: -28px -338px;
   }
@@ -214,6 +217,23 @@
   &.ic-error {
     background-position: -416px -66px;
   }
+  &.ic-enlarge {
+    background-position: -107px -415px;
+  }
+  &.ic-printer{
+    background-position: -328px -64px;
+  }
+  &.ic-more{
+    background-position: -372px -20px;
+  }
+  &.ic-minus-border{
+    @include setSquare(18);
+    background-position: -375px -463px;
+  }
+  &.ic-add-border{
+    @include setSquare(18);
+    background-position: -375px -419px;
+  }
 }
 .menu-group {
   .menu-item:hover,
@@ -247,4 +267,10 @@
       background-position: -328px -196px;
     }
   }
+}
+
+.icon-minus-border {
+  background: url('@/assets/images/icons/qlts-icon.png') no-repeat -375px -463px;
+width: 18px;
+height: 18px;
 }

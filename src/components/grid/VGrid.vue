@@ -67,6 +67,7 @@
         :style="{
           'padding-right': left - 2 + 'px',
         }"
+        v-if="disableFooter"
       >
         <table
           class="gr-footer"
@@ -125,6 +126,10 @@ export default defineComponent({
       type: Boolean,
     },
 
+    disableFooter:{
+      default: false,
+      type: Boolean,
+    },
     // Xác định cột cho table
     columns: {
       default: [],

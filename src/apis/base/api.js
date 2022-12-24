@@ -1,7 +1,7 @@
 import httpclient from "@/apis/base/httpclient";
 
 export default class BaseAPI {
-  controllerName = "";
+  controllerName = "v1";
 
   getBaseURL() {
     return "https://localhost:44375/api" + "/" + this.controllerName;

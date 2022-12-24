@@ -10,13 +10,13 @@
     </div>
     <div class="menu">
       <div class="menu-group">
-        <div v-for="(item, index) in menuItems" :key="index">
+        <div class="group__item" v-for="(item, index) in menuItems" :key="index">
           <v-tooltip
             :content="collapsed ? item.title : ''"
             placement="right"
             right="right"
           >
-            <a
+            <div
               class="menu-item"
               :href="item.path"
               :class="[item.path == activeItem?.path ? 'active' : '']"
@@ -26,20 +26,36 @@
               <span class="text-menu">{{ item.text }}</span>
               <div
                 class="arrow-menu misa-icon app-icon"
+                @click="hanhdleShowItemChildrens(index)"
                 :class="item.arrow"
               ></div>
-            </a>
+            </div>
           </v-tooltip>
+          <div class="sidebar__sub-menu">
+            <div
+              class="sidebar-sub__group"
+              v-for="(itemChildrens, i) in item.childrens"
+              :key="i"
+            >
+              <div
+                class="sidebar-sub"
+                :href="itemChildrens.path"
+                :class="[itemChildrens.path == activeItem?.path ? 'active' : '']"
+                @click="() => clickMenu(itemChildrens)"
+                v-if="Childrens"
+              >
+                <a class="sidebar-sub__item">
+                  <span class="text-menu">{{ itemChildrens.text }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="wrap-bottom-menu">
-      <v-tooltip
-        :content="collapsed ? 'Mở ra' : 'Thu vào'"
-        placement="top"
-        right="top"
-      >
+      <v-tooltip :content="collapsed ? 'Mở ra' : 'Thu vào'" placement="top" right="top">
         <div
           class="menu-resize"
           :class="{ 'rotate-180': collapsed }"
@@ -81,10 +97,10 @@ export default {
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
 
+    window.sideBar = proxy;
     const isActive = ref(false);
-
     const activeItem = ref(null);
-
+    const Childrens = ref(false);
     function setActive() {
       proxy.isActive = true;
     }
@@ -145,56 +161,130 @@ export default {
       collapsed.value = !collapsed.value;
     };
 
+    function hanhdleShowItemChildrens(index, e) {
+      let id = 0;
+      proxy.menuItems.forEach((item) => {
+        item.childrens.forEach((element) => (id = element.itemID));
+      });
+      if ((index = id)) {
+        proxy.Childrens = !proxy.Childrens;
+      } else {
+        proxy.Childrens = false;
+      }
+    }
     const getMenuItems = () => {
       let menuItems = [
         {
-          path: "/dashboard",
+          itemID: 1,
+          path: "/voucher",
           icon: "ic-overview",
           text: Resource.LeftMenu.Dashboard,
           arrow: "",
           title: Resource.LeftMenu.Dashboard,
+          childrens: [],
         },
         {
+          itemID: 2,
           path: "/asset",
           icon: "ic-car",
           text: Resource.LeftMenu.FA,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.FA,
+          childrens: [
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Ghi tăng",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Thay đổi thông tin",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Đánh giá lại",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Tính hao mòn",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Điều chuyển tài sản",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Ghi giảm",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Kiểm kê",
+              arrow: "",
+            },
+            {
+              itemID: 2,
+              path: "/voucher",
+              text: "Khác",
+              arrow: "",
+            },
+          ],
         },
         {
+          itemID: 3,
           path: "",
           icon: "ic-asset",
           text: Resource.LeftMenu.HTDBAsset,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.HTDBAssetTT,
+          childrens: [],
         },
         {
+          itemID: 4,
           path: "",
           icon: "ic-tools",
           text: Resource.LeftMenu.SU,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.SU,
+          childrens: [],
         },
         {
+          itemID: 5,
           path: "",
           icon: "ic-dictionary",
           text: Resource.LeftMenu.Dictionary,
           arrow: "",
           title: Resource.LeftMenu.Dictionary,
+          childrens: [],
         },
         {
+          itemID: 6,
           path: "",
           icon: "ic-menu__search",
           text: Resource.LeftMenu.Search,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.Search,
+          childrens: [],
         },
         {
+          itemID: 7,
           path: "/report",
           icon: "ic-report ",
           text: Resource.LeftMenu.Report,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.Report,
+          childrens: [],
         },
       ];
       return menuItems;
@@ -206,6 +296,7 @@ export default {
 
     return {
       getMenuItems,
+      hanhdleShowItemChildrens,
       collapsed,
       toggleSideBar,
       sideBarWidth,
@@ -215,6 +306,8 @@ export default {
       activeItem,
       activeMenu,
       Resource,
+      Childrens,
+      setActive,
     };
   },
 };

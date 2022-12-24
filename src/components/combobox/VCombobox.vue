@@ -204,6 +204,10 @@ export default {
       proxy.selected.map((x) => x[props.displayField]).join("; ")
     );
 
+    /**
+     * Lấy những item selected
+     * NNNINH (25/11/2022)
+     */
     const objSelected = computed(() =>
       proxy.dataAll.reduce(
         (o, x) => ({
@@ -213,6 +217,11 @@ export default {
         {}
       )
     );
+
+    /**
+     * Xóa 1 item trong selected
+     * NNNINH (25/11/2022)
+     */
     const handleRemoveItem = (item) => {
       proxy.isShowMenu = true;
       let i = proxy.selected.findIndex((x) => x[proxy.valueField] == item);
@@ -461,6 +470,8 @@ export default {
       proxy.setDropdown();
       proxy.initEvent();
     });
+
+    // Xét giá trị positon cho menu
     function setPosition() {
       let offset = proxy.$refs.input.getBoundingClientRect();
       offsetPosi.top = offset.bottom;

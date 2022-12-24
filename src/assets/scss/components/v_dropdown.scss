@@ -55,7 +55,7 @@
       white-space: nowrap;
       overflow: hidden;
       &::placeholder {
-        font-style: italic;
+        font-style: unset;
       }
     }
   }

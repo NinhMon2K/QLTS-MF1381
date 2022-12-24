@@ -1,0 +1,73 @@
+.container__voucher{
+    display: flex;
+    flex-direction: column;
+    background-color: #F4F7FF;
+    height: 100%;
+    .voucher__header{
+        display: flex;
+       align-items: center;
+       justify-content: space-between;
+       .voucher__header--right{
+        display: flex;
+       
+            .box_buttom--right{
+                display: flex;
+                align-items: center;
+                .box_enlarge{
+                    margin-right: -11px;
+                    margin-left: 2px;
+                }
+            }
+
+        
+       
+       }
+    }
+    .voucher__content{
+        display: flex;
+       
+        flex-direction: column;
+        background-color: #fff;
+       
+        flex: 2;
+        margin-bottom: 6px;
+        .voucher__toolbar{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            .voucher__toolbar--left{
+                width: 256px;
+            }
+            .voucher__toolbar--right{
+                display: flex;
+                .btn-printer{
+                    margin-right: -11px;
+                }
+            }
+        }
+    }
+    .voucher__footer{
+        flex: 1;
+        background-color: #fff;
+        .content-menu{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            .content-btns{
+                display: flex;
+            }
+        }
+    }
+   
+}
+#btn-add{
+min-width: 110px;
+width: 110px;
+
+}
+.grid-container{
+    border: none;
+    box-shadow: none;
+}

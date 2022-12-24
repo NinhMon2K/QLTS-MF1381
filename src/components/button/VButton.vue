@@ -20,7 +20,7 @@
       ]"
       v-if="leftIcon"
     ></div>
-    <div class="btn-text" v-if="text">
+    <div class="btn-text" :class="buttonText" v-if="text">
       {{ text }}
     </div>
     <div
@@ -94,6 +94,10 @@ export default defineComponent({
     tabindex: {
       default: null,
       type: [Number, String],
+    },
+    buttonText:{
+      default: null,
+      type: String,
     },
   },
   setup(props, { emit }) {
