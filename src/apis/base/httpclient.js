@@ -4,13 +4,13 @@ import Qs from "qs";
 
 let cancelRequests = [];
 class AxiosHttpClient {
-  async postAsync(
+   postAsync(
     config,
     isShowLoading = false,
     isCancelRequest = true,
     contenType = ApplicationJson
   ) {
-    return await this.requestAsync(
+    return this.requestAsync(
       config,
       POST,
       isShowLoading,
@@ -46,13 +46,13 @@ class AxiosHttpClient {
       contenType
     );
   }
-  async getAsync(
+  async   getAsync(
     config,
     isShowLoading = false,
     isCancelRequest = true,
     contenType = ApplicationJson
   ) {
-    return await this.requestAsync(
+    return  await this.requestAsync(
       config,
       GET,
       isShowLoading,
@@ -142,6 +142,7 @@ class AxiosHttpClient {
     if (!config) return;
     let headers = config.headers || {};
     headers["Content-Type"] = contenType;
+    headers["Authorization"] = 'Bearer ' + localStorage.getItem('_token');
     config.headers = headers;
   }
   _getKey(config) {

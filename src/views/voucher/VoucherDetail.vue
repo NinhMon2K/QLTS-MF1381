@@ -3,9 +3,13 @@
     <div class="model" v-show="isShowPopupDetail">
       <div class="form-asset">
         <div class="header-popup">
-          <div class="form-asset__title">Thêm chứng từ ghi tăng</div>
+          <div class="form-asset__title">{{ title }} chứng từ ghi tăng</div>
           <v-tooltip content="Hủy" placement="bottom" right="bottom">
-            <div ref="btnClose" class="form-asset__close app-icon ic-close"></div>
+            <div
+              ref="btnClose"
+              @click="handlePopupClose"
+              class="form-asset__close app-icon ic-close"
+            ></div>
           </v-tooltip>
         </div>
         <div class="content-popup">
@@ -20,20 +24,30 @@
                       tabindex="101"
                       hasLabel
                       hasInput
+                      placeholder="Nhập mã chứng từ"
+                      ref="voucher_code"
                       :maxLength="50"
                       :radius="false"
-                      :disabledMessage="true"
-                      message="Lỗi 1"
+                      v-model="dataForm.voucher_code"
+                      :valueField="ResourceTable.FieldVoucher.voucherCode"
+                      :disabledMessage="errorMessage.voucher_code && isSubmited"
+                      :message="Resource.ErrorInput.VoucherCode.VI"
+                      @blur="onBlurInput"
                     ></v-input>
                   </div>
                   <div class="form-group">
                     <v-input-date
-                      label="Ngày bắt đầu sử dụng"
+                      label="Ngày chứng từ"
                       hasLabel
                       hasInput
-                      tabindex="109"
+                      tabindex="102"
                       rightIcon="ic-date"
                       :radius="true"
+                      v-model="dataForm.voucher_date"
+                      :valueField="ResourceTable.FieldVoucher.voucherDate"
+                      :disabledMessage="errorMessage.voucher_date && isSubmited"
+                      :message="Resource.ErrorInput.VoucherDate.VI"
+                      @changeValue="handleChangeDate"
                     ></v-input-date>
                   </div>
                   <div class="form-group">
@@ -41,27 +55,31 @@
                       label="Ngày ghi tăng"
                       hasLabel
                       hasInput
-                      tabindex="109"
+                      tabindex="103"
                       rightIcon="ic-date"
                       :radius="true"
+                      v-model="dataForm.increment_date"
+                      :valueField="ResourceTable.FieldVoucher.incrementDate"
+                      :disabledMessage="errorMessage.increment_date && isSubmited"
+                      :message="Resource.ErrorInput.IncrementDate.VI"
+                      @changeValue="handleChangeDate"
                     ></v-input-date>
                   </div>
                 </div>
                 <div class="detaill__content-bottom">
                   <v-input
                     label="Ghi chú"
-                    tabindex="101"
+                    tabindex="104"
                     hasLabel
                     :maxLength="50"
                     :radius="false"
-                    :disabledMessage="true"
-                    message="Lỗi 1"
+                    v-model="dataForm.description"
                   ></v-input>
                 </div>
               </div>
             </div>
             <div class="voucher__assets-details--title">
-              <h4>Thông tin chi tiết</h4>
+              <p>Thông tin chi tiết</p>
             </div>
             <div class="voucher__assets-details">
               <div class="details__toolbars">
@@ -73,12 +91,12 @@
                     leftIcon="ic-search"
                     placeholder="Tìm kiếm theo mã, tên tài sản"
                     :disabledMessage="false"
-                    :tabindex="'1'"
+                    tabindex="105"
                   ></v-input>
                 </div>
                 <div class="details__toolbars--right">
                   <v-button
-                    tabindex="201"
+                    tabindex="106"
                     text="Chọn tài sản"
                     @click="handleShowPopupSelect"
                     type="secodary"
@@ -90,31 +108,19 @@
                 <div class="form_container--table">
                   <v-grid
                     :columns="columns"
-                    :allData="allData"
+                    :allData="selectedData"
                     :selectedCol="false"
                     :dataTotal="dataTotal"
                     v-model:active="active"
                     :disableFooter="true"
+                    :selectedRow="true"
                     ref="table"
-                    @deleteOnKey="handleShowMessBox"
+                    @handleEventTable="handleEventTable"
                     v-model:selectedData="dataSelected"
                     @currentPage="handleTotalPage"
                     @changeTabView="handleChangeTab"
                   >
                   </v-grid>
-                </div>
-                <div class="container_footer--table">
-                  <table class="gr-footer">
-                    <tfoot>
-                      <v-tfoot
-                        :columns="columns"
-                        :spanCol="4"
-                        :dataTotal="dataTotalPaging"
-                        @currentPage="handleTotalPage"
-                        @changeTabView="handleChangeTab"
-                      ></v-tfoot>
-                    </tfoot>
-                  </table>
                 </div>
               </div>
             </div>
@@ -124,20 +130,27 @@
           <div class="form-asset__footer">
             <!-- Buttom hủy
                     @author NNNINH (22/11/2022) -->
-            <v-tooltip content="Hủy" placement="top" right="top">
+            <v-tooltip content="Hủy bỏ" placement="top" right="top">
               <v-button
-                text="Hủy"
+                text="Hủy bỏ"
                 tabindex="112"
                 type="secodary"
                 ref="btnClosePopup"
+                @click="handlePopupClose"
                 radius
               >
               </v-button>
             </v-tooltip>
             <!-- Buttom lưu dữ liệu
-                    @author NNNINH (22/11/2022) -->
+              @author NNNINH (22/11/2022) -->
             <v-tooltip content="Lưu và cất" placement="top" right="top">
-              <v-button text="Lưu" tabindex="111" radius :disabled="false"></v-button>
+              <v-button
+                text="Lưu"
+                tabindex="111"
+                @click="saveData"
+                radius
+                :disabled="false"
+              ></v-button>
             </v-tooltip>
           </div>
         </div>
@@ -147,7 +160,97 @@
   <teleport to="body">
     <v-loading v-if="isLoading"></v-loading>
   </teleport>
-  <voucher-select-assets v-if="isShowPopupSelect"></voucher-select-assets>
+  <voucher-select-assets
+    @closePopupSelect="handleClosePopupSelect"
+    @SelectedData="handleSelectedData"
+    :dataAssetDetaill="selectedData"
+    v-if="isShowPopupSelect"
+  ></voucher-select-assets>
+
+  <!-- Cập nhật ngân sách -->
+  <voucher-update-asset
+    :formModel="pram"
+    v-model="selectedData[detailIndex]"
+    @hideDialog="handleClosePopupUpdate"
+    v-if="isShowPopupUpdate"
+  ></voucher-update-asset>
+
+  <!-- Hiển thị thông báo error multiple
+       @author NNNINH (04/01/2023) -->
+  <teleport to="body">
+    <v-message-box
+      leftIcon="ic-warning"
+      :disabledTop="false"
+      :disabled="false"
+      disabledLeftMultiple
+      :valueMultiple="titleErrValidate"
+      :disabledMultiple="true"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isShowDialogDetail"
+    >
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Close.VI"
+        radius
+        @click="handleCloseErrorMultiple"
+      ></v-button>
+    </v-message-box>
+  </teleport>
+
+  <!-- Hiển thị thông báo cập nhât
+       @author NNNINH (22/11/2022) -->
+  <teleport to="body">
+    <v-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessUpdate"
+    >
+      <v-button tabindex="201" :text="Resource.TitleBtnDialog.Save.VI" radius></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.NoSave.VI"
+        type="abort"
+        @click="handleClosePopup"
+        radius
+      ></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        type="secodary"
+        @click="closeProValidate"
+        radius
+      ></v-button>
+    </v-message-box>
+  </teleport>
+
+  <!-- Dialog messagebox hủy bỏ khai báo
+   @author NNNINH (05/01/2023) -->
+  <teleport to="body">
+    <v-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.AddVoucher.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelAdd"
+    >
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        radius
+        @click="handleClosePopup"
+      ></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        @click="isDialogMessCancelAdd = false"
+        radius
+      ></v-button>
+    </v-message-box>
+  </teleport>
 </template>
 
 <style lang="scss" scoped></style>
@@ -159,21 +262,47 @@ import {
   onUpdated,
   reactive,
   ref,
+  nextTick,
   watch,
 } from "vue";
 import VButton from "@/components/button/VButton.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VInput from "@/components/input/VInput.vue";
 import VGrid from "@/components/grid/VGrid.vue";
-import assetAPI from "@/apis/api/assetAPI.js";
+import voucherAPI from "@/apis/api/voucherAPI.js";
+import assetAPI from "@/apis/api/assetAPI";
 import ResourceTable from "@/assets/js/resource/resourceTable";
 import VLoading from "@/components/loading/VLoading.vue";
 import VInputDate from "@/components/date/VInputDate.vue";
 import Enum from "@/assets/js/enums/enum.js";
 import Resource from "@/assets/js/resource/resource.js";
 import VoucherSelectAssets from "./VoucherSelectAssets.vue";
-import VTfoot from "@/components/grid/VTfoot.vue";
+import VoucherUpdateAsset from "./VoucherUpdateAsset.vue";
+import VMessageBox from "@/components/toast/VMessageBox.vue";
+import useValidate from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import _ from "lodash";
 export default {
+  props: {
+    // Xác định là form thêm, sửa, xóa
+    formModel: {
+      default: {},
+    },
+    // Đối tượng để lấy dữ liệu truyền từ table sang
+    allData: {
+      default: {},
+    },
+    // Đối tượng lấy dữ liệu và cập nhật lại dữ liệu
+    modelValue: {
+      default: {},
+    },
+    dataAll: {
+      default: [],
+    },
+    dataAssetDetaill: {
+      default: [],
+    },
+  },
   components: {
     VButton,
     VTooltip,
@@ -182,13 +311,15 @@ export default {
     VLoading,
     VInputDate,
     VoucherSelectAssets,
-    VTfoot,
+    VoucherUpdateAsset,
+    VMessageBox,
   },
+  emits: ["handle-close", "show-message"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
-    window.popupSelect = proxy;
+    window.popupVoucherDetail = proxy;
     const isLoading = ref(false);
-    const allData = ref([]);
+    const allDataVoucher = ref([]);
     const txtSearch = ref(" ");
     const currentPage = ref(0);
     const tableView = ref(0);
@@ -198,9 +329,41 @@ export default {
     const dataSelected = ref([]);
     const isShowPopupDetail = ref(true);
     const isShowPopupSelect = ref(false);
+    const isShowPopupUpdate = ref(false);
+    const detailIndex = ref(0);
+    const oldDataForm = ref({});
+    const title = ref("");
     let pram = ref({});
     const dataTotal = ref({});
+    const dataVoucherDetail = ref([]);
     const dataTotalPaging = ref({});
+    const selectedData = ref([]);
+    const titleErrValidate = ref([]);
+    const errorMessage = ref([]);
+    const isShowDialogDetail = ref(false);
+    const oldDataAssetSelect = ref([]);
+    const isSubmited = ref(false);
+    const isDialogMessUpdate = ref(false);
+    const isDialogMessCancelAdd = ref(false);
+    // Lưu dữ liệu 1 tài sản
+    const dataForm = ref({});
+
+    const EqualDataSelect = computed(() => {
+      return _.isEqual(proxy.selectedData, proxy.oldDataAssetSelect);
+    });
+
+    /**
+     * Xử lý sự kiện required dữ liệu data chứng từ
+     *  @author NNNinh(12/01/2023)
+     */
+    const dataFormValidate = computed(() => {
+      return {
+        voucher_code: { required },
+        voucher_date: { required },
+        increment_date: { required },
+      };
+    });
+    const v$ = useValidate(dataFormValidate, dataForm);
 
     const handleShowPopupSelect = () => {
       proxy.isShowPopupDetail = false;
@@ -209,13 +372,11 @@ export default {
     // Sự kiện change giới hạn bản ghi
     const handleChangeTab = (val) => {
       proxy.tableView = val;
-      proxy.loadDataAsset();
     };
     // Sự kiện change page number
     const handleTotalPage = (tableView, val) => {
       proxy.tableView = tableView;
       proxy.currentPage = val;
-      proxy.loadDataAsset();
     };
     /**
      * Lấy dữ liệu tài sản
@@ -242,17 +403,14 @@ export default {
         let res = await assetAPI.filters("Assets/Filters", pagingAsset);
         proxy.isLoading = false;
         proxy.dataTotalPaging.totalCount = res.totalCount; // Lấy giá trị tổng số bản ghi
-        proxy.dataTotal.quantity = res.totalQuantity; // Lấy giá trị tổng số lượng
-        proxy.dataTotal.cost = res.totalCost; // Lấy giá trị tổng số nguyên giá
-        proxy.dataTotal.depreciation_year = res.totalDepreciation; // Lấy tổng số khấu hao hao mòn lũy kế
-        proxy.dataTotal.depreciation_residual = res.totalRemain; // Lấy tổng số giá trị còn lại
+
         let data = res?.data;
         let o = (proxy.currentPage - 1) * proxy.tableView;
         data.forEach((x, i) => {
           x.STT = i + 1 + o;
           x.depreciation_residual = x.cost - x.depreciation_year;
         });
-        proxy.allData = data;
+        proxy.allDataVoucher = data;
       } catch (error) {
         proxy.isLoading = false;
         console.log(error);
@@ -260,13 +418,474 @@ export default {
     }
 
     /**
+     * Lấy mã tài sản tự động tăng
+     *  @author NNNinh(21/10/2021)
+     */
+    async function getVoucherNextCode() {
+      try {
+        let result = await voucherAPI.get("Vouchers/NextCode", {});
+        proxy.dataForm.voucher_code = result?.code;
+        proxy.oldDataForm = _.cloneDeep(proxy.dataForm);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    /**
+     * Xét giá trị mặc định cho ngày chứng từ và ngày ghi tăng
+     * @author NNNINH (01/01/2023)
+     */
+    const defaultValue = () => {
+      nextTick(() => {
+        // xét giá trị ban đầu cho ngày chứng từ
+        if (proxy.dataForm.voucher_date == "") {
+          proxy.dataForm.voucher_date = new Date().toDate();
+        }
+        // xét giá trị ban đầu cho ngày ghi tăng
+        if (proxy.dataForm.increment_date == "") {
+          proxy.dataForm.increment_date = new Date().toDate();
+        }
+      });
+    };
+
+    /**
+     * Xử lý sự kiện đóng popup cập nhật sửa tài sản
+     * @author NNNINH (01/01/2023)
+     */
+    const handleClosePopupUpdate = () => {
+      proxy.isShowPopupUpdate = false;
+    };
+
+    /**
+     * Xử lý sự kiện đóng popup chọn tài sản
+     * @author NNNINH (01/01/2023)
+     */
+    const handleClosePopupSelect = () => {
+      proxy.isShowPopupSelect = false;
+      proxy.isShowPopupDetail = true;
+      proxy.focusFirst();
+    };
+    onMounted(() => {
+      if (proxy.selectedData.length > 0) {
+        proxy.dataTotal.totalCount = proxy.selectedData.length;
+      } else {
+        proxy.dataTotal.totalCount = 0;
+      }
+    });
+    onMounted(() => {
+      try {
+        /**
+         * Kiểm tra giá trị mode là add hay cập nhật,nhân bản
+         *  @author NNNinh(17/10/2021)
+         */
+        switch (proxy.formModel.mode) {
+          //Kiểm tra giá trị mode là cập nhật
+          case Enum.Mode.Update:
+            proxy.title = Resource.Title.Edit;
+            // Lấy dữ liệu chứng từ theo id chứng từ
+            proxy.dataAssetDetaill.forEach((x) => (x.flag = 0));
+            proxy.selectedData = proxy.dataAssetDetaill;
+            proxy.dataForm = _.cloneDeep(proxy.allData);
+            proxy.oldDataForm = _.cloneDeep(proxy.dataForm);
+            proxy.oldDataAssetSelect = _.cloneDeep(proxy.selectedData);
+            break;
+          //Kiểm tra giá trị mode là thêm
+          case Enum.Mode.Add:
+            proxy.title = Resource.Title.Add;
+            proxy.defaultValue();
+            proxy.getVoucherNextCode();
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
+    const handlePopupClose = () => {
+      if (proxy.formModel.mode == Enum.Mode.Update) {
+        if (proxy.EqualData && proxy.EqualDataSelect) {
+          emit("handle-close");
+        } else {
+          proxy.isDialogMessUpdate = true;
+        }
+      } else {
+        if (proxy.EqualData && proxy.EqualDataSelect) {
+          emit("handle-close");
+        } else {
+          proxy.isDialogMessCancelAdd = true;
+        }
+      }
+    };
+    const submitUpdate = ref(false);
+
+    const dataDeleteSelected = ref([]);
+
+    /**
+     * Sự kiện click chức năng sửa hay nhân bản
+     * @param {object} item Đối tượng cần xóa trong mảng
+     * @author NNNinh (01/01/2023)
+     */
+    const handleRemoveData = (item) => {
+      let i = proxy.selectedData.findIndex(
+        (x) => x["fixed_asset_id"] == item["fixed_asset_id"]
+      );
+      proxy.selectedData.splice(i, 1);
+      var indexOldDataSelect = proxy.oldDataAssetSelect.findIndex(
+        (x) => x["fixed_asset_id"] == item["fixed_asset_id"]
+      );
+      if (indexOldDataSelect != -1) {
+        item.flag = 3;
+        proxy.dataDeleteSelected.push(item);
+      }
+    };
+
+    const allDataVoucherDetaill = [];
+
+    async function getDataVoucherDetail(voucherId, assetId) {
+      try {
+        let res = await voucherAPI.getVoucherDetail("Vouchers", voucherId, assetId);
+        return res;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    /**
+     * Sự kiện click chức năng sửa hay nhân bảnS
+     * @param {string} action xác định cho form là sửa hay nhân bản
+     * @param {string} val giá trị mã tài sản
+     * @author NNNinh (01/01/2023)
+     */
+    const clickMenu = async (action, val) => {
+      switch (action) {
+        case 0: // kiểm tra action = 0 là sửa
+          proxy.pram.mode = proxy.formModel.mode;
+          var index = proxy.selectedData.findIndex(
+            (x) => x["fixed_asset_id"] == val["fixed_asset_id"]
+          );
+
+          if (index < 0) {
+            proxy.selectedData.push(val);
+            index = proxy.selectedData.length - 1;
+          }
+          proxy.detailIndex = index;
+
+          // if (proxy.EqualDataAssetSelect) {
+          //   console.log("cos");
+          // } else {
+          //   console.log("k");
+          // }
+
+          proxy.isShowPopupUpdate = true;
+          break;
+        case 2: // kiểm tra action = 2 là xóa
+          proxy.handleRemoveData(val);
+          break;
+      }
+    };
+
+    /**
+     * Gọi API thêm mới chứng từ
+     *  @author NNNinh(11/01/2023)
+     */
+    async function handleInsertVoucher() {
+      try {
+        let obj = {
+          voucher: proxy.dataForm,
+          listAssetDetail: proxy.selectedData,
+        };
+        let result = await voucherAPI.post("Vouchers/addVouchers", obj);
+        if (result != null || result != "") {
+          proxy.titleErrValidate = []; // reset lại title error validate
+          return result;
+        } else return false;
+      } catch (error) {
+        console.log(error);
+        // switch (error.response.status) {
+        //   case 400:
+        //     proxy.backEndErrorNotify(error.response.data.moreInfo);
+        //     break;
+        //   case 404:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[404]);
+        //     break;
+        //   case 405:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[405]);
+        //     break;
+        //   case 500:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[500]);
+        //     break;
+        //   default:
+        // }
+      }
+    }
+
+    /**
+     * API Sửa dữ liệu chứng từ detail
+     *  @author NNNinh(12/01/2023)
+     */
+    async function handleUpdateVoucherDetail() {
+      try {
+        let result = await voucherAPI.backUpdateVoucherDetail(
+          "Vouchers/detail/batch-update",
+          proxy.dataForm["voucher_id"],
+          proxy.dataVoucherDetail
+        );
+        if (result != null || result != "") {
+          proxy.titleErrValidate = [];
+          return result;
+        } else return false;
+      } catch (error) {
+        console.log(error);
+        // switch (error.response.status) {
+        //   case 400:
+        //     proxy.backEndErrorNotify(error.response.data.moreInfo);
+        //     break;
+        //   case 404:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[404]);
+        //     break;
+        //   case 405:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[405]);
+        //     break;
+        //   case 500:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[500]);
+        //     break;
+        //   default:
+        // }
+      }
+    }
+
+    /**
+     * Xử lý sự kiện dblclick table,F2,Ctrl+Insert
+     * @author NNNinh (19/11/2022)
+     */
+    const handleEventTable = (mode, data) => {
+      proxy.pram.mode = mode;
+      var index = proxy.selectedData.findIndex(
+        (x) => x["fixed_asset_id"] == data["fixed_asset_id"]
+      );
+
+      if (index < 0) {
+        proxy.selectedData.push(data);
+        index = proxy.selectedData.length - 1;
+      }
+      proxy.detailIndex = index;
+      proxy.isShowPopupUpdate = true;
+    };
+    const validateData = () => {
+      proxy.v$.$validate();
+      if (proxy.v$.$error) {
+        proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
+        if (proxy.v$.voucher_code.$error) {
+          proxy.titleErrValidate.push("Mã chứng từ không được để trống");
+          proxy.errorMessage.voucher_code = true;
+        }
+        if (proxy.v$.voucher_date.$error) {
+          proxy.titleErrValidate.push("Ngày chứng từ không được bỏ trống");
+          proxy.errorMessage.voucher_date = true;
+        }
+        if (proxy.v$.increment_date.$error) {
+          proxy.titleErrValidate.push("Ngày ghi tăng không được bỏ trống");
+          proxy.errorMessage.increment_date = true;
+        }
+
+        return false;
+      } else if (proxy.selectedData.length == 0) {
+        proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
+        proxy.titleErrValidate.push("Chọn ít nhất 1 tài sản.");
+        return false;
+      } else {
+        proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
+        return true;
+      }
+    };
+
+    /**
+     * Sự kiện close error message Multiple
+     *  @author NNNinh(18/10/2021)
+     */
+    const handleCloseErrorMultiple = () => {
+      if (proxy.formModel.mode == Enum.Mode.Update) {
+        proxy.isShowDialogDetail = false;
+        proxy.isSubmited = true;
+        proxy.focusFirst();
+      }
+      proxy.isSubmited = true;
+      proxy.isShowDialogDetail = false;
+      proxy.focusFirst();
+    };
+
+    /**
+     * Xử lý sự kiện click lưu chứng từ
+     *  @author NNNinh(12/01/2023)
+     */
+    const saveData = async () => {
+      try {
+        if (proxy.validateData() == false) {
+          proxy.isShowDialogDetail = true;
+        } else {
+          proxy.dataForm.cost = proxy.selectedData.reduce(
+            (acc, item) => acc + item.cost,
+            0
+          );
+          if (proxy.formModel.mode == Enum.Mode.Update) {
+            if (proxy.EqualData == false || proxy.EqualDataSelect == false) {
+              proxy.dataVoucherDetail = [
+                ...proxy.selectedData,
+                ...proxy.dataDeleteSelected,
+              ];
+              let res = await proxy.handleUpdateVoucherDetail();
+              if (res && proxy.titleErrValidate.length == 0) {
+                emit("handle-close");
+                emit("show-message", proxy.formModel.mode, res);
+              }
+              proxy;
+            } else {
+              proxy.titleErrValidate = [];
+              proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa");
+              proxy.isShowDialogDetail = true;
+            }
+          } else {
+            let res = await proxy.handleInsertVoucher();
+            if (res && proxy.titleErrValidate.length == 0) {
+              emit("handle-close");
+              emit("show-message", proxy.formModel.mode, res);
+            }
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    watch(
+      () => selectedData.value,
+      (newVal) => {
+        let SumDepreciationYear = 0;
+        let SumDepreciationResidual = 0;
+        let Sumcost = 0;
+        proxy.selectedData.forEach((x, i) => {
+          SumDepreciationYear += x.depreciation_year;
+          SumDepreciationResidual += x.depreciation_residual;
+          Sumcost += x.cost;
+        });
+        proxy.dataTotal.totalCount = proxy.selectedData.length; // Lấy giá trị tổng số bản ghi
+        proxy.dataTotal.cost = Sumcost; // Lấy giá trị tổng số nguyên giá
+        proxy.dataTotal.depreciation_year = SumDepreciationYear; // Lấy tổng số khấu hao hao mòn lũy kế
+        proxy.dataTotal.depreciation_residual = SumDepreciationResidual; // Lấy tổng số giá trị còn lại
+      },
+      { deep: true }
+    );
+    /**
+     *  Sự kiện blur của input
+     * @author NNNINH (04/01/2023)
+     */
+    const onBlurInput = (isValue, valueField, e) => {
+      switch (valueField) {
+        case ResourceTable.FieldVoucher.voucherCode:
+          // Kiểm tra có phải là tên tài sản hay không
+          if (isValue != "") {
+            proxy.errorMessage.voucher_code = false;
+            proxy.dataForm.voucher_code = isValue;
+          } else {
+            proxy.errorMessage.voucher_code = true;
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    /**
+     *  Xử lý sự kiện change value của ngày mua và ngày sử dụng
+     * @author NNNINH (04/01/2023)
+     */
+    const handleChangeDate = (val, field) => {
+      switch (field) {
+        case ResourceTable.FieldVoucher.voucherDate:
+          if (val == null) {
+            proxy.errorMessage.voucher_date = true;
+          } else {
+            proxy.errorMessage.voucher_date = false;
+          }
+
+          break;
+        case ResourceTable.FieldVoucher.incrementDate:
+          if (val == null) {
+            proxy.errorMessage.increment_date = true;
+          } else {
+            proxy.errorMessage.increment_date = false;
+          }
+          break;
+      }
+    };
+
+    /**
+     * focus vào input dầu tiên
+     *  @author NNNinh(21/10/2021)
+     */
+    const focusFirst = () => {
+      proxy.$refs.voucher_code.$el.getElementsByTagName("input")[0].focus();
+    };
+
+    watch(
+      () => selectedData.value,
+      (newVal) => {
+        proxy.focusFirst();
+      }
+    );
+    const EqualData = computed(() => {
+      return _.isEqual(proxy.dataForm, proxy.oldDataForm);
+    });
+
+    /**
+     * Xử lý sự kiện emit dữ liệu ra ngoài khi chọn tài sản
+     *  @author NNNinh(12/01/2023)
+     */
+    const handleSelectedData = (dataSelecteds) => {
+      if (proxy.selectedData.length > 0) {
+        dataSelecteds.forEach((x, i) => {
+          x.STT = proxy.selectedData.length + 1;
+          proxy.selectedData.push(x);
+        });
+      } else {
+        dataSelecteds.forEach((x, i) => {
+          x.STT = i + 1;
+          proxy.selectedData.push(x);
+        });
+      }
+      proxy.focusFirst();
+    };
+
+    onMounted(() => {
+      proxy.focusFirst();
+    });
+
+    /**
+     * Xác nhận đóng cảnh báo validate nghiệp vụ
+     * @author NNNINH (25/11/2022)
+     */
+    const closeProValidate = () => {
+      proxy.isDialogMessUpdate = false;
+      proxy.focusFirst();
+    };
+    // Sự kiện đóng close popup
+    const handleClosePopup = () => {
+      emit("handle-close");
+    };
+    /**
      * Xác định cột cho table
      * @param {string} type giá trị là number,text hay checked
      * @param {string} field trường để map dữ liệu
      * @param {string} title text hiện thị lên giao diện
      * @param {string} width độ rộng của cột
      * @param {string} align vị trí bên trái, phải, center
-     * @Author: NNNinh (16/10/2022)
+     * @author NNNinh (16/10/2022)
      */
     const columns = ref([
       {
@@ -280,20 +899,21 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCode,
         title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
-        width: 80,
+        align: "Left",
+        width: 90,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
         title: ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
-        minWidth: 140,
+        minWidth: 130,
       },
 
       {
         field: ResourceTable.FieldDepartment.departmentName,
         title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
-        width: 165,
+        width: 180,
       },
 
       {
@@ -301,28 +921,49 @@ export default {
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
         summary: "sum",
-        width: 110,
+        align: "Right",
+        width: 140,
       },
       {
         field: ResourceTable.FieldAsset.depreciationYear,
         title: "Hao mòn năm",
         type: "Number",
+        align: "Right",
         summary: "sum",
-        width: 110,
+        width: 140,
       },
       {
         field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
+        align: "Right",
         summary: "sum",
-        width: 110,
+        width: 140,
+      },
+      {
+        field: ResourceTable.FieldAsset.fixedAssetId,
+        type: "Action",
+        position: "absolute",
+        action: [
+          {
+            command: 0,
+            icon: "ic-edit",
+            click: clickMenu,
+          },
+          {
+            command: 2,
+            icon: "ic-delete__toolbar",
+            click: clickMenu,
+          },
+        ],
       },
     ]);
     return {
+      title,
       columns,
       loadDataAsset,
       isLoading,
-      allData,
+      allDataVoucher,
       txtSearch,
       currentPage,
       tableView,
@@ -330,6 +971,7 @@ export default {
       dataAssetID,
       active,
       dataSelected,
+      clickMenu,
       pram,
       dataTotal,
       handleTotalPage,
@@ -338,6 +980,46 @@ export default {
       handleShowPopupSelect,
       isShowPopupSelect,
       dataTotalPaging,
+      isShowPopupUpdate,
+      dataForm,
+      defaultValue,
+      getVoucherNextCode,
+      handleClosePopupSelect,
+      handleClosePopupUpdate,
+      handleSelectedData,
+      selectedData,
+      oldDataForm,
+      EqualData,
+      handleEventTable,
+      submitUpdate,
+      titleErrValidate,
+      errorMessage,
+      v$,
+      validateData,
+      saveData,
+      isShowDialogDetail,
+      Resource,
+      ResourceTable,
+      handleCloseErrorMultiple,
+      isSubmited,
+      onBlurInput,
+      handleChangeDate,
+      handlePopupClose,
+      oldDataAssetSelect,
+      EqualDataSelect,
+      isDialogMessUpdate,
+      closeProValidate,
+      handleClosePopup,
+      handleRemoveData,
+      dataDeleteSelected,
+      focusFirst,
+      isDialogMessCancelAdd,
+      allDataVoucherDetaill,
+      getDataVoucherDetail,
+      handleInsertVoucher,
+      detailIndex,
+      handleUpdateVoucherDetail,
+      dataVoucherDetail,
     };
   },
 };

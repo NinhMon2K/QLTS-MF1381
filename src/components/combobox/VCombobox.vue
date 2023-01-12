@@ -7,11 +7,7 @@
 
     <button class="combobox-menu-toggle" ref="input">
       <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
         v-if="leftIcon"
       ></div>
       <div
@@ -24,11 +20,7 @@
           v-for="item in selected"
           :key="item[valueField]"
         >
-          <v-tooltip
-            :content="item[displayField]"
-            placement="bottom"
-            right="bottom"
-          >
+          <v-tooltip :content="item[displayField]" placement="bottom" right="bottom">
             <div class="text-cbo">{{ item[displayField] }}</div>
           </v-tooltip>
           <div
@@ -50,11 +42,7 @@
         @keyup="search"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
       ></div>
@@ -92,9 +80,7 @@
                   : '',
                 active == index ? 'active-row' : '',
               ]"
-              :selected="
-                selected?.some((x) => x[valueField] == item[valueField])
-              "
+              :selected="selected?.some((x) => x[valueField] == item[valueField])"
               @change-value="changeValue"
             >
             </v-combobox-detail>
@@ -365,10 +351,7 @@ export default {
               break;
 
             case Enums.KeyCode.ENTER:
-              emit(
-                "update:modelValue",
-                proxy.data[proxy.active][proxy.valueField]
-              );
+              emit("update:modelValue", proxy.data[proxy.active][proxy.valueField]);
               nextTick(() => {
                 let item = proxy.data[proxy.active];
                 changeValue(
@@ -498,9 +481,7 @@ export default {
     const changeValue = function (item, select) {
       if (
         select &&
-        proxy.selected?.some(
-          (x) => x[proxy.valueField] == item[proxy.valueField]
-        )
+        proxy.selected?.some((x) => x[proxy.valueField] == item[proxy.valueField])
       ) {
         return false;
       }
@@ -527,8 +508,7 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".combobox-menu") ||
-            target.closest(".combobox-menu-toggle");
+            target.closest(".combobox-menu") || target.closest(".combobox-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }

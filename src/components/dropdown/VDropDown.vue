@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="filter-dropdown"
-    ref="container"
-    :class="disabledMessage ? 'mg-9' : false"
-  >
+  <div class="filter-dropdown" ref="container" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel">
       {{ label ? label : "" }}
       <span v-if="hasInput">&#8727;</span>
@@ -14,11 +10,7 @@
       :class="disabledMessage ? 'error__message' : ''"
     >
       <div
-        :class="[
-          'app-icon icon--left',
-          leftIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
         v-if="leftIcon"
       ></div>
       <input
@@ -35,11 +27,7 @@
         @click="isShowMenu = true"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
         @click="isShowMenu = !isShowMenu"
       ></div>
@@ -87,9 +75,7 @@
         </div>
       </div>
     </teleport>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 <script>
@@ -181,12 +167,13 @@ export default {
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
+    window.dr = proxy;
 
     const data = ref(props.dataAll);
     const disp = ref("");
     const autoHeight = ref(false);
+    const itemData = ref({});
     const active = ref(-1);
-    window.dr = proxy;
     const handleKeyUp = () => {
       console.log("sdasd");
     };
@@ -194,9 +181,7 @@ export default {
     // Lấy dữ liệu những item selected
     const selected = computed(() => {
       if (proxy.modelValue) {
-        return proxy.dataAll.find(
-          (x) => x[proxy.valueField] == proxy.modelValue
-        );
+        return proxy.dataAll.find((x) => x[proxy.valueField] == proxy.modelValue);
       } else {
         return null;
       }
@@ -228,9 +213,7 @@ export default {
       }, 100);
     };
 
-    const display = computed(
-      () => proxy.selected && proxy.selected[proxy.displayField]
-    );
+    const display = computed(() => proxy.selected && proxy.selected[proxy.displayField]);
 
     const offsetPosi = reactive({
       top: 0,
@@ -368,6 +351,7 @@ export default {
         e.target.nextElementSibling.focus();
       }
     };
+    const CheckAssetCode = () => {};
 
     const onBlur = (e) => {
       nextTick(() => {
@@ -400,7 +384,7 @@ export default {
             case Enums.KeyCode.Up:
               proxy.active > 0 && proxy.active--;
               nextTick(() => {
-                proxy.$refs.item[proxy.active]?.$el.scrollIntoView({
+                proxy.$refs?.item[proxy?.active]?.$el.scrollIntoView({
                   behavior: "smooth",
                   block: "center",
                 });
@@ -411,7 +395,7 @@ export default {
               proxy.active < proxy.data.length - 1 && proxy.active++;
 
               nextTick(() => {
-                proxy.$refs.item[proxy.active]?.$el.scrollIntoView({
+                proxy.$refs?.item[proxy?.active]?.$el.scrollIntoView({
                   behavior: "smooth",
                   block: "end",
                 });
@@ -419,10 +403,16 @@ export default {
               break;
 
             case Enums.KeyCode.ENTER:
-              emit(
-                "update:modelValue",
-                proxy.data[proxy.active][proxy.valueField]
+              emit("update:modelValue", proxy.data[proxy.active][proxy.valueField]);
+
+              proxy.itemData = proxy.dataAll.find((x) =>
+                x[props.valueField]
+                  .toLowerCase()
+                  ?.includes(proxy.data[proxy.active][proxy.valueField].toLowerCase())
               );
+              nextTick(() => {
+                emit("item-click", proxy.itemData, proxy.valueField);
+              });
               close();
               break;
           }
@@ -468,8 +458,7 @@ export default {
         if (proxy.isShowMenu) {
           let target = e.target;
           let cbo =
-            target.closest(".dropdown-menu") ||
-            target.closest(".dropdown-menu-toggle");
+            target.closest(".dropdown-menu") || target.closest(".dropdown-menu-toggle");
           if (!cbo) {
             proxy.isShowMenu = false;
           }
@@ -501,6 +490,7 @@ export default {
       prevItem,
       nextItem,
       focusInput,
+      itemData,
     };
   },
 };

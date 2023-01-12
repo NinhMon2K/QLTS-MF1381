@@ -6,18 +6,11 @@
     </label>
     <div
       class="flex-row"
-      :class="[
-        leftIcon ? 'has-icon' : '',
-        disabledMessage ? 'input__error' : '',
-      ]"
+      :class="[leftIcon ? 'has-icon' : '', disabledMessage ? 'input__error' : '']"
     >
       <div class="icon-filter">
         <span
-          :class="[
-            'app-icon icon--left',
-            leftIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
+          :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
           v-if="leftIcon"
         ></span>
       </div>
@@ -31,11 +24,11 @@
         :placeholder="placeholder"
         :disabled="disabled || false"
         :readonly="hasReadonly || false"
-        :max="max"
+        v-bind:maxlength="max"
         :min="min"
         v-on="eventListsioner"
       />
-      <div :class="['icon--right', disabledRight ? 'disabled-icon' : '']">
+      <div :class="['icon--right']" v-if="disabledRight">
         <v-tooltip content="Lên" placement="bottom">
           <div
             :class="[
@@ -61,9 +54,7 @@
         </v-tooltip>
       </div>
     </div>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 <script>
@@ -172,7 +163,7 @@ export default defineComponent({
     },
     max: {
       default: 99999999999999,
-      type: [Number, String],
+      type: Number,
     },
     step: {
       default: 1,
@@ -264,6 +255,11 @@ export default defineComponent({
       emit("blur", proxy.isValue, proxy.valueField);
     };
 
+    onUpdated(() => {
+      if (proxy.isValue < 0) {
+        proxy.isValue = 0;
+      }
+    });
     const eventListsioner = computed(() => {
       const me = this;
       return {

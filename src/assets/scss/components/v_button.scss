@@ -31,6 +31,7 @@
   &.disabled-icon:disabled {
     background-color: $button-disable;
   }
+
   &.btn-boder-none {
     border: none;
   }
@@ -122,15 +123,50 @@ button[disabled] {
   //   background-color: #fff !important;
   // }
 }
-.basic{
+.basic {
   background-color: #fff;
   width: 36px;
   height: 36px;
   min-width: 36px;
   min-height: 36px;
   margin-left: 11px;
- // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
-.login-text{
+.login-text {
   font-size: 15px !important;
+}
+.ic-menu {
+  margin-right: 4px !important;
+}
+.ic-menuExpand {
+  margin: 0px 6px 0px -16px;
+}
+.menu-warp_top {
+  .btn {
+    &:hover {
+      background-color: #D1EDF4;
+      .btn-text {
+        color: #000;
+      }
+    }
+  }
+}
+.menu--warp_bottom {
+  .btn {
+    &:hover {
+      background-color: #D1EDF4;
+      .btn-text {
+        color: #000;
+      }
+    }
+  }
+}
+.btn_icon {
+  .ic-enlarge {
+    background-position: -19px -415px
+  }
+}
+.style-button{
+  // width: 80px;
+  // min-width: 80px;
 }

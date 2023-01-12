@@ -25,6 +25,9 @@ export default class BaseAPI {
     let request = {
       url: this.getBaseURL() + "/" + action,
       data: payload,
+    Headers:{
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    }
     };
     return httpclient.postAsync(request);
   }

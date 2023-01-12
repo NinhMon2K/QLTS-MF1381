@@ -9,26 +9,19 @@
       radius ? 'btn-radius' : '',
       btn_boder ? '' : 'btn-boder-none',
       disabled ? 'disabled-icon' : '',
+      leftIcon ? '' : 'style-button',
     ]"
     :disabled="disabled || false"
   >
     <div
-      :class="[
-        'app-icon icon--left',
-        leftIcon,
-        disabled ? 'disabled-icon' : '',
-      ]"
+      :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
       v-if="leftIcon"
     ></div>
     <div class="btn-text" :class="buttonText" v-if="text">
       {{ text }}
     </div>
     <div
-      :class="[
-        'app-icon icon--right',
-        rightIcon,
-        disabled ? 'disabled-icon' : '',
-      ]"
+      :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
       v-if="rightIcon"
     ></div>
   </button>
@@ -95,7 +88,7 @@ export default defineComponent({
       default: null,
       type: [Number, String],
     },
-    buttonText:{
+    buttonText: {
       default: null,
       type: String,
     },

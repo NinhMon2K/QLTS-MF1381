@@ -42,6 +42,7 @@ export default {
     modifiedBy: "modified_by",
     modifiedDate: "modified_date",
     depreciationResidual: "depreciation_residual",
+    incrementStatus:"increment_status"
   },
   FieldDepartment: {
     departmentId: "department_id",
@@ -70,4 +71,17 @@ export default {
     modifiedDate: "modified_date",
     fixedAssetCode: "fixed_asset_code",
   },
+  FieldVoucher: {
+    voucherId: "voucher_id",
+    voucherCode: "voucher_code",
+    voucherDate: "voucher_date",
+    incrementDate: "increment_date",
+    cost: "cost",
+    description: "description",
+    createdBy: "created_by",
+    createdDate: "created_date",
+    modifiedBy: "modified_by",
+    modifiedDate: "modified_date",
+  },
+  
 };

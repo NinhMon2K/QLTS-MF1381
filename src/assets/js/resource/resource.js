@@ -1,7 +1,7 @@
 export default {
   // Text cho left menu
   LeftMenu: {
-    TitleLogo: "MISA QLTC",
+    TitleLogo: "MISA QLTS",
     Control: "Control",
     Dashboard: "Tổng quan",
     FA: "Tài sản",
@@ -52,6 +52,7 @@ export default {
     DepreciationYear: {
       VI: "Cần phải nhập giá trị hao mòn năm",
     },
+   
   },
 
   // error input khi validate
@@ -99,6 +100,19 @@ export default {
     DepreciationRateVali: {
       VI: "Tỉ lệ hao mòn phải bằng 1/Số năm sử dụng!",
     },
+    // Thiếu Username
+    ValidateUsername: "Yêu cầu nhập Username",
+    // Thiếu Password
+    ValidatePassword: "Yêu cầu nhập Password",
+    VoucherCode:{
+      VI: "Mã chứng từ không được để chống!",
+    },
+    VoucherDate:{
+      VI: "Ngày chứng từ không được để chống!",
+    },
+    IncrementDate:{
+      VI: "Ngày ghi tăng không được để chống!",
+    }
   },
   TitleBtnDialog: {
     Cancel: {
@@ -129,7 +143,7 @@ export default {
       EN: "Add new asset",
     },
     FormUpdateAsset: {
-      VI: "Chỉnh sửa tài sản",
+      VI: "Sửa tài sản",
       EN: "Edit assets",
     },
     FormInfoAsset: {
@@ -141,6 +155,15 @@ export default {
       EN: "Duplicate asset",
     },
   },
+  // Tiêu đề
+  Title: {
+    // Thêm
+    Add: "Thêm",
+    // Sửa
+    Edit: "Sửa",
+    // Nhân bản
+    Duplicate: "Nhân bản",
+  },
   TitleDialogMessage: {
     DeleteNoData: {
       VI: "Bạn chưa chọn tài sản để xóa",
@@ -150,12 +173,26 @@ export default {
       VI: "Bạn có muốn xóa tài sản",
       EN: "Do you want to delete assets?",
     },
+    DeleteOneVoucher: {
+      VI: "Bạn có muốn xóa chứng từ có mã",
+      EN: "Do you want to delete assets?",
+    },
     DeleteMultiple: {
       VI: "tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách?",
       EN: "asset has been selected. Do you want to remove these assets from the list?",
     },
+    DeleteMultipleVoucher: {
+      VI: "chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách?",
+      EN: "asset has been selected. Do you want to remove these assets from the list?",
+    },
     AddAsset: {
       VI: "Bạn có muốn hủy bỏ khai báo tài sản này?",
+    },
+    AddVoucher: {
+      VI: "Bạn có muốn hủy bỏ khai báo chứng từ này?",
+    },
+    AddAssetDelect: {
+      VI: "Bạn có muốn hủy chọn những tài sản này?",
     },
     SaveUpdate: {
       VI: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này?",
@@ -182,6 +219,35 @@ export default {
     POST: "POST",
     DELETE: "DELETE",
   },
+  // Định dạng ngày tháng
+  DateFormat: {
+    // Việt Nam
+    VN: "DD/MM/YYYY",
+    // Hoa kỳ
+    US: "MM/DD/YYYY",
+  },
+  // Text của Toast
+  Toast: {
+    // Thành công
+    success: "Lưu dữ liệu thành công.",
+    // Xóa thành công
+    successDelete: "Xóa dữ liệu thành công.",
+    // Thất bại
+    failed: "Có lỗi xảy ra.",
+    // lưu thất bại
+    errorSuccess : "Lưu dữ liệu không thành công",
+    //Xóa thất bại
+    errorDelete : "Xóa liệu không thành công",
+    //Xóa thất bại
+    updateSuccess : "Cập nhật dữ liệu thành công",
+
+    errorUpdate: "Cập nhật dữ liệu không thành công",
+
+    loginFailed: "Tài khoản hoặc mật khẩu không chính xác",
+
+
+},
+
 
   // Mã lỗi
   ErrorCode: {

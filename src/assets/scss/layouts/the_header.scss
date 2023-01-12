@@ -86,3 +86,130 @@
     }
   }
 }
+
+// user info
+.header-user {
+  width: 186px;
+  height: 148px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+
+  right: 10px;
+  position: fixed;
+  top: 40px;
+  padding: 16px;
+  z-index: 99;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+  border: 1px solid #dddddd;
+  &::after,
+  &::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    right: 13px;
+    width: 13px;
+    height: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
+    border: 1px solid #dddddd;
+    transform: rotate(45deg);
+
+    border-radius: 3px;
+    z-index: -1;
+  }
+  &::after {
+    background-color: #fff;
+    top: -7px;
+    z-index: 2;
+    border: 0;
+    right: 13px;
+  }
+  .user-name {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    width: 100%;
+    margin-top: -6px;
+    p {
+      font-size: 16px;
+      font-weight: 600;
+      &:first-child {
+        margin-right: 5px;
+      }
+    }
+  }
+  .user-change_pass {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 100%;
+    .app-icon {
+      margin-right: 10px;
+    }
+    .text_user_info {
+      opacity: 0.5;
+      width: 100%;
+      text-align: left;
+      border-radius: 5px;
+      &:hover {
+        opacity: 1;
+        background-color: #f5f5f5;
+      }
+      a {
+        color: #000;
+        font-size: 13px;
+      }
+    }
+  }
+  .user-manage {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 100%;
+    .app-icon {
+      margin-right: 10px;
+    }
+    .text_user_info {
+      opacity: 0.5;
+      width: 100%;
+      border-radius: 5px;
+      text-align: left;
+      &:hover {
+        opacity: 1;
+        background-color: #f5f5f5;
+      }
+      a {
+        color: #000;
+        font-size: 13px;
+      }
+    }
+  }
+  .logout-user {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 100%;
+    border-radius: 4px;
+    &:hover {
+      background-color: #1aa4c8;
+      cursor: pointer;
+      .text_user_info {
+        color: #fff;
+      }
+    }
+    &:focus,
+    &:active {
+      background-color: #0582a2;
+    }
+    .app-icon {
+      margin-right: 10px;
+    }
+    .text_user_info {
+      a {
+        color: #000;
+        font-size: 13px;
+      }
+    }
+  }
+}

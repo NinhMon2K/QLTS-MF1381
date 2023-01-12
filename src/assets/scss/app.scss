@@ -193,6 +193,15 @@ input[type="radio"] {
     }
   }
 }
-a{
+tr{
+  cursor: pointer;
+}
+a {
   text-decoration: none;
+}
+td {
+  padding: 8px;
+}
+th {
+  padding: 8px;
 }

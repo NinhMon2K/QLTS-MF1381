@@ -15,6 +15,7 @@ import router from "@/assets/js/routers/router.js";
 app.use(ElementPlus, {
   locale: vi,
 });
+app.config.globalProperties.hostname = "http://localhost:8080/"
 app.use(router);
 
 app.use(ElementPlus);

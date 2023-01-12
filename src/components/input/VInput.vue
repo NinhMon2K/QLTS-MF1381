@@ -2,26 +2,18 @@
   <div class="input-field" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" for="input__text">
       {{ label ? label : "" }}
-      <span v-if="hasInput">&#8727;</span>
+      <span v-if="hasInput">*</span>
     </label>
+    <div class="icon-filter">
+      <div
+        :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
+        v-if="leftIcon"
+      ></div>
+    </div>
     <div
       class="flex-row"
-      :class="[
-        leftIcon ? 'has-icon' : '',
-        disabledMessage ? 'input__error' : '',
-      ]"
+      :class="[leftIcon ? 'has-icon' : '', disabledMessage ? 'input__error' : '']"
     >
-      <div class="icon-filter">
-        <span
-          :class="[
-            'app-icon icon--left',
-            leftIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
-          v-if="leftIcon"
-        ></span>
-      </div>
-
       <input
         id="input__text"
         class="input-text"
@@ -35,17 +27,11 @@
         v-on="eventListsioner"
       />
       <div
-        :class="[
-          'app-icon icon--right',
-          rightIcon,
-          disabled ? 'disabled-icon' : '',
-        ]"
+        :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
         v-if="rightIcon"
       ></div>
     </div>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 <script>
@@ -215,4 +201,10 @@ export default defineComponent({
 </script>
 <style lang="scss" scope="">
 @import "./../../assets/scss/components/v_input.scss";
+.ic-search {
+  z-index: 3;
+  position: absolute;
+  top: 5px;
+  left: 8px;
+}
 </style>

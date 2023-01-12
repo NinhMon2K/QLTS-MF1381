@@ -1,11 +1,17 @@
 <template>
-  <td :style="styles" :class="[cls, styleAlign]">
-    <div class="td-inner" ref="td">
+  <td
+    :style="styles"
+    :class="[cls, styleAlign]"
+    v-if="config.type != ColumnType.Action || config.position == 'relative'"
+  >
+    <div class="td-inner check-box_input" ref="td">
       <template v-if="config.type == ColumnType.Checkbox">
-        <v-checkbox v-model="data"></v-checkbox>
+        <v-checkbox v-model="data" @click="handleClickCheckbox(data)"></v-checkbox>
       </template>
 
-      <template v-else-if="config.type == ColumnType.Action">
+      <template
+        v-else-if="config.type == ColumnType.Action && config.position == 'relative'"
+      >
         <div class="action-group">
           <div v-for="btn in config.action" :key="btn">
             <v-tooltip
@@ -31,6 +37,9 @@
         >
           {{ text }}
         </v-tooltip>
+      </template>
+      <template v-else-if="config.type == ColumnType.Date">
+        {{ text }}
       </template>
 
       <template v-else>
@@ -62,6 +71,7 @@ import commonFunction from "@/assets/js/commons/commonFunction.js";
 import Resource from "@/assets/js/resource/resource.js";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VCheckbox from "@/components/input/VCheckbox.vue";
+import moment from "moment";
 export default {
   name: "MsTd",
   components: {
@@ -76,7 +86,7 @@ export default {
       default: null,
     },
   },
-  methods: {},
+  emits: ["checkBoxAll"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     const data = ref(props.value);
@@ -97,6 +107,16 @@ export default {
       );
     });
 
+    /**
+     * Định dạng ngày tháng
+     * NNNINH (29/12/2022)
+     * @param {string} date số tiền
+     */
+
+    function formatDate(date) {
+      return moment(date).format("DD/MM/YYYY");
+    }
+
     const setTooltipDisplay = () => {
       let offset = proxy.$refs.td.getBoundingClientRect();
       if (proxy.text.length > offset.width) {
@@ -109,6 +129,7 @@ export default {
       if (props.config.width) {
         arr.push("width: " + props.config.width + "px;");
         arr.push("min-width: " + props.config.width + "px;");
+        arr.push("max-width: " + props.config.width + "px;");
       }
       if (props.config.minWidth) {
         arr.push("min-width: " + props.config.minWidth + "px;");
@@ -119,8 +140,7 @@ export default {
 
     // Show giá trị value td
     const showValue = () => {
-      let rs = props.value;
-
+      let rs = "";
       switch (props.config.type) {
         case ColumnType.Text:
           rs = props.value || "";
@@ -128,8 +148,23 @@ export default {
         case ColumnType.Number:
           rs = commonFunction.formatNumber(props.value);
           break;
+        case ColumnType.Date:
+          rs = proxy.formatDate(props.value);
+          break;
+        case ColumnType.Status:
+          rs = proxy.formatStatus(props.value);
+          break;
       }
+      return rs;
+    };
 
+    const formatStatus = (status) => {
+      let rs = "";
+      if (status == true) {
+        rs = "Đã ghi tăng";
+      } else {
+        rs = "Chưa ghi tăng";
+      }
       return rs;
     };
 
@@ -146,10 +181,16 @@ export default {
         case ColumnType.Number:
           rs.push("text-right");
           break;
+        case ColumnType.Date:
+          rs.push("text-center");
+          break;
       }
 
       return rs.join(" ");
     });
+    const handleClickCheckbox = (data) => {
+      emit("checkBoxAll", data);
+    };
 
     //Căn chỉnh nội dung bên trái,phải hay center
     const styleAlign = computed(() => {
@@ -179,6 +220,9 @@ export default {
       data,
       setTooltipDisplay,
       styleAlign,
+      formatDate,
+      formatStatus,
+      handleClickCheckbox,
     };
   },
 };
@@ -234,5 +278,12 @@ input[type="checkbox"] {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+td {
+  padding: 8px;
+  height: 39px;
+}
+th {
+  padding: 8px;
 }
 </style>

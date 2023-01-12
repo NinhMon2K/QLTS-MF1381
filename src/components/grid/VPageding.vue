@@ -33,7 +33,17 @@ export default {
       default: {},
     },
   },
-  emits: ["currentPage", "update:modelValue", "changeValue"],
+  emits: [
+    "size-change",
+    "current-change",
+    "prev-click",
+    "next-click",
+    "update:currentPage",
+    "update:pageSize",
+    "currentPage",
+    "update:modelValue",
+    "changeValue",
+  ],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.page = proxy;
@@ -78,10 +88,6 @@ export default {
 <style lang="scss" scoped>
 :deep() {
   .el-pager {
-    li {
-      padding: 0;
-      margin: 0;
-    }
     .more {
       width: 20px !important;
       min-width: 20px !important;

@@ -1,10 +1,29 @@
 <template>
-  <th :style="styles" :class="styleAlign">
+  <th
+    :style="styles"
+    :class="styleAlign"
+    v-if="config.type != ColumnType.Action || config.position == 'relative'"
+  >
     <div class="th-inner">
       <template v-if="config.type == ColumnType.Checkbox">
         <v-checkbox v-model="allSelected"></v-checkbox>
       </template>
       <!--  -->
+
+      <template
+        v-else-if="config.type == ColumnType.Action && config.position == 'relative'"
+      >
+        <v-tooltip
+          :content="displayTootip(config.title)"
+          placement="bottom"
+          right="bottom"
+        >
+          <div class="th-text">
+            {{ config.title }}
+          </div>
+        </v-tooltip>
+      </template>
+
       <template v-else>
         <v-tooltip
           :content="displayTootip(config.title)"
@@ -64,17 +83,17 @@ export default {
     onMounted(() => {
       proxy.allSelected = proxy.selected;
     });
-    function displayTootip (val){
-      let tilteTooltip = '';
-      switch(val){
+    function displayTootip(val) {
+      let tilteTooltip = "";
+      switch (val) {
         case "STT":
-        tilteTooltip = 'Số thứ tự'
+          tilteTooltip = "Số thứ tự";
           break;
-        case 'HM/KH lũy kế':
-        tilteTooltip = 'Hao mòn khấu hao lũy kế'
-        break;
-        default :
-        tilteTooltip = ''
+        case "HM/KH lũy kế":
+          tilteTooltip = "Hao mòn khấu hao lũy kế";
+          break;
+        default:
+          tilteTooltip = "";
       }
       return tilteTooltip;
     }
@@ -133,12 +152,19 @@ export default {
       selectedData,
       ResourceTable,
       styleAlign,
-      displayTootip
+      displayTootip,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-.text-align__center{
+.text-align__center {
   text-align: center;
-}</style>
+}
+.text-align__right {
+  text-align: right;
+}
+.text-align__left {
+  text-align: left;
+}
+</style>

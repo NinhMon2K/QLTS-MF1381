@@ -5,7 +5,11 @@
         <div class="header-popup">
           <div class="form-asset__title">Chọn tài sản ghi tăng</div>
           <v-tooltip content="Hủy" placement="bottom" right="bottom">
-            <div ref="btnClose" class="form-asset__close app-icon ic-close"></div>
+            <div
+              ref="btnClose"
+              @click="handleClosePopupSelect"
+              class="form-asset__close app-icon ic-close"
+            ></div>
           </v-tooltip>
         </div>
         <div class="content-popup">
@@ -16,8 +20,10 @@
                   id="txt-search"
                   v-model="txtSearch"
                   :hasLabel="false"
+                  ref="input"
                   :radius="true"
                   leftIcon="ic-search"
+                  @keyup.enter="handleChangeSeach"
                   placeholder="Tìm kiếm theo Mã, tên tài sản"
                   :disabledMessage="false"
                 ></v-input>
@@ -32,7 +38,6 @@
                 v-model:active="active"
                 :disableFooter="true"
                 ref="table"
-                @deleteOnKey="handleShowMessBox"
                 v-model:selectedData="dataSelected"
                 @currentPage="handleTotalPage"
                 @changeTabView="handleChangeTab"
@@ -45,12 +50,13 @@
           <div class="form-asset__footer">
             <!-- Buttom hủy
                   @author NNNINH (22/11/2022) -->
-            <v-tooltip content="Hủy" placement="top" right="top">
+            <v-tooltip content="Hủy bỏ" placement="top" right="top">
               <v-button
                 text="Hủy bỏ"
                 tabindex="112"
                 type="secodary"
                 ref="btnClosePopup"
+                @click="handlePopupClose"
                 radius
               >
               </v-button>
@@ -58,7 +64,12 @@
 
             <!-- Buttom lưu dữ liệu
                   @author NNNINH (22/11/2022) -->
-            <v-tooltip content="Đông ý" placement="top" right="top">
+            <v-tooltip
+              content="Đông ý"
+              @click="handleSelectOnCkick"
+              placement="top"
+              right="top"
+            >
               <v-button text="Đồng ý" tabindex="111" radius :disabled="false"></v-button>
             </v-tooltip>
           </div>
@@ -66,6 +77,56 @@
       </div>
     </div>
   </teleport>
+
+  <!-- Hiển thị thông báo error multiple
+       @author NNNINH (04/01/2023) -->
+  <teleport to="body">
+    <v-message-box
+      leftIcon="ic-warning"
+      :disabledTop="false"
+      :disabled="false"
+      disabledLeftMultiple
+      :valueMultiple="titleErrValidate"
+      :disabledMultiple="true"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isShowDialogDetail"
+    >
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Close.VI"
+        radius
+        @click="handleCloseErrorMultiple"
+      ></v-button>
+    </v-message-box>
+  </teleport>
+
+  <!-- Dialog messagebox hủy bỏ khai báo
+   @author NNNINH (05/01/2023) -->
+  <teleport to="body">
+    <v-message-box
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.AddAssetDelect.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessCancelAdd"
+    >
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        radius
+        @click="handleClosePopupSelect"
+      ></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.NoCancel.VI"
+        type="secodary"
+        @click="isDialogMessCancelAdd = false"
+        radius
+      ></v-button>
+    </v-message-box>
+  </teleport>
+
   <teleport to="body">
     <v-loading v-if="isLoading"></v-loading>
   </teleport>
@@ -90,14 +151,22 @@ import ResourceTable from "@/assets/js/resource/resourceTable";
 import VLoading from "@/components/loading/VLoading.vue";
 import Enum from "@/assets/js/enums/enum.js";
 import Resource from "@/assets/js/resource/resource.js";
+import VMessageBox from "@/components/toast/VMessageBox.vue";
 export default {
   components: {
     VButton,
     VTooltip,
     VInput,
     VGrid,
-    VLoading
+    VLoading,
+    VMessageBox,
   },
+  props: {
+    dataAssetDetaill: {
+      default: [],
+    },
+  },
+  emits: ["closePopupSelect", "SelectedData"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.popupSelect = proxy;
@@ -112,7 +181,9 @@ export default {
     const dataSelected = ref([]);
     let pram = ref({});
     const dataTotal = ref({});
-
+    const titleErrValidate = ref([]);
+    const isShowDialogDetail = ref(false);
+    const isDialogMessCancelAdd = ref(false);
     // Sự kiện change giới hạn bản ghi
     const handleChangeTab = (val) => {
       proxy.tableView = val;
@@ -124,6 +195,11 @@ export default {
       proxy.currentPage = val;
       proxy.loadDataAsset();
     };
+
+    const handleClosePopupSelect = () => {
+      emit("closePopupSelect");
+    };
+
     /**
      * Lấy dữ liệu tài sản
      * @Author: NNNinh (13/11/2022)
@@ -136,6 +212,7 @@ export default {
         // Mảng lưu dữ liệu mã bộ phận sử dụng
         let arrDepartment = [];
 
+        let listIdAsset = proxy.dataAssetDetaill.map((x) => x.fixed_asset_id);
         // Đối tượng paging tài sản
         let pagingAsset = {
           keyword: proxy.txtSearch, // Giá trị tìm kiếm tài sản
@@ -143,6 +220,8 @@ export default {
           listCategory: [], // Mảng dữ liệu mã loại tài sản
           limit: proxy.tableView, // Số bản ghi hiện lên một trang
           page: proxy.currentPage, // Trang hiện tại
+          listIdAsset: listIdAsset,
+          mode: 2,
         };
 
         // Gọi API lấy dữ liệu tài sản
@@ -162,6 +241,54 @@ export default {
         console.log(error);
       }
     }
+    onMounted(() => {
+      proxy.focusFirst();
+    });
+
+    // Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
+    const handlePopupClose = () => {
+      if (proxy.dataSelected.length > 0) {
+        proxy.isDialogMessCancelAdd = true;
+      } else {
+        proxy.handleClosePopupSelect();
+      }
+    };
+
+    /**
+     * Sự kiện close error message Multiple
+     *  @author NNNinh(18/10/2021)
+     */
+    const handleCloseErrorMultiple = () => {
+      proxy.isShowDialogDetail = false;
+      proxy.focusFirst();
+    };
+
+    /**
+     * focus vào input dầu tiên
+     *  @author NNNinh(21/10/2021)
+     */
+    const focusFirst = () => {
+      proxy.$refs.input.$el.getElementsByTagName("input")[0].focus();
+    };
+    const handleSelectOnCkick = () => {
+      if (proxy.dataSelected.length == 0) {
+        proxy.titleErrValidate = [];
+        proxy.errorMessage = {};
+        proxy.titleErrValidate.push("Chọn ít nhất 1 tài sản.");
+        proxy.isShowDialogDetail = true;
+      } else {
+        proxy.dataSelected.forEach((x) => {
+          x.flag = 1;
+        });
+        emit("SelectedData", proxy.dataSelected);
+        proxy.handleClosePopupSelect();
+      }
+    };
+
+    // Xử lý sự kiện change input tìm kiếm
+    const handleChangeSeach = () => {
+      proxy.loadDataAsset();
+    };
 
     /**
      * Xác định cột cho table
@@ -197,13 +324,14 @@ export default {
         field: ResourceTable.FieldDepartment.departmentName,
         title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
-        width: 165,
+        width: 200,
       },
 
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
+        align: "Right",
         summary: "sum",
         width: 110,
       },
@@ -211,12 +339,14 @@ export default {
         field: ResourceTable.FieldAsset.depreciationYear,
         title: "Hao mòn năm",
         type: "Number",
+        align: "Right",
         summary: "sum",
         width: 110,
       },
       {
         field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAsset,
+        align: "Right",
         type: "Number",
         summary: "sum",
         width: 110,
@@ -238,10 +368,21 @@ export default {
       dataTotal,
       handleTotalPage,
       handleChangeTab,
+      handleClosePopupSelect,
+      handleSelectOnCkick,
+      focusFirst,
+      isShowDialogDetail,
+      titleErrValidate,
+      Resource,
+      handleCloseErrorMultiple,
+      isDialogMessCancelAdd,
+      handlePopupClose,
+      handleChangeSeach,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/view/voucher/VoucherSelectAssets.scss";
+@import "@/assets/scss/components/v_message_box.scss";
 </style>

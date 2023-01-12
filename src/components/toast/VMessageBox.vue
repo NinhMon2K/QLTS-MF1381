@@ -11,11 +11,7 @@
         <div class="toast-content__left">
           <div
             ref="first"
-            :class="[
-              'app-icon icon--left',
-              leftIcon,
-              disabled ? 'disabled-icon' : '',
-            ]"
+            :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
             v-if="leftIcon"
           ></div>
         </div>
@@ -28,6 +24,7 @@
             <span v-if="disabledValueRight" class="span__right">?</span>
           </div>
         </div>
+
         <div class="toast-content__right" v-if="disabledMultiple">
           <div class="text-message" v-for="text in valueMultiple" :key="text">
             <span v-if="disabledLeftMultiple" class="span__left">- </span>
@@ -38,7 +35,7 @@
         </div>
       </div>
       <div class="toast-bottom">
-        <slot></slot>
+        <slot ref="button"></slot>
       </div>
     </div>
   </div>
@@ -131,4 +128,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "./../../assets/scss/components/v_message_box.scss";
+@import "@/assets/scss/components/v_message_box.scss";
 </style>

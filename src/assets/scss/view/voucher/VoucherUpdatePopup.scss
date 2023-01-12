@@ -8,7 +8,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 2;
+    z-index: 4;
     .form-asset {
       position: relative;
       width: 760px;
@@ -86,7 +86,7 @@
                     flex: 1;
                   }
                   .price__cb{
-                    width: 150px;
+                    width: 174px;
                     margin-left: 10px;
                     .ms-number{
                       .flex-row{
@@ -126,7 +126,7 @@
               flex: 1;
             }
             .box_sum-price{
-              width: 150px;
+              width: 174px;
               margin-left: 10px;
             }
           }

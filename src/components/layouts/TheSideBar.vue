@@ -20,13 +20,13 @@
               class="menu-item"
               :href="item.path"
               :class="[item.path == activeItem?.path ? 'active' : '']"
-              @click="() => clickMenu(item)"
+              @click.prevent="() => clickMenu(item)"
             >
               <div :class="['app-icon', item.icon]"></div>
               <span class="text-menu">{{ item.text }}</span>
               <div
                 class="arrow-menu misa-icon app-icon"
-                @click="hanhdleShowItemChildrens(index)"
+                @click.prevent="hanhdleShowItemChildrens(index)"
                 :class="item.arrow"
               ></div>
             </div>
@@ -40,8 +40,12 @@
               <div
                 class="sidebar-sub"
                 :href="itemChildrens.path"
-                :class="[itemChildrens.path == activeItem?.path ? 'active' : '']"
-                @click="() => clickMenu(itemChildrens)"
+                :class="[
+                  itemChildrens.path == activeItemChildrens?.path
+                    ? 'activeChildrens'
+                    : '',
+                ]"
+                @click.prevent="() => clickMenuChildrens(itemChildrens)"
                 v-if="Childrens"
               >
                 <a class="sidebar-sub__item">
@@ -100,27 +104,53 @@ export default {
     window.sideBar = proxy;
     const isActive = ref(false);
     const activeItem = ref(null);
+    const activeItemChildrens = ref(null);
     const Childrens = ref(false);
     function setActive() {
       proxy.isActive = true;
     }
-    onMounted(() => {
-      proxy.activeMenu();
-    });
+    onMounted(() => {});
 
     watch(
       () => activeItem.value,
       (newVal) => {
         if (newVal) {
-          proxy.activeMenu();
+          // proxy.activeMenu(newVal.path);
         }
       }
     );
 
-    function activeMenu() {
+    watch(
+      () => activeItemChildrens.value,
+      (newVal) => {
+        if (newVal) {
+          //  proxy.activeMenuChildrens();
+        }
+      }
+    );
+    onMounted(() => {
       let pathName = location.pathname.toLowerCase();
       let item = proxy.menuItems.find((x) => x.path == pathName);
       proxy.activeItem = item || proxy.menuItems[1];
+    });
+
+    function activeMenu(item) {
+      let pathName = location.pathname.toLowerCase();
+      if (item.path == pathName) {
+        proxy.activeItem = item;
+      } else {
+        proxy.activeItem = null;
+        proxy.activeItemChildrens = null;
+      }
+    }
+    function activeMenuChildrens(item) {
+      proxy.activeChildrens = null;
+      setTimeout(() => {
+        let pathName = location.pathname.toLowerCase();
+        if (item.path == pathName) {
+          proxy.activeItemChildrens = item;
+        }
+      }, 10);
     }
 
     const cancelEvent = (e) => {
@@ -171,12 +201,15 @@ export default {
       } else {
         proxy.Childrens = false;
       }
+      let pathName = location.pathname.toLowerCase();
+      let item = proxy.menuItems.find((x) => x.path == pathName);
+      proxy.activeItem = item || proxy.menuItems[1];
     }
     const getMenuItems = () => {
       let menuItems = [
         {
           itemID: 1,
-          path: "/voucher",
+          path: "",
           icon: "ic-overview",
           text: Resource.LeftMenu.Dashboard,
           arrow: "",
@@ -199,43 +232,43 @@ export default {
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Thay đổi thông tin",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Đánh giá lại",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Tính hao mòn",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Điều chuyển tài sản",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Ghi giảm",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Kiểm kê",
               arrow: "",
             },
             {
               itemID: 2,
-              path: "/voucher",
+              path: "",
               text: "Khác",
               arrow: "",
             },
@@ -292,9 +325,15 @@ export default {
 
     function clickMenu(item) {
       proxy.$router.push(item.path);
+      proxy.activeMenu(item);
+    }
+    function clickMenuChildrens(item) {
+      proxy.$router.push(item.path);
+      proxy.activeMenuChildrens(item);
     }
 
     return {
+      clickMenuChildrens,
       getMenuItems,
       hanhdleShowItemChildrens,
       collapsed,
@@ -304,6 +343,8 @@ export default {
       isActive,
       clickMenu,
       activeItem,
+      activeItemChildrens,
+      activeMenuChildrens,
       activeMenu,
       Resource,
       Childrens,
@@ -314,4 +355,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/layouts/the_sidebar.scss";
+.activeChildrens {
+  background-color: #48586c !important;
+  opacity: 1 !important;
+}
 </style>

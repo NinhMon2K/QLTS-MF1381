@@ -1,5 +1,10 @@
 <template>
-  <div class="grid-container">
+  <div
+    class="grid-container"
+    ref="tabless"
+    v-on:keydown="keyboardEvent"
+    v-on:keyup="keyUpboardEvent"
+  >
     <div class="grid-view">
       <div
         class="grid-header"
@@ -17,6 +22,7 @@
                   <v-checkbox v-model="allSelected"></v-checkbox>
                 </div>
               </th>
+
               <v-th
                 ref="th"
                 v-for="col in columns"
@@ -44,8 +50,9 @@
               :data="item"
               :columns="columns"
               :selectedCol="selectedCol"
+              :selectedRow="selectedIndex[i]"
               v-model:selected="selectedIndex[i]"
-              @click="handleClick(i)"
+              @click="(e) => handleClick(i, e)"
               @dblclick="handleEdit(item, i)"
               @keydown.f2="handleEdit(item, i)"
               @keydown.insert="handleDuplicate(item, i)"
@@ -53,6 +60,7 @@
               @keydown.up="prevItem"
               @keydown.down="nextItem"
               @keyup.enter="handleClick(i)"
+              @checkBoxAll="handleCheckBoxAll"
             >
             </v-tr>
           </tbody>
@@ -64,6 +72,7 @@
 
       <div
         class="grid-footer"
+        :class="positionPaging == 'Bottom' ? 'position_paging-bottom' : ''"
         :style="{
           'padding-right': left - 2 + 'px',
         }"
@@ -77,15 +86,63 @@
           }"
         >
           <tfoot>
-            <v-tfoot
-              :columns="columns"
-              :spanCol="4"
-              :dataTotal="dataTotal"
-              @currentPage="handleTotalPage"
-              @changeTabView="handleChangeTab"
-            ></v-tfoot>
+            <tr>
+              <th v-if="selectedCol" style="width: 50px">
+                <div class="th-inner">
+                  <div></div>
+                </div>
+              </th>
+              <v-tfoot
+                ref="th"
+                v-for="col in columns"
+                :dataTotal="dataTotal"
+                :key="col"
+                :config="col"
+              >
+              </v-tfoot>
+            </tr>
           </tfoot>
         </table>
+
+        <!-- Paging table -->
+        <div class="paging_table">
+          <div class="container-tfooter-left">
+            <div class="tfooter--left" style="font-size: 11px">
+              <span>Tổng số:</span>
+              <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{
+                dataTotal.totalCount
+              }}</span>
+              <span>bản ghi</span>
+            </div>
+            <div class="total-page">
+              <select id="total-page_size" v-model="tableView" @change="handleChangeTab">
+                <option
+                  v-show="true"
+                  id="item-total"
+                  v-for="item in dataTotalPage"
+                  :key="item"
+                  :value="item"
+                  selected
+                  @click="handleTotalPage"
+                  @change="handleTotalPage"
+                >
+                  {{ item }}
+                </option>
+              </select>
+              <label class="icon-total_page" for="total-page_size">
+                <div class="icon-bottom app-icon ic-angle_down"></div>
+              </label>
+            </div>
+
+            <div class="tfooter--right">
+              <v-pageding
+                v-model="tableView"
+                :dataTotal="dataTotal"
+                @currentPage="handleTotalPage"
+              ></v-pageding>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <v-popup-asset
@@ -115,18 +172,22 @@ import VPopupAsset from "@/components/popup/VPopupAsset.vue";
 import VCheckbox from "@/components/input/VCheckbox.vue";
 import VTfoot from "@/components/grid/VTfoot.vue";
 import Resource from "@/assets/js/resource/resource.js";
+import VPageding from "@/components/grid/VPageding.vue";
 import Enum from "@/assets/js/enums/enum.js";
 
 export default defineComponent({
   name: "MsGrid",
-  components: { VTh, VTr, VPopupAsset, VCheckbox, VTfoot },
+  components: { VTh, VTr, VPopupAsset, VCheckbox, VTfoot, VPageding },
   props: {
     selectedCol: {
       default: false,
       type: Boolean,
     },
-
-    disableFooter:{
+    positionPaging: {
+      default: "Top",
+      type: String,
+    },
+    disableFooter: {
       default: false,
       type: Boolean,
     },
@@ -159,6 +220,10 @@ export default defineComponent({
     active: {
       default: 0,
     },
+    selectedRow: {
+      default: false,
+      type: Boolean,
+    },
     // filters: {
     //   default: [],
     //   type: Array,
@@ -181,11 +246,21 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     window.tables = proxy;
     const selected = ref([]);
+    const allSelectedsIndex = ref([]);
     const isShowPopup = ref(false);
+    const dataTotalPage = ref([20, 50, 100, 200]);
     let pram = reactive({
       mode: 0,
     });
     let pramData = ref({});
+
+    const rowAllSelected = ref(true);
+    const scrollWidth = ref(0);
+    const leftWidth = ref(0);
+    const tableWidth = ref(0);
+
+    const shiftPressed = ref(false);
+    const left = ref(0);
     const confirmMessage = reactive({
       iconMessage: "",
       textMessage: "",
@@ -225,14 +300,6 @@ export default defineComponent({
       left.value = body.scrollHeight > body.clientHeight ? 8 : 0;
       tableWidth.value = body.scrollWidth;
     });
-
-    const scrollWidth = ref(0);
-    const leftWidth = ref(0);
-    const tableWidth = ref(0);
-
-    const left = ref(0);
-
-    window.o = proxy;
 
     function resize() {
       let body = proxy.$el.querySelector(".grid-body");
@@ -276,9 +343,10 @@ export default defineComponent({
      * @pram {object} item dữ liệu asset khi click tr
      */
     const handleEdit = (item, i) => {
-      proxy.pram.mode = Enum.Mode.Update;
-      proxy.pramData = item;
-      proxy.isShowPopup = true;
+      // proxy.pram.mode = Enum.Mode.Update;
+      // proxy.pramData = item;
+      // proxy.isShowPopup = true;
+      emit("handleEventTable", Enum.Mode.Update, item);
       emit("update:active", i);
     };
 
@@ -288,27 +356,41 @@ export default defineComponent({
      * @pram {object} item dữ liệu asset khi click tr
      */
     const handleDuplicate = (item, i) => {
-      proxy.pram.mode = Enum.Mode.Duplicate;
-      proxy.pramData = item;
-      proxy.isShowPopup = true;
+      // proxy.pram.mode = Enum.Mode.Duplicate;
+      // proxy.pramData = item;
+      // proxy.isShowPopup = true;
+      emit("handleEventTable", Enum.Mode.Duplicate, item);
       emit("update:active", i);
     };
 
     const handleDelete = () => {
       emit("deleteOnKey");
     };
+    const pageIndex = ref(0);
 
     /**
      * Xử lý sự kiện bỏ checked 1 dòng
      *  @author NNNinh(01/11/2022)
      */
-    const handleClick = (index) => {
-      if (proxy.selectedIndex[index]) {
-        proxy.selectedIndex[index] = false;
-      } else {
-        proxy.selectedIndex[index] = true;
-      }
+    const handleClick = (index, e) => {
+      let isCheckbox = !!e.target.closest(".checkbox-control");
 
+      if (!isCheckbox && proxy.selectedRow) {
+        if (proxy.selectedIndex[index]) {
+          proxy.selectedIndex[index] = false;
+        } else {
+          proxy.selectedIndex = [];
+          proxy.selectedIndex[index] = true;
+        }
+      } else {
+        if (proxy.selectedIndex[index]) {
+          proxy.selectedIndex[index] = false;
+        } else {
+          proxy.allSelectedsIndex[proxy.allData[index]["STT"]] = true;
+          proxy.selectedIndex[index] = true;
+          // proxy.allSelectedsIndex = proxy.selectedIndex[index] = true;
+        }
+      }
       emit("update:active", index);
     };
 
@@ -321,14 +403,6 @@ export default defineComponent({
       emit("show-message", mode, isShowMessage);
     };
 
-    const handleChangeTab = (val) => {
-      emit("changeTabView", val);
-    };
-
-    const handleTotalPage = (tableView, val) => {
-      emit("currentPage", tableView, val);
-    };
-
     /**
      * Focus vào item trước đó
      * NNNINH (28/11/2022)
@@ -337,6 +411,10 @@ export default defineComponent({
       if (e.target.previousElementSibling) {
         e.target.previousElementSibling.focus();
       }
+    };
+
+    const handleCheckBoxAll = (data) => {
+      proxy.rowAllSelected = false;
     };
 
     /**
@@ -349,9 +427,43 @@ export default defineComponent({
       }
     };
 
-    function reset() {
+    /**
+     * Xử lí sự kiện keyboard shortcut
+     * @author NNNINH (14/11/2022)
+     */
+    const keyboardEvent = (e) => {
+      if (e.which == Enum.KeyCode.Shift) {
+        proxy.shiftPressed = true;
+      }
+    };
+    /**
+     * Xử lí sự kiện keyupboard shortcut
+     * @author NNNINH (14/11/2022)
+     */
+    const keyUpboardEvent = (e) => {
+      if (e.which == Enum.KeyCode.Shift) {
+        if (proxy.shiftPressed == true) {
+          proxy.shiftPressed = false;
+        }
+      }
+    };
+
+    function resetData() {
       proxy.selectedIndex = [];
+      proxy.$refs.tabless.reset();
     }
+
+    // Số trang hiển thị
+    const tableView = ref(20);
+    const handleTotalPage = (val) => {
+      proxy.pageIndex = val;
+      //  proxy.allSelectedsIndex = proxy.selectedIndex.map((x) => x == true);
+      emit("currentPage", proxy.tableView, val);
+    };
+
+    const handleChangeTab = () => {
+      emit("changeTabView", proxy.tableView);
+    };
 
     return {
       prevItem,
@@ -372,33 +484,45 @@ export default defineComponent({
       handlClosePopup,
       confirmMessage,
       handleShowMess,
-      reset,
+      resetData,
       scrollWidth,
       leftWidth,
       left,
       tableWidth,
+      dataTotalPage,
+      tableView,
+      resize,
+      allSelectedsIndex,
+      pageIndex,
+      keyboardEvent,
+      keyUpboardEvent,
+      shiftPressed,
+      rowAllSelected,
+      handleCheckBoxAll,
     };
   },
 });
 </script>
 <style lang="scss" scoped>
 @import "../../assets/scss/components/v_gid.scss";
-.active-tr,
-.active-row {
-  background-color: rgba(26, 164, 200, 0.2);
+.grid-footer {
+  position: relative;
 }
-
-#tbl_tbody {
-  tbody {
-    tr {
-      .text-center {
-        &:first-child {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+.paging_table {
+  position: absolute;
+  bottom: -1px;
+}
+.position_paging-bottom {
+  .gr-footer {
+    tfoot {
+      tr {
+        background-color: #f5f5f5;
       }
     }
+  }
+  .paging_table {
+    position: relative;
+    border-top: 1px solid #ccc;
   }
 }
 </style>

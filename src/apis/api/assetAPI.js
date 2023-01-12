@@ -23,7 +23,7 @@ class AssetApi extends BaseAPI {
       url: this.getBaseURL() + "/" + action,
       data: payload,
     };
-    return httpclient.postAsync(request);
+    return await httpclient.postAsync(request);
   }
 }
 

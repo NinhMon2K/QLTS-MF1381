@@ -1,60 +1,24 @@
 <template>
-  <tr>
-    <th :colspan="spanCol">
-      <div class="container-tfooter-left">
-        <div class="tfooter--left" style="font-size: 11px">
-          <span>Tổng số:</span>
-          <span style="font-size: 11px; font-weight: 700; margin: 0 4px">{{
-            dataTotal.totalCount
-          }}</span>
-          <span>bản ghi</span>
+  <th
+    :style="styles"
+    :class="styleAlign"
+    v-if="config.type != ColumnType.Action || config.position == 'relative'"
+  >
+    <div class="th-inner">
+      <template v-if="config.type == ColumnType.Checkbox">
+        <div></div>
+      </template>
+      <!--  -->
+      <template v-if="config.type == ColumnType.Action && config.position == 'relative'">
+        <div></div>
+      </template>
+      <template v-else>
+        <div class="th-text">
+          {{ text }}
         </div>
-        <div class="total-page">
-          <select
-            id="total-page_size"
-            v-model="tableView"
-            @change="handleChangeTab"
-          >
-            <option
-              v-show="true"
-              id="item-total"
-              v-for="item in dataTotalPage"
-              :key="item"
-              :value="item"
-              selected
-              @click="handleTotalPage"
-              @change="handleTotalPage"
-            >
-              {{ item }}
-            </option>
-          </select>
-          <label class="icon-total_page" for="total-page_size">
-            <div class="icon-bottom app-icon ic-angle_down"></div>
-          </label>
-        </div>
-
-        <div class="tfooter--right">
-          <v-pageding
-            v-model="tableView"
-            :dataTotal="dataTotal"
-            @currentPage="handleTotalPage"
-          ></v-pageding>
-        </div>
-      </div>
-    </th>
-
-    <th
-      class="th-foot"
-      v-for="col in column"
-      :key="col.field"
-      :style="{
-        width: col.width + 'px',
-      }"
-    >
-      {{ getValue(col) }}
-    </th>
-    <th></th>
-  </tr>
+      </template>
+    </div>
+  </th>
 </template>
 <script>
 import {
@@ -67,15 +31,13 @@ import {
   onBeforeMount,
   toRefs,
 } from "vue";
-import VPageding from "@/components/grid/VPageding.vue";
+import ColumnType from "@/assets/js/constant/ColumnType.js";
 import Resource from "@/assets/js/resource/resource.js";
 import ResourceTable from "@/assets/js/resource/resourceTable.js";
 import commonFunction from "@/assets/js/commons/commonFunction.js";
 import { columns } from "element-plus/es/components/table-v2/src/common";
 export default {
-  components: {
-    VPageding,
-  },
+  components: {},
   props: {
     columns: {
       default: [],
@@ -86,102 +48,87 @@ export default {
     dataTotal: {
       default: {},
     },
-    page: {
+    config: {
       default: {},
     },
   },
-  emits: ["currentPage", "changeTabView"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.tfoot = proxy;
-    const dataTotalPage = ref([20, 50, 100, 200]);
-    // Số trang hiển thị
-    const tableView = ref(20);
-    const handleTotalPage = (val) => {
-      emit("currentPage", proxy.tableView, val);
-    };
-
-    const column = computed(() =>
-      proxy.columns?.filter((x, i) => i >= proxy.spanCol)
-    );
-
-    const handleChangeTab = () => {
-      emit("changeTabView", proxy.tableView);
-    };
-
-    function getValue(col) {
-      switch (col.summary) {
-        case "sum":
-          return commonFunction.formatNumber(proxy.dataTotal[col.field] || 0);
-
-        case "number":
-          return proxy.dataTotal[col.field] || 0;
+    // Xét style cho th
+    const styles = computed(() => {
+      let arr = [];
+      if (props.config.width) {
+        arr.push("width: " + props.config.width + "px;");
+        arr.push("min-width: " + props.config.width + "px;");
       }
-    }
+      if (props.config.minWidth) {
+        arr.push("min-width: " + props.config.minWidth + "px;");
+      }
+
+      return arr.join("; ");
+    });
+    const styleAlign = computed(() => {
+      let rs = [];
+
+      switch (props.config.align) {
+        case ColumnType.AlignCenter:
+          rs.push("text-align__center");
+          break;
+        case ColumnType.AlignLeft:
+          rs.push("text-align__left");
+          break;
+        case ColumnType.AlignRight:
+          rs.push("text-align__right");
+          break;
+      }
+
+      return rs.join(" ");
+    });
+
+    // Giá trị hiện lên Dom
+    const text = computed(() => {
+      let rs = props.value;
+      switch (props.config.summary) {
+        case "sum":
+          rs = commonFunction.formatNumber(proxy.dataTotal[props.config.field] || 0);
+
+          break;
+        case "number":
+          // rs = proxy.dataTotal[field] || 0;
+          break;
+        default:
+          rs = "";
+      }
+      return rs;
+    });
 
     return {
-      dataTotalPage,
-      tableView,
-      handleTotalPage,
-      handleChangeTab,
       commonFunction,
-      getValue,
-      column,
+
+      styleAlign,
+      styles,
+      ColumnType,
+      text,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.container-tfooter-left {
-  display: flex;
-  align-items: center;
-  .tfooter--left {
-    width: 150px;
-    span {
-      &:last-child {
-        font-weight: 500;
-      }
-      &:first-child {
-        font-weight: 500;
-        margin-left: -11px;
-      }
-    }
-  }
-  .total-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    margin-right: 20px;
-    .icon-total_page {
-      position: absolute;
-      right: 12px;
-      cursor: pointer;
-    }
-  }
+.text-align__center {
+  text-align: center;
 }
-#total-page_size {
-  background-color: #ffffff;
-  border-radius: 2.625px;
-  border: 1px solid #afafaf;
-  width: 59px;
-  height: 25px;
-  overflow: hidden;
-  font-size: 11px;
-  padding-left: 13px;
-  outline: none;
-  -webkit-appearance: none;
-  #item-total {
-    widows: 100%;
-    height: 36px !important;
-  }
-}
-.th-foot {
-  font-size: 13px;
+.text-align__right {
   text-align: right;
 }
-#total-page_size {
+.text-align__left {
+  text-align: left;
 }
-
+td {
+  padding: 8px;
+}
+th {
+  padding: 8px;
+}
 </style>

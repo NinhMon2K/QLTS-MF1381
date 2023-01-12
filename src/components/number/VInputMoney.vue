@@ -2,23 +2,19 @@
   <div class="ms-number" :class="disabledMessage ? 'mg-9' : false">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
-      <span v-if="hasInput">&#8727;</span>
+      <span v-if="hasInput">*</span>
     </label>
     <div
       class="flex-row"
       :class="[
         leftIcon ? 'has-icon' : '',
         disabledMessage ? 'input__error' : '',
-        radius ? 'row-radius' : ''
+        radius ? 'row-radius' : '',
       ]"
     >
       <div class="icon-filter">
         <span
-          :class="[
-            'app-icon icon--left',
-            leftIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
+          :class="['app-icon icon--left', leftIcon, disabled ? 'disabled-icon' : '']"
           v-if="leftIcon"
         ></span>
       </div>
@@ -34,12 +30,10 @@
         :max="max"
         :min="min"
         v-on="eventListsioner"
+        :class="[disabledRight ? 'input__icon' : '']"
         style="text-align: right"
       />
-      <div
-        :class="['icon--right', disabledRight ? 'disabled-icon' : '']"
-        v-if="disabledRight"
-      >
+      <div :class="['icon--right']" v-if="disabledRight">
         <v-tooltip content="Lên" placement="bottom">
           <div
             :class="[
@@ -48,6 +42,7 @@
               disabledIconTop ? 'disabled-icon' : '',
             ]"
             v-if="topIcon"
+            @click="plus"
           ></div>
         </v-tooltip>
 
@@ -59,13 +54,12 @@
               disabledIconBottom ? 'disabled-icon' : '',
             ]"
             v-if="bottomIcon"
+            @click="less"
           ></div>
         </v-tooltip>
       </div>
     </div>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 
@@ -84,6 +78,7 @@ import {
 import { useCurrencyInput } from "vue-currency-input";
 import { watchDebounced } from "@vueuse/core";
 import VTooltip from "../tooltip/VTooltip.vue";
+import { integer } from "@vuelidate/validators";
 export default {
   name: "VInputMoney",
   components: {
@@ -164,11 +159,11 @@ export default {
     },
 
     min: {
-      default: -99999999999999,
+      default: -99999999999999999,
       type: [Number, String],
     },
     max: {
-      default: 99999999999999,
+      default: 999999999999999999,
       type: [Number, String],
     },
     step: {
@@ -186,20 +181,17 @@ export default {
     options: {
       default: {},
     },
-    radius : {
+    radius: {
       default: false,
       type: Boolean,
-    }
+    },
   },
   emits: ["update:modelValue", "blur", "focus", "changeValue", "change"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     window.iNumbers = proxy;
     const isValue = ref(0);
-    const { inputRef, numberValue, setValue } = useCurrencyInput(
-      props.options,
-      false
-    );
+    const { inputRef, numberValue, setValue } = useCurrencyInput(props.options, false);
     watchDebounced(numberValue, (value) => {
       proxy.isValue = value;
       emit("update:modelValue", isValue),
@@ -240,12 +232,10 @@ export default {
       };
     });
     const less = () => {
-      if (proxy.isValue <= 0) {
-        proxy.isValue = 1;
-        emit("plus", proxy.isValue, proxy.valueField);
+      if (parseInt(proxy.$refs.inputRef.value) <= 0) {
+        emit("less", parseInt(proxy.$refs.inputRef.value), proxy.valueField);
       } else {
-        proxy.isValue = proxy.isValue - proxy.step;
-        emit("changeValue", proxy.isValue, proxy.valueField);
+        proxy.$refs.inputRef.value = parseInt(proxy.$refs.inputRef.value) - proxy.step;
       }
     };
 
@@ -265,11 +255,10 @@ export default {
      *  @author NNNinh(16/10/2021)
      */
     const plus = () => {
-      if (proxy.isValue > proxy.max) {
-        emit("plus", proxy.isValue, proxy.valueField);
+      if (parseInt(proxy.$refs.inputRef.value) > proxy.max) {
+        emit("plus", parseInt(proxy.$refs.inputRef.value), proxy.valueField);
       } else {
-        proxy.isValue = proxy.isValue + proxy.step;
-        emit("changeValue", proxy.isValue, proxy.valueField);
+        proxy.$refs.inputRef.value = parseInt(proxy.$refs.inputRef.value) + proxy.step;
       }
     };
     watch(
@@ -294,7 +283,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "./../../assets/scss/components/v_input_number.scss";
-.input-text{
+.input-text {
   padding-right: 10px !important;
+}
+.input__icon {
+  padding-right: 30px !important;
 }
 </style>

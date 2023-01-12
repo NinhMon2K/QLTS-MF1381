@@ -3,9 +3,15 @@
     <div class="model">
       <div class="form-asset">
         <div class="header-popup">
-          <div class="form-asset__title">Sửa tài sản Xe Toyota</div>
+          <div class="form-asset__title">
+            Sửa tài sản {{ dataFormAsset.fixed_asset_name }}
+          </div>
           <v-tooltip content="Hủy" placement="bottom" right="bottom">
-            <div ref="btnClose" class="form-asset__close app-icon ic-close"></div>
+            <div
+              ref="btnClose"
+              @click="handleClosePopup"
+              class="form-asset__close app-icon ic-close"
+            ></div>
           </v-tooltip>
         </div>
         <div class="content-popup">
@@ -17,8 +23,9 @@
                 hasLabel
                 :maxLength="50"
                 :radius="false"
-                placeholder="Mã tài sản"
+                placeholder="Bộ phận sử dụng"
                 :disabled="true"
+                v-model="dataFormAsset.department_name"
               ></v-input>
             </div>
             <div class="box__title">Nguyên giá</div>
@@ -35,18 +42,31 @@
                 >
                   <div class="form-group">
                     <div class="dialog-item select--cb">
-                      <v-drop-down
-                        ref="hu"
-                        tabindex="104"
-                        :heightCb="-25"
-                        :valueField="budget_id"
-                        displayField="budget_name"
-                        @blur="onBlurDropdown"
-                        rightIcon="ic-angle-downs"
-                        :columns="columns"
-                        placeholder="Chọn ngân sách"
-                        :dataAll="budget_options"
-                      ></v-drop-down>
+                      <div class="item_dropdown">
+                        <el-select
+                          v-model="source.budget_id"
+                          filterable
+                          placeholder="Chọn nguồn hình thành"
+                          class="source-item-cbb"
+                          @change="handleChangeCbo"
+                          :tabindex="`20${index * 2}`"
+                          :class="{
+                            'input--error': validateShowError[index],
+                            'duplicate-source-input--error': validateShowError[index],
+                          }"
+                        >
+                          <el-option
+                            v-for="item in budget_options"
+                            :key="item.budget_id"
+                            :label="item.budget_name"
+                            :value="item.budget_id"
+                          />
+                        </el-select>
+                      </div>
+
+                      <span class="error-message" v-if="validateShowError[index]">{{
+                        titleError[index]
+                      }}</span>
                     </div>
                     <div class="dialog-item price__cb">
                       <v-number
@@ -54,7 +74,11 @@
                         leftIcon
                         :disabledRight="false"
                         :radius="true"
-                        @blur="onBlurInputNumber"
+                        v-model="source.cost"
+                        @change="handleChangeCbo"
+                        @blur="handleChangeCbo"
+                        :disabledMessage="validateShowErrorInput[index]"
+                        :message="titleErrorInput[index]"
                         :options="{
                           locale: 'vi-VN',
                           currency: 'EUR',
@@ -68,15 +92,26 @@
                   </div>
                   <div class="form_group-btn">
                     <div class="position-relative mt-10 mb-20 box-add">
-                      <v-tooltip content="Thêm" placement="bottom" right="bottom">
+                      <v-tooltip
+                        content="Thêm nguồn chi phí"
+                        placement="bottom"
+                        right="bottom"
+                      >
                         <div
                           @click="addField(sources)"
                           class="button-no-border app-icon ic-add-border"
                         ></div>
                       </v-tooltip>
                     </div>
-                    <div class="position-relative mt-10 mb-20 box-minus">
-                      <v-tooltip content="Xóa" placement="bottom" right="bottom">
+                    <div
+                      v-if="sources.length > 1"
+                      class="position-relative mt-10 mb-20 box-minus"
+                    >
+                      <v-tooltip
+                        content="Xóa nguồn chi phí"
+                        placement="bottom"
+                        right="bottom"
+                      >
                         <div
                           @click="removeField(index, sources)"
                           class="button-no-border app-icon ic-minus-border"
@@ -103,7 +138,7 @@
                   leftIcon
                   :disabledRight="false"
                   :radius="true"
-                  @blur="onBlurInputNumber"
+                  v-model="sumCost"
                   :disabled="true"
                   :options="{
                     locale: 'vi-VN',
@@ -128,6 +163,7 @@
                 tabindex="112"
                 type="secodary"
                 ref="btnClosePopup"
+                @click="handleClosePopup"
                 radius
               >
               </v-button>
@@ -135,20 +171,45 @@
 
             <!-- Buttom lưu dữ liệu
                 @author NNNINH (22/11/2022) -->
-            <v-tooltip content="Lưu và cất" placement="top" right="top">
-              <v-button text="Lưu" tabindex="111" radius :disabled="false"></v-button>
+            <v-tooltip content="Lưu" placement="top" right="top">
+              <v-button
+                text="Lưu"
+                tabindex="111"
+                @click="handleSaveOnClick"
+                radius
+                :disabled="false"
+              ></v-button>
             </v-tooltip>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Hiển thị thông báo error multiple
+       @author NNNINH (04/01/2023) -->
+    <teleport to="body">
+      <v-message-box
+        leftIcon="ic-warning"
+        :disabledTop="false"
+        :disabled="false"
+        disabledLeftMultiple
+        :valueMultiple="titleErrValidate"
+        :disabledMultiple="true"
+        :disabledValueLeft="false"
+        :disabledValueRight="false"
+        v-if="isShowDialogDetail"
+      >
+        <v-button
+          tabindex="201"
+          :text="Resource.TitleBtnDialog.Close.VI"
+          radius
+          @click="isShowDialogDetail = false"
+        ></v-button>
+      </v-message-box>
+    </teleport>
   </teleport>
 </template>
-<style lang="scss" scoped>
-@import "@/assets/scss/view/voucher/VoucherUpdatePopup.scss";
-@import "@/assets/scss/components/v_combobox.scss";
-</style>
-<script setup>
+<script>
 import {
   computed,
   getCurrentInstance,
@@ -156,72 +217,289 @@ import {
   onUpdated,
   reactive,
   ref,
+  nextTick,
   watch,
 } from "vue";
 import VButton from "@/components/button/VButton.vue";
 import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VInput from "@/components/input/VInput.vue";
 import vNumber from "@/components/number/VInputMoney.vue";
-import VDropDown from "@/components/dropdown/VDropDown.vue";
-
-const sourceCost = ref([]);
-const sources = ref([
-  {
-    budget_id: "",
-    budget_name: "",
-    cost: 0,
+import Resource from "@/assets/js/resource/resource.js";
+import VMessageBox from "@/components/toast/VMessageBox.vue";
+import Enum from "@/assets/js/enums/enum.js";
+import _ from "lodash";
+import assetAPI from "@/apis/api/assetAPI";
+import { forEach } from "lodash";
+import { integer } from "@vuelidate/validators";
+export default {
+  components: {
+    VButton,
+    VTooltip,
+    VInput,
+    vNumber,
+    VMessageBox,
   },
-]);
+  emits: ["hideDialog"],
+  props: {
+    // Xác định là form thêm, sửa, xóa
+    formModel: {
+      default: {},
+    },
+    modelValue: {
+      default: {},
+    },
+    // Đối tượng lấy dữ liệu và cập nhật lại dữ liệu
+  },
 
-const addField = (list) => {
-  list.push({ budget_id: "", budget_name: "", cost: null });
+  setup(props, { emit }) {
+    const { proxy } = getCurrentInstance();
+    window.popupUpdate = proxy;
+    const sourceCost = ref([]);
+    const sumCost = ref(0);
+    const dataFormAsset = ref({});
+    const oldDataFormAsset = ref([]);
+    const titleError = ref({});
+    const titleErrorInput = ref({});
+    const assetData = ref({});
+    const isShowDialogDetail = ref(false);
+    const titleErrValidate = ref([]);
+    const sources = ref([
+      {
+        budget_id: "",
+        budget_name: "",
+        cost: 0,
+      },
+    ]);
+    onMounted(() => {
+      proxy.assetData = proxy.dataSelect;
+    });
+
+    // Mảng có giá trị 1 tại vị trí trùng
+    const duplicateValidate = ref([]);
+    watch(
+      () => proxy.modelValue,
+      (newVal) => {
+        proxy.dataFormAsset = newVal;
+      }
+    );
+    watch(
+      () => proxy.dataSelect,
+      (newVal) => {
+        proxy.assetData = newVal;
+      }
+    );
+
+    onMounted(() => {
+      proxy.dataFormAsset = _.cloneDeep(proxy.modelValue);
+    });
+    const addField = (list) => {
+      list.push({ budget_id: "", budget_name: "", cost: null });
+    };
+    /**
+     * Lấy dữ liệu data ngân sách
+     * @Author: NNNinh (02/01/2023)
+     */
+    async function loadDataComboBudget() {
+      try {
+        let res = await assetAPI.get("Budgets/GetAll", {});
+        proxy.budget_options = res;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    watch(
+      () => sources.value,
+      (newVal) => {
+        proxy.sumCost = proxy.sources.reduce((acc, item) => acc + item.cost, 0);
+        proxy.budget_options.forEach((x, index) => {
+          proxy.sources.forEach((y) => {
+            if (y["budget_id"] == x["budget_id"]) {
+              y["budget_name"] = x["budget_name"];
+            }
+          });
+        });
+      },
+      {
+        deep: true,
+      }
+    );
+
+    const removeField = (index, list) => {
+      if (sources.value.length == 1) {
+        return;
+      } else {
+        proxy.validateShowError = [];
+        list.splice(index, 1);
+        sourceCost.value.splice(index, 1);
+      }
+    };
+    // Mảng lưu các tên nguồn ngân sách
+    const budget_options = ref([]);
+
+    const defaultValue = () => {
+      if (proxy.modelValue.budget != "") {
+        proxy.sources = JSON.parse(proxy.modelValue.budget);
+        proxy.oldDataFormAsset = _.cloneDeep(proxy.sources);
+      }
+    };
+    onMounted(() => {
+      proxy.loadDataComboBudget();
+      proxy.defaultValue();
+    });
+    const handleClosePopup = () => {
+      emit("hideDialog");
+    };
+
+    /**
+     * Kiểm tra trùng nguồn ngân sách
+     * @author NNNINH (03/01/2023)
+     */
+    const checkDuplicate = () => {
+      let check = true;
+      for (let i in proxy.sources) {
+        for (let j in proxy.sources) {
+          if (proxy.sources[i].budget_id == proxy.sources[j].budget_id && i < j) {
+            proxy.validateShowError[j] = true;
+            proxy.titleError[j] = "Nguồn chi phí đã tồn tại!";
+
+            check = false;
+          }
+        }
+      }
+      return check;
+    };
+    const handleChangeCbo = () => {};
+
+    const validateData = () => {
+      proxy.validateShowError = [];
+      proxy.titleErrorInput = [];
+      proxy.titleError = [];
+      proxy.validateShowErrorInput = [];
+      let res = true;
+      proxy.sources.forEach((x, index) => {
+        if (x.budget_id == "") {
+          proxy.validateShowError[index] = true;
+          proxy.titleError[index] = "Không được bỏ trống ô này!";
+          res = false;
+        }
+        if (x.cost == null || x.cost == "") {
+          proxy.validateShowErrorInput[index] = true;
+          proxy.titleErrorInput[index] = "Không được bỏ trống ô này!";
+          res = false;
+        }
+      });
+      return res;
+    };
+    const validateShowError = ref([]);
+    const validateShowErrorInput = ref([]);
+    const EqualData = computed(() => {
+      return _.isEqual(proxy.sources, proxy.oldDataFormAsset);
+    });
+    const handleSaveOnClick = () => {
+      if (proxy.checkDuplicate() && proxy.validateData()) {
+        proxy.dataFormAsset.budget = JSON.stringify(proxy.sources);
+
+        if (proxy.EqualData == true) {
+          proxy.titleErrValidate = [];
+          proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa?");
+          proxy.isShowDialogDetail = true;
+        } else {
+          proxy.titleErrValidate = [];
+          proxy.dataFormAsset.oldCost = proxy.sources.reduce(
+            (acc, item) => acc + item.cost,
+            0
+          );
+          if (proxy.dataFormAsset.increment_status) {
+            proxy.dataFormAsset.flag = Enum.Mode.Update;
+          } else {
+            proxy.dataFormAsset.flag = Enum.Mode.Add;
+          }
+
+          emit("update:modelValue", proxy.dataFormAsset);
+          proxy.handleClosePopup();
+        }
+      } else {
+        console.log("k ok");
+      }
+    };
+
+    return {
+      budget_options,
+      loadDataComboBudget,
+      removeField,
+      addField,
+      sources,
+      sourceCost,
+      sumCost,
+      duplicateValidate,
+      handleSaveOnClick,
+      checkDuplicate,
+      defaultValue,
+      assetData,
+      handleClosePopup,
+      validateShowError,
+      dataFormAsset,
+      oldDataFormAsset,
+      EqualData,
+      titleError,
+      titleErrorInput,
+      validateShowErrorInput,
+      validateData,
+      handleChangeCbo,
+      Resource,
+      isShowDialogDetail,
+      titleErrValidate,
+    };
+  },
 };
-
-const removeField = (index, list) => {
-  if (sources.value.length == 1) {
-    return;
-  } else {
-    list.splice(index, 1);
-    sourceCost.value.splice(index, 1);
-  }
-};
-const columns = ref([
-  {
-    field: "budget_id",
-    titleField: "Mã",
-  },
-  {
-    field: "budget_name",
-    titleField: "Tên ngân sách",
-  },
-]);
-
-const budget_options = ref([
-  {
-    budget_id: "0",
-    budget_name: "Ngân sách tỉnh",
-  },
-  {
-    budget_id: "1",
-    budget_name: "Ngân sách huyện",
-  },
-]);
-
-const props = defineProps({
-  // Xác định là form thêm, sửa, xóa
-  formModel: {
-    default: {},
-  },
-  // Đối tượng để lấy dữ liệu truyền từ table sang
-  allData: {
-    default: {},
-  },
-  // Đối tượng lấy dữ liệu và cập nhật lại dữ liệu
-  modelValue: {
-    default: {},
-  },
-  dataAll: {
-    default: [],
-  },
-});
 </script>
+<style lang="scss" scoped>
+@import "@/assets/scss/view/voucher/VoucherUpdatePopup.scss";
+@import "@/assets/scss/components/v_combobox.scss";
+.source-item-cbb {
+  width: 100%;
+}
+:deep() {
+  .el-input__wrapper:focus {
+    border: 1px solid #409eff;
+    box-shadow: none !important;
+  }
+  .el-input__wrapper {
+    box-shadow: none !important;
+  }
+  .is-focus {
+    box-shadow: none !important;
+  }
+}
+.dialog-item {
+  .item_dropdown {
+    position: relative;
+  }
+  .error-message {
+    color: red;
+    font-size: 13px;
+    margin-top: 2px;
+    position: absolute;
+    max-width: 100%;
+    text-overflow: ellipsis;
+  }
+}
+:deep() {
+  .el-input__wrapper {
+    box-shadow: none !important;
+    &:active,
+    &:hover,
+    &:focus-within {
+      box-shadow: none !important;
+      border: solid 1px #1492e6 !important;
+    }
+  }
+  .is-focus {
+    box-shadow: none !important;
+  }
+  .el-select .el-input.is-focus .el-input__wrapper {
+    box-shadow: none !important;
+    border: solid 1px #1492e6 !important;
+  }
+}
+</style>

@@ -25,5 +25,7 @@ export default {
     Up: 38,
     // Xuống
     Down: 40,
+
+    Shift : 16
   },
 };

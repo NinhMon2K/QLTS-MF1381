@@ -140,6 +140,11 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     padding-left: 18px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
   }
 }
 .active {

@@ -2,14 +2,11 @@
   <div class="input-date__field">
     <label class="text-label" v-if="hasLabel" :for="id">
       {{ label ? label : "" }}
-      <span v-if="hasInput">&#8727;</span>
+      <span v-if="hasInput">*</span>
     </label>
     <div
       class="flex-row"
-      :class="[
-        leftIcon ? 'has-icon' : '',
-        disabledMessage ? 'input__error' : '',
-      ]"
+      :class="[leftIcon ? 'has-icon' : '', disabledMessage ? 'input__error' : '']"
     >
       <el-date-picker
         :id="id ? id : ''"
@@ -28,19 +25,13 @@
       />
       <label :for="id">
         <div
-          :class="[
-            'app-icon icon--right',
-            rightIcon,
-            disabled ? 'disabled-icon' : '',
-          ]"
+          :class="['app-icon icon--right', rightIcon, disabled ? 'disabled-icon' : '']"
           @click="handleClick"
           v-if="rightIcon"
         ></div>
       </label>
     </div>
-    <span v-if="disabledMessage" class="error-message">{{
-      message ? message : ""
-    }}</span>
+    <span v-if="disabledMessage" class="error-message">{{ message ? message : "" }}</span>
   </div>
 </template>
 <script>
@@ -151,6 +142,34 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="scss" scope="">
+<style lang="scss" scope>
 @import "./../../assets/scss/components/v_input_date.scss";
+.input-date__field {
+  .flex-row {
+    .el-input {
+      .el-input__wrapper {
+        .el-input__suffix {
+          .el-input__suffix-inner {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+.el-input__suffix-inner {
+  //@debug display: none;
+}
+:deep() {
+  .el-input__wrapper {
+    &:focus,
+    &:active {
+      border: none !important;
+    }
+  }
+  .is-focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
 </style>

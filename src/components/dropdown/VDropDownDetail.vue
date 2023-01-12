@@ -1,13 +1,10 @@
 <template>
   <v-tooltip
-    :content="
-      dataItem[columns[1].field].length > 20 ? dataItem[columns[1].field] : ''
-    "
+    :content="dataItem[columns[1].field].length > 20 ? dataItem[columns[1].field] : ''"
     placement="right"
   >
     <li
       class="item-dropdown"
-      tabindex="-1"
       @click="emitClick"
       @keyup.enter="emitClick"
       @keyup.space="emitClick"
@@ -47,7 +44,7 @@ export default {
       default: null,
       type: String,
     },
-    // 
+    //
     columns: {
       default: [],
     },

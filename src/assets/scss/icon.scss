@@ -11,6 +11,9 @@
 @mixin commonApp() {
   background-image: url("../images/icons/qlts-icon.svg");
 }
+@mixin iconQLTS() {
+  background-image: url("../images/icons/Icon-qlts-update.svg");
+}
 @mixin commonAppDropDown() {
   background-image: url("../images/icons/icons8-v-24.png");
 }
@@ -197,10 +200,21 @@
   &.ic-checkbox {
     @include commonAppIcCheckBox();
   }
-  &.ic-success {
-    @include setSquare(10);
-    background-position: -72px -511px;
-    scale: 1.5;
+  // icon succsess
+  &.ic-success,&.ic-successDelete,&.ic-updateSuccess {
+    @include setSquare(16);
+    background-position: -69px -508px;
+  }
+  &.ic-errorSuccess,&.ic-errorDelete,&.ic-errorUpdate {
+  background: url(@/assets/images/icons/ic-warings.png)  no-repeat center;
+
+  }
+  
+  // icon succsess
+  &.ic-failed,&.ic-loginFailed {
+    @include iconQLTS();
+    @include setSquare(24);
+    background-position:-416px -285px;
   }
   &.ic-close {
     @include setSquare(18);
@@ -234,6 +248,33 @@
     @include setSquare(18);
     background-position: -375px -419px;
   }
+  &.ic-expand{
+    @include setSquare(18);
+    background-position:-244px -330px;
+  }
+  &.ic-shrink{
+    @include setSquare(18);
+    background-position: -287px -330px;
+  }
+  &.ic-menuExpand{
+    background-position: -18px -416px
+  }
+  &.ic-menu{
+    background-position: -107px -415px;
+  }
+  &.ic-menu_ex{
+    background-position: -19px -415px;
+  }
+  &.ic-change_password{
+    background-position: -63px -548px;
+  }
+  &.ic-img_user{
+    background-position: -19px -20px;
+  }
+  &.ic-logout{
+    background-position: -106px -549px;
+  }
+  
 }
 .menu-group {
   .menu-item:hover,

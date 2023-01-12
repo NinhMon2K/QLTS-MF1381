@@ -152,9 +152,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: none !important;
 }
 
-.el-input__suffix-inner {
-  display: none !important;
-}
+
 
 .datepicker--error .el-input__wrapper {
   border: 1px solid red !important;
@@ -178,6 +176,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .el-input {
     .el-input__wrapper {
       border: solid 1px red !important;
+    }
+  }
+}
+.input-date__field {
+  .flex-row {
+    .el-input {
+      .el-input__wrapper {
+        .el-input__suffix {
+          .el-input__suffix-inner {
+            display: none;
+          }
+        }
+      }
     }
   }
 }

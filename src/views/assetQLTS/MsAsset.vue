@@ -66,7 +66,6 @@
           leftIcon="ic-export"
           id="btn-export"
           :tabindex="'5'"
-          :disabled="disabledButton.disabledExport"
           :radius="true"
           @click="handleExportExcel"
         ></v-button>
@@ -79,7 +78,6 @@
           id="btn-delete"
           :radius="true"
           :tabindex="'6'"
-          :disabled="disabledButton.disabledDelete"
           @click="handleShowMessBox"
         >
         </v-button>
@@ -89,7 +87,7 @@
       <v-popup-asset
         v-if="isShowPopup"
         :formModel="pram"
-        :allData="dataAssetID[0]"
+        :allData="dataAssetID[0] || dataAssetID"
         @handle-close="handlClosePopup"
         @show-message="handleShowMess"
         :dataAll="dataAllAsset.value"
@@ -215,6 +213,7 @@
     ref="table"
     @deleteOnKey="handleShowMessBox"
     v-model:selectedData="dataSelected"
+    @handleEventTable="handleEventTable"
     @handle-close="handlClosePopup"
     @show-message="handleShowMess"
     @currentPage="handleTotalPage"
@@ -224,11 +223,7 @@
 
   <!-- Có hiện thông báo message hay không -->
   <teleport to="body">
-    <v-message
-      :iconMessage="confirmMessage.iconMessage"
-      :textMessage="confirmMessage.textMessage"
-      v-show="confirmMessage.isShow"
-    ></v-message>
+    <v-message :type="typeMessage" v-show="isShowMessage"></v-message>
   </teleport>
 </template>
 <script>
@@ -294,6 +289,8 @@ export default {
     const dataAssetID = ref({});
     const active = ref(-1);
 
+    const isShowMessage = ref(false);
+    const typeMessage = ref("");
     const dataSelected = ref([]);
     const disabledButton = reactive({
       disabledExport: true,
@@ -334,13 +331,22 @@ export default {
      * @Author: NNNinh (19/11/2022)
      */
     onUpdated(() => {
-      if (proxy.confirmMessage.isShow == true) {
+      if (proxy.isShowMessage == true) {
         setTimeout(() => {
-          proxy.confirmMessage.isShow = false;
+          proxy.isShowMessage = false;
         }, 2000);
       }
     });
 
+    /**
+     * Xử lý sự kiện dblclick table,F2,Ctrl+Insert
+     * @Author: NNNinh (19/11/2022)
+     */
+    const handleEventTable = (mode, data) => {
+      proxy.pram.mode = mode;
+      proxy.dataAssetID = data;
+      proxy.isShowPopup = true;
+    };
     /**
      * Theo dõi thay đổi mảng selected table thì disable button xóa và xuất excel hay không
      * @Author: NNNinh (19/11/2022)
@@ -446,20 +452,20 @@ export default {
      */
     async function loadDataCombotCategory() {
       try {
-        let res = await assetAPI.get("Categories", {});
+        let res = await assetAPI.get("Categories/GetAll", {});
         proxy.DataAssetCategory.value = res;
       } catch (error) {
         console.log(error);
       }
     }
 
-    onMounted(()=>{
-      proxy.loadDataAllAsset()
-    })
-    const dataAllAsset = ref([])
+    onMounted(() => {
+      proxy.loadDataAllAsset();
+    });
+    const dataAllAsset = ref([]);
     async function loadDataAllAsset() {
       try {
-        let res = await assetAPI.get("Assets", {});
+        let res = await assetAPI.get("Assets/GetAll", {});
         proxy.dataAllAsset.value = res;
       } catch (error) {
         console.log(error);
@@ -499,7 +505,7 @@ export default {
      */
     async function loadDataComboDepartment() {
       try {
-        let res = await assetAPI.get("Departments", {});
+        let res = await assetAPI.get("Departments/GetAll", {});
         proxy.DataDepartment.value = res;
       } catch (error) {
         console.log(error);
@@ -544,6 +550,17 @@ export default {
         console.log(error);
       }
     }
+    watch(
+      () => isShowMessage.value,
+      (newVal) => {
+        if (proxy.isShowMessage == true) {
+          setTimeout(() => {
+            proxy.isShowMessage == false;
+          }, 2000);
+        }
+      }
+    );
+    onUpdated(() => {});
 
     /**
      * Xuất dữ liệu excel
@@ -559,26 +576,24 @@ export default {
      * @param {string} isShowMessage xác định xóa thành công hay thất bại
      * Author: NNNinh (13/11/2022)
      */
-    const handleShowMess = async (mode, res, isShowMessage) => {
+    const handleShowMess = (mode, res, isShowMessage) => {
       try {
         if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
-          await proxy.loadDataAsset();
-          proxy.$refs.table.reset();
-          proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Thêm mới thành công";
-          proxy.confirmMessage.isShow = true;
-          proxy.active = proxy.allData.findIndex(
-            (x) => x.fixed_asset_id == res
-          );
+          setTimeout(() => {
+            proxy.loadDataAsset();
+            proxy.$refs.table.reset();
+          }, 10);
+          proxy.typeMessage = "success";
+          proxy.isShowMessage = true;
+          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
         } else {
-          proxy.loadDataAsset();
-          proxy.$refs.table.reset();
-          proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Sửa dữ liệu thành công";
-          proxy.confirmMessage.isShow = true;
-          proxy.active = proxy.allData.findIndex(
-            (x) => x.fixed_asset_id == res
-          );
+          setTimeout(() => {
+            proxy.loadDataAsset();
+            proxy.$refs.table.reset();
+          }, 10);
+          proxy.typeMessage = "updateSuccess";
+          proxy.isShowMessage = true;
+          proxy.active = proxy.allData.findIndex((x) => x.fixed_asset_id == res);
         }
       } catch (error) {
         console.log(error);
@@ -636,15 +651,11 @@ export default {
         } else {
           //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
           if (proxy.dataSelected.length == 1) {
-            proxy.valueMessageBox = proxy.customValueMessBox(
-              proxy.dataSelected.length
-            );
+            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
             proxy.isDialogMessDelete = true;
           } else {
             //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
-            proxy.valueMessageBox = proxy.customValueMessBox(
-              proxy.dataSelected.length
-            );
+            proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
             proxy.isDialogMessDeleMultiple = true;
           }
         }
@@ -659,16 +670,14 @@ export default {
         let result = await proxy.deleteAsset();
         if (result) {
           proxy.isDialogMessDelete = false;
-          proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage = "Xóa dữ liệu thành công";
-          proxy.confirmMessage.isShow = true;
+          proxy.typeMessage = "successDelete";
+          proxy.isShowMessage = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
         } else {
           proxy.isDialogMessDelete = false;
-          proxy.confirmMessage.iconMessage = "ic-error";
-          proxy.confirmMessage.textMessage = "Xóa dữ liệu thất bại";
-          proxy.confirmMessage.isShow = true;
+          proxy.typeMessage = "errorDelete";
+          proxy.isShowMessage = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
         }
@@ -687,20 +696,14 @@ export default {
         let result = await proxy.deleteMultiAsset();
         if (result) {
           proxy.isDialogMessDeleMultiple = false;
-          proxy.confirmMessage.iconMessage = "ic-success";
-          proxy.confirmMessage.textMessage =
-            proxy.customValueMessBox(proxy.dataSelected.length) +
-            " Xóa dữ liệu thành công!";
-          proxy.confirmMessage.isShow = true;
+          proxy.typeMessage = "successDelete";
+          proxy.isShowMessage = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
         } else {
           proxy.isDialogMessDeleMultiple = false;
-          proxy.confirmMessage.iconMessage = "ic-error";
-          proxy.confirmMessage.textMessage =
-            proxy.customValueMessBox(proxy.dataSelected.length) +
-            " Xóa dữ liệu thất bại!";
-          proxy.confirmMessage.isShow = true;
+          proxy.typeMessage = "errorDelete";
+          proxy.isShowMessage = true;
           proxy.loadDataAsset();
           proxy.$refs.table.reset();
         }
@@ -764,37 +767,39 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCode,
         title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
-        width: 80,
+        width: 100,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
         title: ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
-        minWidth: 140,
+        width: 150,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetCategoryName,
         title: ResourceTable.lblTableAssets.lblAssetCategoryName,
         type: "Text",
-        width: 260,
+        width: 200,
       },
       {
         field: ResourceTable.FieldDepartment.departmentName,
         title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
-        width: 165,
+        width: 200,
       },
       {
         field: ResourceTable.FieldAsset.quantity,
         title: ResourceTable.lblTableAssets.lblQuantity,
         type: "Number",
-        summary: "number",
+        align: "Right",
+        summary: "sum",
         width: 60,
       },
       {
         field: ResourceTable.FieldAsset.cost,
         title: ResourceTable.lblTableAssets.lblCost,
         type: "Number",
+        align: "Right",
         summary: "sum",
         width: 110,
       },
@@ -802,6 +807,7 @@ export default {
         field: ResourceTable.FieldAsset.depreciationYear,
         title: ResourceTable.lblTableAssets.lblAccumulated,
         type: "Number",
+        align: "Right",
         summary: "sum",
         width: 110,
       },
@@ -809,7 +815,15 @@ export default {
         field: ResourceTable.FieldAsset.depreciationResidual,
         title: ResourceTable.lblTableAssets.lblAsset,
         type: "Number",
+        align: "Right",
         summary: "sum",
+        width: 110,
+      },
+      {
+        field: ResourceTable.FieldAsset.incrementStatus,
+        title: "Trạng thái",
+        type: "Status",
+        align: "Center",
         width: 110,
       },
       {
@@ -817,6 +831,8 @@ export default {
         title: ResourceTable.Controls.FunctionControl,
         type: "Action",
         width: 100,
+        align: "Center",
+        position: "relative",
         action: [
           {
             command: 0,
@@ -878,7 +894,10 @@ export default {
       exportToExcel,
       handleExportExcel,
       loadDataAllAsset,
-      dataAllAsset
+      dataAllAsset,
+      handleEventTable,
+      typeMessage,
+      isShowMessage,
     };
   },
 };
