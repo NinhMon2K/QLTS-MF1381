@@ -12,6 +12,7 @@
     .form-asset {
       position: relative;
       width: 760px;
+      
       border-radius: 4px;
       background-color: #fff;
       padding-top: 20px;
@@ -68,7 +69,7 @@
 
               display: flex;
               flex-direction: column;
-              height: 220px;
+              height: 224px;
             
               overflow: auto;
               flex-wrap: nowrap;
@@ -80,6 +81,7 @@
                 margin-bottom: 20px;
                 .form-group{
                   align-items: center;
+                  position: relative;
                   display: flex;
                   width: 67%;
                   .select--cb{
@@ -153,3 +155,4 @@
       }
     }
   }
+  

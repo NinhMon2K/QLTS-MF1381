@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <div class="model">
+    <div class="model" v-on:keypress="keyboardEvent">
       <div class="form-asset">
         <div class="header-popup">
           <div class="form-asset__title">
@@ -208,6 +208,40 @@
       </v-message-box>
     </teleport>
   </teleport>
+
+  <!-- Hiển thị thông báo cập nhât
+       @author NNNINH (22/11/2022) -->
+  <teleport to="body">
+    <v-message-box
+      v-on:keydown="keyboardEvent"
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.SaveUpdate.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessUpdate"
+    >
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Save.VI"
+        radius
+        @click="handleSaveOnClick"
+      ></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.NoSave.VI"
+        type="abort"
+        @click="handleClosePop"
+        radius
+      ></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Cancel.VI"
+        type="secodary"
+        @click="closeProValidate"
+        radius
+      ></v-button>
+    </v-message-box>
+  </teleport>
 </template>
 <script>
 import {
@@ -239,7 +273,7 @@ export default {
     vNumber,
     VMessageBox,
   },
-  emits: ["hideDialog"],
+  emits: ["hideDialog", "update:modelValue"],
   props: {
     // Xác định là form thêm, sửa, xóa
     formModel: {
@@ -270,9 +304,6 @@ export default {
         cost: 0,
       },
     ]);
-    onMounted(() => {
-      proxy.assetData = proxy.dataSelect;
-    });
 
     // Mảng có giá trị 1 tại vị trí trùng
     const duplicateValidate = ref([]);
@@ -288,9 +319,29 @@ export default {
         proxy.assetData = newVal;
       }
     );
-
+    watch(
+      () => sources.value,
+      (newVal) => {
+        if (proxy.modelValue.budget != "" || proxy.modelValue.budget != null) {
+          proxy.sumCost = proxy.sources.reduce((acc, item) => acc + item.cost, 0);
+          proxy.budget_options.forEach((x, index) => {
+            proxy.sources.forEach((y) => {
+              if (y["budget_id"] == x["budget_id"]) {
+                y["budget_name"] = x["budget_name"];
+              }
+            });
+          });
+        }
+      },
+      {
+        deep: true,
+      }
+    );
     onMounted(() => {
+      proxy.assetData = proxy.dataSelect;
       proxy.dataFormAsset = _.cloneDeep(proxy.modelValue);
+      proxy.loadDataComboBudget();
+      proxy.defaultValue();
     });
     const addField = (list) => {
       list.push({ budget_id: "", budget_name: "", cost: null });
@@ -307,22 +358,6 @@ export default {
         console.log(error);
       }
     }
-    watch(
-      () => sources.value,
-      (newVal) => {
-        proxy.sumCost = proxy.sources.reduce((acc, item) => acc + item.cost, 0);
-        proxy.budget_options.forEach((x, index) => {
-          proxy.sources.forEach((y) => {
-            if (y["budget_id"] == x["budget_id"]) {
-              y["budget_name"] = x["budget_name"];
-            }
-          });
-        });
-      },
-      {
-        deep: true,
-      }
-    );
 
     const removeField = (index, list) => {
       if (sources.value.length == 1) {
@@ -337,16 +372,23 @@ export default {
     const budget_options = ref([]);
 
     const defaultValue = () => {
-      if (proxy.modelValue.budget != "") {
+      if (proxy.modelValue.budget != null) {
         proxy.sources = JSON.parse(proxy.modelValue.budget);
-        proxy.oldDataFormAsset = _.cloneDeep(proxy.sources);
+      }
+      proxy.oldDataFormAsset = _.cloneDeep(proxy.sources);
+    };
+
+    const isDialogMessUpdate = ref(false);
+    const handleClosePopup = () => {
+      if (proxy.EqualData == true) {
+        emit("hideDialog");
+      } else {
+        proxy.isDialogMessUpdate = true;
       }
     };
-    onMounted(() => {
-      proxy.loadDataComboBudget();
-      proxy.defaultValue();
-    });
-    const handleClosePopup = () => {
+
+    // Sự kiện đóng close popup
+    const handleClosePop = () => {
       emit("hideDialog");
     };
 
@@ -369,7 +411,15 @@ export default {
       return check;
     };
     const handleChangeCbo = () => {};
-
+    /**
+     * Xử lí sự kiện keyboard shortcut
+     * @author NNNINH (13/01/2023)
+     */
+    const keyboardEvent = (e) => {
+      if (e.which == Enum.KeyCode.ESC) {
+        proxy.handleClosePopup();
+      }
+    };
     const validateData = () => {
       proxy.validateShowError = [];
       proxy.titleErrorInput = [];
@@ -389,6 +439,14 @@ export default {
         }
       });
       return res;
+    };
+    /**
+     * Xác nhận đóng cảnh báo validate nghiệp vụ
+     * @author NNNINH (13/01/2023)
+     */
+    const closeProValidate = () => {
+      proxy.isDialogMessUpdate = false;
+      // proxy.focusFirst();
     };
     const validateShowError = ref([]);
     const validateShowErrorInput = ref([]);
@@ -416,7 +474,7 @@ export default {
           }
 
           emit("update:modelValue", proxy.dataFormAsset);
-          proxy.handleClosePopup();
+          proxy.handleClosePop();
         }
       } else {
         console.log("k ok");
@@ -437,6 +495,7 @@ export default {
       defaultValue,
       assetData,
       handleClosePopup,
+      handleClosePop,
       validateShowError,
       dataFormAsset,
       oldDataFormAsset,
@@ -449,6 +508,9 @@ export default {
       Resource,
       isShowDialogDetail,
       titleErrValidate,
+      keyboardEvent,
+      isDialogMessUpdate,
+      closeProValidate,
     };
   },
 };
@@ -456,6 +518,7 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/view/voucher/VoucherUpdatePopup.scss";
 @import "@/assets/scss/components/v_combobox.scss";
+@import "@/assets/scss/components/v_message_box.scss";
 .source-item-cbb {
   width: 100%;
 }

@@ -86,7 +86,7 @@ export default {
       default: null,
     },
   },
-  emits: ["checkBoxAll"],
+  emits: ["checkBoxAll", "update:value"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     const data = ref(props.value);

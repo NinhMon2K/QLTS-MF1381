@@ -177,7 +177,7 @@
             @changeTabView="handleChangeTabAsset"
             v-model:active="activeAsset"
             positionPaging="Top"
-            ref="table"
+            ref="tables"
           >
           </v-grid>
         </div>
@@ -454,6 +454,7 @@ export default {
      */
     async function loadDataVouder() {
       try {
+        proxy.allDataVoucher = [];
         proxy.isLoading = true;
 
         // Gọi API lấy dữ liệu tài sản
@@ -549,9 +550,10 @@ export default {
       switch (action) {
         case 0: // kiểm tra action = 0 là sửa
           proxy.pram.mode = Enum.Mode.Update;
-          proxy.dataSelected = [];
           proxy.dataVoucherID = val;
-          proxy.isShowPopup = true;
+          setTimeout(() => {
+            proxy.isShowPopup = true;
+          }, 100);
           break;
         case 2: // kiểm tra action = 1 là xóa
           //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
@@ -572,14 +574,27 @@ export default {
         if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
           setTimeout(() => {
             proxy.loadDataVouder();
-            proxy.$refs.table.reset();
+            proxy.$refs.tables.resetData();
           }, 10);
           proxy.typeMessage = "success";
           proxy.isShowMessage = true;
-          proxy.active = proxy.allDataVoucher.findIndex((x) => x.voucher_id == res);
+          setTimeout(() => {
+            proxy.active = proxy.allDataVoucher.findIndex((x) =>
+              x.voucher_id?.toLowerCase().includes(res.toLowerCase())
+            );
+          }, 20);
         } else {
+          setTimeout(() => {
+            proxy.loadDataVouder();
+            proxy.$refs.tables.resetData();
+          }, 10);
           proxy.typeMessage = "updateSuccess";
           proxy.isShowMessage = true;
+          setTimeout(() => {
+            proxy.active = proxy.allDataVoucher.findIndex((x) =>
+              x.voucher_id?.toLowerCase().includes(res.toLowerCase())
+            );
+          }, 20);
         }
       } catch (error) {
         console.log(error);
@@ -601,7 +616,7 @@ export default {
      */
     async function deleteVoucherAPI() {
       try {
-        let voucher_id = proxy.dataSelected[0].voucher_id;
+        let voucher_id = proxy.dataSelected[0]?.voucher_id;
         let res = await voucherAPI.delete("Vouchers", voucher_id);
         if (res != null || res != "") {
           return true;
@@ -642,19 +657,23 @@ export default {
           proxy.typeMessage = "successDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
-          proxy.$refs.table.reset();
+          proxy.$refs.tables.resetData();
         } else {
           proxy.isDialogMessDeleMultiple = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
-          proxy.$refs.table.reset();
+          proxy.$refs.tables.resetData();
         }
       } catch (error) {
         console.log(error);
       }
     };
 
+    /**
+     * Xử lý sự kiện sau cùng  khi xóa
+     *  @author NNNinh(13/01/2023)
+     */
     const handleDelete = async () => {
       try {
         let result = await proxy.deleteVoucherAPI();
@@ -663,19 +682,23 @@ export default {
           proxy.typeMessage = "successDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
-          proxy.$refs.table.reset();
+          proxy.$refs.tables.resetData();
         } else {
           proxy.isDialogMessDelete = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
-          proxy.$refs.table.reset();
+          proxy.$refs.tables.resetData();
         }
       } catch (error) {
         console.log(error);
       }
     };
 
+    /**
+     * Xử lý sự kiện đóng popup detail
+     *  @author NNNinh(13/01/2023)
+     */
     const handleClosePopupDetaill = () => {
       proxy.isShowPopup = false;
     };
@@ -780,22 +803,22 @@ export default {
         title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
         align: "Left",
-        width: 210,
-        minWidth: 210,
-        maxWidth: 210,
+        width: 200,
+        minWidth: 200,
+        maxWidth: 200,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
         title: ResourceTable.lblTableAssets.lblAssetName,
         type: "Text",
-        minWidth: 280,
+        minWidth: 270,
       },
 
       {
         field: ResourceTable.FieldDepartment.departmentName,
         title: ResourceTable.lblTableAssets.lblDepartmentName,
         type: "Text",
-        width: 280,
+        width: 270,
       },
       {
         field: ResourceTable.FieldAsset.cost,

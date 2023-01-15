@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <div class="model">
+    <div class="model" v-on:keydown="keyboardEvent">
       <div class="form-asset">
         <div class="header-popup">
           <div class="form-asset__title">Chọn tài sản ghi tăng</div>
@@ -184,6 +184,10 @@ export default {
     const titleErrValidate = ref([]);
     const isShowDialogDetail = ref(false);
     const isDialogMessCancelAdd = ref(false);
+
+    onMounted(() => {
+      proxy.focusFirst();
+    });
     // Sự kiện change giới hạn bản ghi
     const handleChangeTab = (val) => {
       proxy.tableView = val;
@@ -196,13 +200,17 @@ export default {
       proxy.loadDataAsset();
     };
 
+    /**
+     * Xử lý sự kiện đóng popup chọn tài sản
+     * @author NNNinh (13/01/2023)
+     */
     const handleClosePopupSelect = () => {
       emit("closePopupSelect");
     };
 
     /**
-     * Lấy dữ liệu tài sản
-     * @Author: NNNinh (13/11/2022)
+     * Lấy dữ liệu tài sản chưa được chứng từ
+     * @author NNNinh (13/01/2023)
      */
     async function loadDataAsset() {
       try {
@@ -241,9 +249,6 @@ export default {
         console.log(error);
       }
     }
-    onMounted(() => {
-      proxy.focusFirst();
-    });
 
     // Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
     const handlePopupClose = () => {
@@ -251,6 +256,16 @@ export default {
         proxy.isDialogMessCancelAdd = true;
       } else {
         proxy.handleClosePopupSelect();
+      }
+    };
+
+    /**
+     * Xử lí sự kiện keyboard shortcut
+     * @author NNNINH (14/11/2022)
+     */
+    const keyboardEvent = (e) => {
+      if (e.which == Enum.KeyCode.ESC) {
+        proxy.handlePopupClose();
       }
     };
 
@@ -378,6 +393,7 @@ export default {
       isDialogMessCancelAdd,
       handlePopupClose,
       handleChangeSeach,
+      keyboardEvent,
     };
   },
 };

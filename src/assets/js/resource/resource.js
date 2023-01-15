@@ -105,13 +105,13 @@ export default {
     // Thiếu Password
     ValidatePassword: "Yêu cầu nhập Password",
     VoucherCode:{
-      VI: "Mã chứng từ không được để chống!",
+      VI: "Mã chứng từ không được để trống!",
     },
     VoucherDate:{
-      VI: "Ngày chứng từ không được để chống!",
+      VI: "Ngày chứng từ không được để trống!",
     },
     IncrementDate:{
-      VI: "Ngày ghi tăng không được để chống!",
+      VI: "Ngày ghi tăng không được để trống!",
     }
   },
   TitleBtnDialog: {

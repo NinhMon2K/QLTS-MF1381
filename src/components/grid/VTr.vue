@@ -82,7 +82,7 @@ export default {
       default: {},
     },
   },
-  emits: ["checkBoxAll"],
+  emits: ["checkBoxAll", "update:selected"],
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
     !window.mk && (window.mk = proxy);

@@ -17,6 +17,5 @@ app.use(ElementPlus, {
 });
 app.config.globalProperties.hostname = "http://localhost:8080/"
 app.use(router);
-
 app.use(ElementPlus);
 app.mount("#app");

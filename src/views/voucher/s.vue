@@ -271,6 +271,7 @@ import VTooltip from "@/components/tooltip/VTooltip.vue";
 import VInput from "@/components/input/VInput.vue";
 import VGrid from "@/components/grid/VGrid.vue";
 import voucherAPI from "@/apis/api/voucherAPI.js";
+import assetAPI from "@/apis/api/assetAPI";
 import ResourceTable from "@/assets/js/resource/resourceTable";
 import VLoading from "@/components/loading/VLoading.vue";
 import VInputDate from "@/components/date/VInputDate.vue";
@@ -295,6 +296,9 @@ export default {
     // Đối tượng lấy dữ liệu và cập nhật lại dữ liệu
     modelValue: {
       default: {},
+    },
+    dataAll: {
+      default: [],
     },
     dataAssetDetaill: {
       default: [],
@@ -338,6 +342,7 @@ export default {
     const isSubmited = ref(false);
     const isDialogMessUpdate = ref(false);
     const isDialogMessCancelAdd = ref(false);
+    const dataVoucherAll = ref([]);
     const dataDeleteSelected = ref([]);
     // Lưu dữ liệu 1 tài sản
     const dataForm = ref({});
@@ -384,6 +389,10 @@ export default {
 
     onMounted(() => {
       proxy.focusFirst();
+    });
+
+    onMounted(() => {
+      proxy.dataVoucherAll = proxy.dataAll;
     });
 
     onMounted(() => {
@@ -534,7 +543,6 @@ export default {
         item.flag = 3;
         proxy.dataDeleteSelected.push(item);
       }
-      proxy.selectedData.forEach((x, index) => (x.STT = index + 1));
     };
 
     /**
@@ -550,6 +558,11 @@ export default {
           var index = proxy.selectedData.findIndex(
             (x) => x["fixed_asset_id"] == val["fixed_asset_id"]
           );
+
+          if (index < 0) {
+            proxy.selectedData.push(val);
+            index = proxy.selectedData.length - 1;
+          }
           proxy.detailIndex = index;
           proxy.isShowPopupUpdate = true;
           break;
@@ -558,35 +571,6 @@ export default {
           break;
       }
     };
-
-    async function getVoucherDetail(assetId) {
-      try {
-        let result = await voucherAPI.getVoucherDetail(
-          "Vouchers",
-          proxy.dataForm.voucher_id,
-          assetId.fixed_asset_id
-        );
-        if (result != null || result != "") {
-          return result;
-        } else return false;
-      } catch (error) {
-        switch (error.response.status) {
-          case 400:
-            proxy.backEndErrorNotify(error.response.data.moreInfo);
-            break;
-          case 404:
-            proxy.backEndErrorNotify(Resource.ErrorCode[404]);
-            break;
-          case 405:
-            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
-            break;
-          case 500:
-            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
-            break;
-          default:
-        }
-      }
-    }
 
     /**
      * Gọi API thêm mới chứng từ
@@ -604,21 +588,22 @@ export default {
           return result;
         } else return false;
       } catch (error) {
-        switch (error.response.status) {
-          case 400:
-            proxy.backEndErrorNotify(error.response.data.moreInfo);
-            break;
-          case 404:
-            proxy.backEndErrorNotify(Resource.ErrorCode[404]);
-            break;
-          case 405:
-            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
-            break;
-          case 500:
-            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
-            break;
-          default:
-        }
+        console.log(error);
+        // switch (error.response.status) {
+        //   case 400:
+        //     proxy.backEndErrorNotify(error.response.data.moreInfo);
+        //     break;
+        //   case 404:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[404]);
+        //     break;
+        //   case 405:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[405]);
+        //     break;
+        //   case 500:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[500]);
+        //     break;
+        //   default:
+        // }
       }
     }
 
@@ -642,38 +627,24 @@ export default {
           return result;
         } else return false;
       } catch (error) {
-        switch (error.response.status) {
-          case 400:
-            proxy.backEndErrorNotify(error.response.data.moreInfo);
-            break;
-          case 404:
-            proxy.backEndErrorNotify(Resource.ErrorCode[404]);
-            break;
-          case 405:
-            proxy.backEndErrorNotify(Resource.ErrorCode[405]);
-            break;
-          case 500:
-            proxy.backEndErrorNotify(Resource.ErrorCode[500]);
-            break;
-          default:
-        }
+        console.log(error);
+        // switch (error.response.status) {
+        //   case 400:
+        //     proxy.backEndErrorNotify(error.response.data.moreInfo);
+        //     break;
+        //   case 404:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[404]);
+        //     break;
+        //   case 405:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[405]);
+        //     break;
+        //   case 500:
+        //     proxy.backEndErrorNotify(Resource.ErrorCode[500]);
+        //     break;
+        //   default:
+        // }
       }
     }
-
-    /**
-     * Hiện thị cảnh báo lỗi truyền từ BackEnd
-     * @author NNNinh(13/01/2023)
-     */
-    const backEndErrorNotify = (moreInfo) => {
-      proxy.titleErrValidate = [];
-      if (moreInfo != null) {
-        moreInfo.forEach((data) => {
-          proxy.titleErrValidate.push(data);
-        });
-      } else {
-        proxy.titleErrValidate = [];
-      }
-    };
 
     /**
      * Xử lý sự kiện dblclick table,F2,Ctrl+Insert
@@ -787,27 +758,31 @@ export default {
                 ...proxy.selectedData,
                 ...proxy.dataDeleteSelected,
               ];
-
               let res = await proxy.handleUpdateVoucherDetail();
               if (res && proxy.titleErrValidate.length == 0) {
                 emit("handle-close");
                 emit("show-message", proxy.formModel.mode, res);
-              } else {
-                proxy.isShowDialogDetail = true;
               }
+              proxy;
             } else {
               proxy.titleErrValidate = [];
-
               proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa");
               proxy.isShowDialogDetail = true;
             }
           } else {
-            let res = await proxy.handleInsertVoucher();
-            if (res && proxy.titleErrValidate.length == 0) {
-              emit("handle-close");
-              emit("show-message", proxy.formModel.mode, res);
-            } else {
+            if (proxy.checkVoucherCodeDetail()) {
+              proxy.titleErrValidate = [];
+              proxy.errorMessage = {};
+              proxy.titleErrValidate.push("Mã chứng từ đã bị trùng");
+              Resource.ErrorInput.VoucherCode.VI = "Mã chứng từ đã bị trùng";
+              proxy.errorMessage.voucher_code = true;
               proxy.isShowDialogDetail = true;
+            } else {
+              let res = await proxy.handleInsertVoucher();
+              if (res && proxy.titleErrValidate.length == 0) {
+                emit("handle-close");
+                emit("show-message", proxy.formModel.mode, res);
+              }
             }
           }
         }
@@ -893,6 +868,15 @@ export default {
         });
       }
       proxy.focusFirst();
+    };
+
+    const checkVoucherCodeDetail = () => {
+      let asset = proxy.dataVoucherAll.filter((x) =>
+        x["voucher_code"]?.includes(proxy.dataForm.voucher_code)
+      );
+      if (asset.length > 0) {
+        return true;
+      } else return false;
     };
 
     /**
@@ -1046,8 +1030,8 @@ export default {
       handleUpdateVoucherDetail, // API Sửa dữ liệu chứng từ detail
       dataVoucherDetail, // Mảng đối tượng sau cùng để sửa 1 tài sản
       keyboardEvent, // Xử lý sự kiến bắt key bàn phím
-      backEndErrorNotify, //  Hiện thị cảnh báo lỗi truyền từ BackEnd
-      getVoucherDetail,
+      dataVoucherAll, // Mảng lưu trữ toàn bộ dữ liệu của chứng từ
+      checkVoucherCodeDetail, // Hàm check mã chứng từ đã có hay chưa từ FE
     };
   },
 };

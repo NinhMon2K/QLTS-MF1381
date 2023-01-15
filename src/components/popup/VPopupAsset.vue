@@ -617,7 +617,7 @@ export default {
     onMounted(() => {
       proxy.focusFirst();
     });
-v$
+    v$;
     onMounted(() => {
       try {
         /**

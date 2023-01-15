@@ -145,13 +145,6 @@
         </div>
       </div>
     </div>
-    <v-popup-asset
-      v-if="isShowPopup"
-      :formModel="pram"
-      :allData="pramData"
-      @handle-close="handlClosePopup"
-      @show-message="handleShowMess"
-    ></v-popup-asset>
   </div>
 </template>
 <script>
@@ -168,7 +161,6 @@ import {
 } from "vue";
 import VTh from "./VTh.vue";
 import VTr from "./VTr.vue";
-import VPopupAsset from "@/components/popup/VPopupAsset.vue";
 import VCheckbox from "@/components/input/VCheckbox.vue";
 import VTfoot from "@/components/grid/VTfoot.vue";
 import Resource from "@/assets/js/resource/resource.js";
@@ -177,7 +169,7 @@ import Enum from "@/assets/js/enums/enum.js";
 
 export default defineComponent({
   name: "MsGrid",
-  components: { VTh, VTr, VPopupAsset, VCheckbox, VTfoot, VPageding },
+  components: { VTh, VTr, VCheckbox, VTfoot, VPageding },
   props: {
     selectedCol: {
       default: false,
@@ -375,7 +367,7 @@ export default defineComponent({
     const handleClick = (index, e) => {
       let isCheckbox = !!e.target.closest(".checkbox-control");
 
-      if (!isCheckbox && proxy.selectedRow) {
+      if (!isCheckbox && proxy.selectedRow && proxy.shiftPressed == false) {
         if (proxy.selectedIndex[index]) {
           proxy.selectedIndex[index] = false;
         } else {
@@ -432,7 +424,7 @@ export default defineComponent({
      * @author NNNINH (14/11/2022)
      */
     const keyboardEvent = (e) => {
-      if (e.which == Enum.KeyCode.Shift) {
+      if (e.which == Enum.KeyCode.Ctrl) {
         proxy.shiftPressed = true;
       }
     };
@@ -441,7 +433,7 @@ export default defineComponent({
      * @author NNNINH (14/11/2022)
      */
     const keyUpboardEvent = (e) => {
-      if (e.which == Enum.KeyCode.Shift) {
+      if (e.which == Enum.KeyCode.Ctrl) {
         if (proxy.shiftPressed == true) {
           proxy.shiftPressed = false;
         }
@@ -450,7 +442,6 @@ export default defineComponent({
 
     function resetData() {
       proxy.selectedIndex = [];
-      proxy.$refs.tabless.reset();
     }
 
     // Số trang hiển thị

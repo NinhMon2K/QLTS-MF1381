@@ -581,7 +581,7 @@ export default {
         if (mode == Enum.Mode.Add || mode == Enum.Mode.Duplicate) {
           setTimeout(() => {
             proxy.loadDataAsset();
-            proxy.$refs.table.reset();
+            proxy.$refs.table.resetData();
           }, 10);
           proxy.typeMessage = "success";
           proxy.isShowMessage = true;
@@ -589,7 +589,7 @@ export default {
         } else {
           setTimeout(() => {
             proxy.loadDataAsset();
-            proxy.$refs.table.reset();
+            proxy.$refs.table.resetdata();
           }, 10);
           proxy.typeMessage = "updateSuccess";
           proxy.isShowMessage = true;
@@ -673,13 +673,13 @@ export default {
           proxy.typeMessage = "successDelete";
           proxy.isShowMessage = true;
           proxy.loadDataAsset();
-          proxy.$refs.table.reset();
+          proxy.$refs.table.resetdata();
         } else {
           proxy.isDialogMessDelete = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataAsset();
-          proxy.$refs.table.reset();
+          proxy.$refs.table.resetdata();
         }
       } catch (error) {
         console.log(error);
@@ -699,13 +699,13 @@ export default {
           proxy.typeMessage = "successDelete";
           proxy.isShowMessage = true;
           proxy.loadDataAsset();
-          proxy.$refs.table.reset();
+          proxy.$refs.table.resetdata();
         } else {
           proxy.isDialogMessDeleMultiple = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataAsset();
-          proxy.$refs.table.reset();
+          proxy.$refs.table.resetdata();
         }
       } catch (error) {
         console.log(error);
