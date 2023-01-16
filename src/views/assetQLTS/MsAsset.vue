@@ -161,7 +161,11 @@
       :disabledValueRight="false"
       v-if="isDialogMessCancelDelete"
     >
-      <v-button :text="Resource.TitleBtnDialog.Close.VI" radius></v-button>
+      <v-button
+        :text="Resource.TitleBtnDialog.Close.VI"
+        @click="isDialogMessCancelDelete = false"
+        radius
+      ></v-button>
     </v-message-box>
   </teleport>
 
@@ -176,7 +180,11 @@
       :disabledValueRight="false"
       v-if="isDialogMessCancelDeleMultiple"
     >
-      <v-button :text="Resource.TitleBtnDialog.Agree.VI" radius></v-button>
+      <v-button
+        :text="Resource.TitleBtnDialog.Agree.VI"
+        @click="isDialogMessCancelDeleMultiple = false"
+        radius
+      ></v-button>
     </v-message-box>
   </teleport>
 
@@ -484,6 +492,10 @@ export default {
           data: proxy.dataSelected,
           method: "POST",
           responseType: "blob",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("_token")}`,
+          },
         }).then((res) => {
           var FILE = window.URL.createObjectURL(new Blob([res.data]));
           var docUrl = document.createElement("a");
@@ -634,6 +646,13 @@ export default {
       } else return val;
     }
 
+    //Custom number
+    function customValueNumber(val) {
+      if (val < 10) {
+        return `0${val}`;
+      } else return val;
+    }
+
     //Sự kiện đóng popup
     const handlClosePopup = (value) => {
       proxy.isShowPopup = value;
@@ -652,11 +671,26 @@ export default {
           //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
           if (proxy.dataSelected.length == 1) {
             proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
-            proxy.isDialogMessDelete = true;
+            if (proxy.dataSelected[0].increment_status) {
+              proxy.isDialogMessCancelDelete = true;
+            } else {
+              proxy.isDialogMessDelete = true;
+            }
           } else {
             //kiểm tra dataSelected lớn hơn 1 => Hiển thị message : Số bản ghi đc chọn...
             proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
-            proxy.isDialogMessDeleMultiple = true;
+            let indexCheck = 0;
+            proxy.dataSelected.forEach((x) => {
+              if (x.increment_status) {
+                indexCheck++;
+              }
+            });
+            if (indexCheck > 0) {
+              proxy.valueMessageBox = proxy.customValueNumber(indexCheck);
+              proxy.isDialogMessCancelDeleMultiple = true;
+            } else {
+              proxy.isDialogMessDeleMultiple = true;
+            }
           }
         }
       } catch (error) {
@@ -767,7 +801,7 @@ export default {
         field: ResourceTable.FieldAsset.fixedAssetCode,
         title: ResourceTable.lblTableAssets.lblAssetCode,
         type: "Text",
-        width: 100,
+        width: 110,
       },
       {
         field: ResourceTable.FieldAsset.fixedAssetName,
@@ -817,13 +851,6 @@ export default {
         type: "Number",
         align: "Right",
         summary: "sum",
-        width: 110,
-      },
-      {
-        field: ResourceTable.FieldAsset.incrementStatus,
-        title: "Trạng thái",
-        type: "Status",
-        align: "Center",
         width: 110,
       },
       {
@@ -898,6 +925,7 @@ export default {
       handleEventTable,
       typeMessage,
       isShowMessage,
+      customValueNumber,
     };
   },
 };

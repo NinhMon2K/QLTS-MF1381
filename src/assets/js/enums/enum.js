@@ -26,6 +26,10 @@ export default {
     // Xuống
     Down: 40,
 
-    Shift : 16
+    Shift : 16,
+
+    Q : 81,
+    
+    Insert : 45
   },
 };

@@ -134,6 +134,9 @@ export default {
       if (props.config.minWidth) {
         arr.push("min-width: " + props.config.minWidth + "px;");
       }
+      if (props.config.color) {
+        arr.push("color: " + props.config.color);
+      }
 
       return arr.join("; ");
     });
@@ -146,7 +149,11 @@ export default {
           rs = props.value || "";
           break;
         case ColumnType.Number:
-          rs = commonFunction.formatNumber(props.value);
+          if (props.value == 0) {
+            rs = 0;
+          } else {
+            rs = commonFunction.formatNumber(props.value);
+          }
           break;
         case ColumnType.Date:
           rs = proxy.formatDate(props.value);

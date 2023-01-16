@@ -179,6 +179,7 @@ export default {
     const dataAssetID = ref({});
     const active = ref(-1);
     const dataSelected = ref([]);
+    const ctrlPressed = ref(false);
     let pram = ref({});
     const dataTotal = ref({});
     const titleErrValidate = ref([]);
@@ -266,6 +267,11 @@ export default {
     const keyboardEvent = (e) => {
       if (e.which == Enum.KeyCode.ESC) {
         proxy.handlePopupClose();
+      } else if (e.which == Enum.KeyCode.Ctrl) {
+        proxy.ctrlPressed = true;
+      } else if (e.which == Enum.KeyCode.Q && proxy.ctrlPressed == true) {
+        proxy.handleSelectOnCkick();
+        proxy.ctrlPressed = false;
       }
     };
 
@@ -301,8 +307,10 @@ export default {
     };
 
     // Xử lý sự kiện change input tìm kiếm
-    const handleChangeSeach = () => {
-      proxy.loadDataAsset();
+    const handleChangeSeach = (e) => {
+      if (e.which == Enum.KeyCode.ENTER) {
+        proxy.loadDataAsset();
+      }
     };
 
     /**
@@ -394,6 +402,7 @@ export default {
       handlePopupClose,
       handleChangeSeach,
       keyboardEvent,
+      ctrlPressed,
     };
   },
 };

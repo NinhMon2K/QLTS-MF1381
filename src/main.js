@@ -3,6 +3,8 @@ import App from "./../App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import vi from "element-plus/es/locale/lang/vi";
+import contextmenu from "v-contextmenu";
+import "v-contextmenu/dist/themes/default.css";
 const app = createApp(App);
 
 //Style SCSS
@@ -17,5 +19,6 @@ app.use(ElementPlus, {
 });
 app.config.globalProperties.hostname = "http://localhost:8080/"
 app.use(router);
+app.use(contextmenu)
 app.use(ElementPlus);
 app.mount("#app");

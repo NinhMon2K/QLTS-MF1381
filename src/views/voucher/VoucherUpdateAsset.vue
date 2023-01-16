@@ -48,8 +48,8 @@
                           filterable
                           placeholder="Chọn nguồn hình thành"
                           class="source-item-cbb"
-                          @change="handleChangeCbo"
-                          :tabindex="`20${index * 2}`"
+                          @change="handleChangeCbo(source.budget_id, index)"
+                          :tabindex="`10${index * 2}`"
                           :class="{
                             'input--error': validateShowError[index],
                             'duplicate-source-input--error': validateShowError[index],
@@ -70,13 +70,13 @@
                     </div>
                     <div class="dialog-item price__cb">
                       <v-number
-                        tabindex="106"
+                        :tabindex="`10${index * 2 + 1}`"
                         leftIcon
                         :disabledRight="false"
                         :radius="true"
                         v-model="source.cost"
-                        @change="handleChangeCbo"
-                        @blur="handleChangeCbo"
+                        @change="handleChangeInput(source.cost, index)"
+                        @blur="handleChangeInput(source.cost, index)"
                         :disabledMessage="validateShowErrorInput[index]"
                         :message="titleErrorInput[index]"
                         :options="{
@@ -125,7 +125,7 @@
             <div class="form_group--bottom">
               <div class="box_sum">
                 <v-input
-                  tabindex="101"
+                  tabindex="250"
                   :maxLength="50"
                   :radius="false"
                   placeholder="Tổng"
@@ -134,7 +134,7 @@
               </div>
               <div class="box_sum-price">
                 <v-number
-                  tabindex="106"
+                  tabindex="250"
                   leftIcon
                   :disabledRight="false"
                   :radius="true"
@@ -337,6 +337,8 @@ export default {
         deep: true,
       }
     );
+
+    const focusFirst = () => {};
     onMounted(() => {
       proxy.assetData = proxy.dataSelect;
       proxy.dataFormAsset = _.cloneDeep(proxy.modelValue);
@@ -410,7 +412,22 @@ export default {
       }
       return check;
     };
-    const handleChangeCbo = () => {};
+    const handleChangeCbo = (data, index) => {
+      if (data != "" || data != null) {
+        proxy.validateShowError[index] = false;
+      } else {
+        proxy.validateShowError[index] = true;
+      }
+    };
+
+    const handleChangeInput = (data, index) => {
+      if (data != "" || data != null) {
+        proxy.validateShowErrorInput[index] = false;
+      } else {
+        proxy.validateShowErrorInput[index] = true;
+      }
+    };
+
     /**
      * Xử lí sự kiện keyboard shortcut
      * @author NNNINH (13/01/2023)
@@ -456,10 +473,9 @@ export default {
     const handleSaveOnClick = () => {
       if (proxy.checkDuplicate() && proxy.validateData()) {
         proxy.dataFormAsset.budget = JSON.stringify(proxy.sources);
-
         if (proxy.EqualData == true) {
           proxy.titleErrValidate = [];
-          proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa?");
+          proxy.titleErrValidate.push("Dữ liệu chưa được chỉnh sửa");
           proxy.isShowDialogDetail = true;
         } else {
           proxy.titleErrValidate = [];
@@ -476,8 +492,6 @@ export default {
           emit("update:modelValue", proxy.dataFormAsset);
           proxy.handleClosePop();
         }
-      } else {
-        console.log("k ok");
       }
     };
 
@@ -511,6 +525,8 @@ export default {
       keyboardEvent,
       isDialogMessUpdate,
       closeProValidate,
+      handleChangeInput,
+      focusFirst,
     };
   },
 };

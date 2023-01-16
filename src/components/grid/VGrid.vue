@@ -41,7 +41,7 @@
           <tbody>
             <v-tr
               tabindex="7"
-              v-for="(item, i) in allData"
+              v-for="(item, i) in data"
               :class="[
                 selectedIndex[i] ? 'active-tr' : '',
                 active == i ? 'active-row' : '',
@@ -54,12 +54,12 @@
               v-model:selected="selectedIndex[i]"
               @click="(e) => handleClick(i, e)"
               @dblclick="handleEdit(item, i)"
-              @keydown.f2="handleEdit(item, i)"
-              @keydown.insert="handleDuplicate(item, i)"
-              @keydown.delete="handleDelete"
+              @keydown.ctrl.e="handleEdit(item, i)"
+              @keydown.ctrl.insert="handleDuplicate(item, i)"
+              @keydown.ctrl.delete="handleDelete"
               @keydown.up="prevItem"
               @keydown.down="nextItem"
-              @keyup.enter="handleClick(i)"
+              @keyup.enter="(e) => handleClick(i, e)"
               @checkBoxAll="handleCheckBoxAll"
             >
             </v-tr>
@@ -206,6 +206,9 @@ export default defineComponent({
     dataTotal: {
       default: {},
     },
+    search: {
+      default: [],
+    },
     page: {
       default: {},
     },
@@ -244,7 +247,8 @@ export default defineComponent({
     let pram = reactive({
       mode: 0,
     });
-    let pramData = ref({});
+
+    const data = ref(proxy.allData || []);
 
     const rowAllSelected = ref(true);
     const scrollWidth = ref(0);
@@ -253,12 +257,6 @@ export default defineComponent({
 
     const shiftPressed = ref(false);
     const left = ref(0);
-    const confirmMessage = reactive({
-      iconMessage: "",
-      textMessage: "",
-      isShow: false,
-    });
-
     const allSelected = ref(false);
     // Lấy ra những vị trí checked
     const selectedIndex = ref([]);
@@ -266,17 +264,29 @@ export default defineComponent({
     const dataSelected = computed(() =>
       selectedIndex.value.map((x, i) => x && proxy.allData[i]).filter((x) => x)
     );
-
-    const scrl = ref(0);
+    watch(
+      () => props.allData,
+      (newVal) => {
+        proxy.data = proxy.allData;
+      }
+    );
+    watch(
+      () => props.search,
+      (newval) => {
+        if (newval?.length) {
+          proxy.data = proxy.allData.filter((row) =>
+            newval.some((x) =>
+              row[x?.field].toLowerCase().includes(x?.value.toLowerCase())
+            )
+          );
+        } else {
+          proxy.data = proxy.allData;
+        }
+      }
+    );
 
     // Reset lại giá trị show toast message
     onUpdated(() => {
-      if (proxy.confirmMessage.isShow == true) {
-        setTimeout(() => {
-          proxy.confirmMessage.isShow = false;
-        }, 2500);
-      }
-
       // window.addEventListener("resize", resize);
 
       proxy.$el.querySelector(".grid-body").addEventListener("scroll", scroll);
@@ -335,9 +345,6 @@ export default defineComponent({
      * @pram {object} item dữ liệu asset khi click tr
      */
     const handleEdit = (item, i) => {
-      // proxy.pram.mode = Enum.Mode.Update;
-      // proxy.pramData = item;
-      // proxy.isShowPopup = true;
       emit("handleEventTable", Enum.Mode.Update, item);
       emit("update:active", i);
     };
@@ -348,9 +355,6 @@ export default defineComponent({
      * @pram {object} item dữ liệu asset khi click tr
      */
     const handleDuplicate = (item, i) => {
-      // proxy.pram.mode = Enum.Mode.Duplicate;
-      // proxy.pramData = item;
-      // proxy.isShowPopup = true;
       emit("handleEventTable", Enum.Mode.Duplicate, item);
       emit("update:active", i);
     };
@@ -384,15 +388,6 @@ export default defineComponent({
         }
       }
       emit("update:active", index);
-    };
-
-    //Sự kiện đóng popup
-    const handlClosePopup = (value) => {
-      proxy.isShowPopup = value;
-    };
-
-    const handleShowMess = (mode, isShowMessage) => {
-      emit("show-message", mode, isShowMessage);
     };
 
     /**
@@ -472,9 +467,6 @@ export default defineComponent({
       allSelected,
       selectedIndex,
       handleClick,
-      handlClosePopup,
-      confirmMessage,
-      handleShowMess,
       resetData,
       scrollWidth,
       leftWidth,
@@ -490,6 +482,7 @@ export default defineComponent({
       shiftPressed,
       rowAllSelected,
       handleCheckBoxAll,
+      data,
     };
   },
 });

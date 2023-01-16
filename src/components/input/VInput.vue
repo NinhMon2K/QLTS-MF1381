@@ -18,6 +18,7 @@
         id="input__text"
         class="input-text"
         type="text"
+        ref="input"
         v-model.trim="isValue"
         :tabindex="tabindex"
         :maxlength="maxLength"
@@ -187,6 +188,9 @@ export default defineComponent({
         emit("changeValue", proxy.isValue, proxy.valueField);
       });
     };
+    const focusInput = () => {
+      proxy.$refs.input.focus();
+    };
     return {
       isValue,
       changeValue,
@@ -195,6 +199,7 @@ export default defineComponent({
       cancelEvent,
       onFocus,
       onBlur,
+      focusInput,
     };
   },
 });

@@ -89,7 +89,9 @@
                     :hasLabel="false"
                     :radius="true"
                     leftIcon="ic-search"
+                    v-model="txtSearch"
                     placeholder="Tìm kiếm theo mã, tên tài sản"
+                    @keyup="handleChangeSearch"
                     :disabledMessage="false"
                     tabindex="105"
                   ></v-input>
@@ -114,6 +116,7 @@
                     v-model:active="active"
                     :disableFooter="true"
                     :selectedRow="true"
+                    :search="filterSelected"
                     ref="table"
                     @handleEventTable="handleEventTable"
                     v-model:selectedData="dataSelected"
@@ -137,7 +140,6 @@
                 type="secodary"
                 ref="btnClosePopup"
                 @click="handlePopupClose"
-                @keypress.tab="focusFirst"
                 radius
               >
               </v-button>
@@ -316,7 +318,7 @@ export default {
     const { proxy } = getCurrentInstance();
     window.popupVoucherDetail = proxy;
     const isLoading = ref(false);
-    const txtSearch = ref(" ");
+    const txtSearch = ref("");
     const currentPage = ref(0);
     const tableView = ref(0);
     const active = ref(-1);
@@ -497,7 +499,9 @@ export default {
     const handleClosePopupSelect = () => {
       proxy.isShowPopupSelect = false;
       proxy.isShowPopupDetail = true;
-      proxy.focusFirst();
+      setTimeout(() => {
+        proxy.$refs.voucher_code.focusInput();
+      }, 10);
     };
 
     // Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
@@ -727,6 +731,26 @@ export default {
         return true;
       }
     };
+    const filterSelected = ref([]);
+
+    const handleChangeSearch = (e) => {
+      if (e.which == Enum.KeyCode.ENTER) {
+        if (proxy.txtSearch != "") {
+          proxy.filterSelected = [
+            {
+              field: "fixed_asset_code",
+              value: proxy.txtSearch,
+            },
+            {
+              field: "fixed_asset_name",
+              value: proxy.txtSearch,
+            },
+          ];
+        } else {
+          proxy.filterSelected = [];
+        }
+      }
+    };
 
     /**
      * Sự kiện close error message Multiple
@@ -761,6 +785,11 @@ export default {
       } else if (e.which == Enum.KeyCode.F8 && proxy.ctrlPressed == true) {
         proxy.saveData();
         proxy.ctrlPressed = false;
+      } else if (e.which == Enum.KeyCode.Q && proxy.ctrlPressed == true) {
+        proxy.saveData();
+        proxy.ctrlPressed = false;
+      } else if (e.which == Enum.KeyCode.Insert && proxy.ctrlPressed == true) {
+        proxy.isShowPopupSelect = true;
       } else if (e.which == Enum.KeyCode.F9 && proxy.ctrlPressed == true) {
         proxy.handlePopupClose();
         proxy.ctrlPressed = false;
@@ -866,6 +895,7 @@ export default {
      */
     const focusFirst = () => {
       proxy.$refs.voucher_code.$el.getElementsByTagName("input")[0].focus();
+      // proxy.$refs.voucher_code.focusInput();
     };
 
     /**
@@ -1048,6 +1078,8 @@ export default {
       keyboardEvent, // Xử lý sự kiến bắt key bàn phím
       backEndErrorNotify, //  Hiện thị cảnh báo lỗi truyền từ BackEnd
       getVoucherDetail,
+      handleChangeSearch,
+      filterSelected,
     };
   },
 };

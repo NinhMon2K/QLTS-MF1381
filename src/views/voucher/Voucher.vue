@@ -1,5 +1,5 @@
 <template>
-  <div class="container__voucher">
+  <div class="container__voucher" @keydown.ctrl.prevent="keyboardEvent">
     <div class="voucher__header">
       <div class="voucher__header--left"><h2>GHI TĂNG TÀI SẢN</h2></div>
       <div class="voucher__header--right">
@@ -10,7 +10,7 @@
               text="Thêm"
               id="btn-add"
               :radius="true"
-              :tabindex="'4'"
+              :tabindex="'2'"
               @click="handleClickAdd"
             >
             </v-button>
@@ -21,7 +21,7 @@
             <v-button
               leftIcon="ic-enlarge"
               type="basic"
-              :tabindex="'5'"
+              :tabindex="'3'"
               :radius="true"
               :class="isShowVertical == false ? 'btn_icon' : ''"
             ></v-button>
@@ -32,7 +32,7 @@
                 <v-button
                   leftIcon="ic-angle-down__black"
                   id="btn-export"
-                  :tabindex="'5'"
+                  :tabindex="'4'"
                   type="basic"
                   ref="icon"
                   :radius="true"
@@ -46,7 +46,7 @@
                   text="Giao diện dọc"
                   leftIcon="ic-menuExpand"
                   type="secodary"
-                  :tabindex="'4'"
+                  :tabindex="'5'"
                   @click="handleOnToolVertical"
                 >
                 </v-button>
@@ -57,7 +57,7 @@
                   leftIcon="ic-menu"
                   type="secodary"
                   @click="handleOnToolNoVertical"
-                  :tabindex="'4'"
+                  :tabindex="'6'"
                 >
                 </v-button>
               </div>
@@ -76,6 +76,7 @@
               :hasLabel="false"
               :radius="true"
               leftIcon="ic-search"
+              ref="input"
               placeholder="Tìm kiếm theo chứng từ, nội dung"
               v-model="txtSearchVoucher"
               @change="handleChangeSearch"
@@ -89,7 +90,7 @@
                 <v-button
                   leftIcon="ic-delete__toolbar"
                   id="btn-delete"
-                  :tabindex="'5'"
+                  :tabindex="'10'"
                   type="basic"
                   :radius="true"
                   @click="handleShowMessBox"
@@ -101,9 +102,10 @@
                 <v-button
                   leftIcon="ic-printer"
                   id="btn-export"
-                  :tabindex="'5'"
+                  :tabindex="'11'"
                   type="basic"
                   :radius="true"
+                  @click="exportToExcel"
                 ></v-button>
               </v-tooltip>
             </div>
@@ -112,7 +114,7 @@
                 <v-button
                   leftIcon="ic-more"
                   id="btn-export"
-                  :tabindex="'5'"
+                  :tabindex="'12'"
                   type="basic"
                   :radius="true"
                 ></v-button>
@@ -132,6 +134,7 @@
             :disableFooter="true"
             :selectedRow="true"
             v-model:selectedData="dataSelected"
+            @deleteOnKey="handleShowMessBox"
             @handleEventTable="handleEventTable"
             @currentPage="handleTotalPage"
             @changeTabView="handleChangeTab"
@@ -151,6 +154,7 @@
                 <div
                   class="button-no-border app-icon ic-expand"
                   @click="handleOnToolEnlarge"
+                  tabindex="14"
                 ></div>
               </v-tooltip>
             </div>
@@ -159,6 +163,7 @@
                 <div
                   class="button-no-border app-icon ic-shrink"
                   @click="handleOnToolNormal"
+                  tabindex="15"
                 ></div>
               </v-tooltip>
             </div>
@@ -184,6 +189,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Khi không chọn dữ để xóa cảnh báo  -->
+  <teleport to="body">
+    <v-message-box
+      :disabledTop="false"
+      leftIcon="ic-warning"
+      :textMessageBox="Resource.TitleDialogMessage.DeleteNoData.VI"
+      :disabledValueLeft="false"
+      :disabledValueRight="false"
+      v-if="isDialogMessDeleNoData"
+    >
+      <v-button
+        :text="Resource.TitleBtnDialog.Close.VI"
+        radius
+        @click="isDialogMessDeleNoData = false"
+      ></v-button>
+    </v-message-box>
+  </teleport>
 
   <!-- Dialog xóa 1 dòng -->
   <teleport to="body">
@@ -282,6 +305,7 @@ import VoucherDetail from "./VoucherDetail.vue";
 import voucherAPI from "@/apis/api/voucherAPI.js";
 import Resource from "@/assets/js/resource/resource.js";
 import assetAPI from "@/apis/api/assetAPI.js";
+import axios from "axios";
 export default {
   components: {
     VButton,
@@ -317,6 +341,7 @@ export default {
     const isShowButtonDelete = ref(false);
     const activeAsset = ref(-1);
     const voucherId = ref({});
+    const idVoucher = ref("");
     const dataVoucherID = ref({});
     const valueMessageBox = ref("");
     let pram = ref({});
@@ -324,6 +349,7 @@ export default {
     const isDialogMessDeleMultiple = ref(false);
     const typeMessage = ref("");
     const isShowMessage = ref(false);
+    const ctrlPressed = ref(false);
 
     /**
      * Xử lý sự kiện click thêm mới
@@ -337,14 +363,12 @@ export default {
     const handleTotalPage = (tableView, val) => {
       proxy.tableView = tableView;
       proxy.currentPage = val;
-
       proxy.loadDataVouder();
     };
 
     // Sự kiện change giới hạn bản ghi
     const handleChangeTab = (val) => {
       proxy.tableView = val;
-
       proxy.loadDataVouder();
     };
     watch(
@@ -353,6 +377,10 @@ export default {
         proxy.voucherId = proxy.allDataVoucher[newVal];
       }
     );
+
+    onMounted(() => {
+      proxy.focusFirst();
+    });
 
     const handleTotalPageAsset = (tableView, val) => {
       proxy.tableViewAsset = tableView;
@@ -420,7 +448,7 @@ export default {
       () => dataSelected.value,
       (newVal) => {
         proxy.loadDataVoucherDetaill();
-        if (proxy.dataSelected.length > 1) {
+        if (proxy.dataSelected?.length > 1) {
           proxy.isShowButtonDelete = true;
         } else {
           proxy.isShowButtonDelete = false;
@@ -481,6 +509,14 @@ export default {
     }
 
     /**
+     * focus vào input dầu tiên
+     *  @author NNNinh(01/01/2023)
+     */
+    const focusFirst = () => {
+      proxy.$refs.input.focusInput();
+    };
+
+    /**
      * Hàm lấy giá trị mã chứng từ đầu tiên của table chứng từ
      *  @author NNNINH (01/01/2023)
      */
@@ -496,6 +532,7 @@ export default {
     async function loadDataVoucherDetaill() {
       try {
         // Gọi API lấy dữ liệu tài sản
+
         let res = await voucherAPI.filterVoucherDetaill(
           "Vouchers/detail",
           "",
@@ -506,11 +543,19 @@ export default {
 
         proxy.dataTotalAsset.totalCount = res.totalCount; // Lấy giá trị tổng số bản ghi
         let data = res?.data;
+        let dateNow = new Date();
         let o = (proxy.currentPageAsset - 1) * proxy.tableViewAsset;
+
         data.forEach((x, i) => {
           x.STT = i + 1 + o;
+          let hm =
+            ((dateNow.getFullYear() - new Date(x.production_date).getFullYear()) *
+              (x.depreciation_rate * x.cost)) /
+            100;
+          x.depreciation_year = hm > x.cost ? x.cost : hm;
           x.depreciation_residual = x.cost - x.depreciation_year;
         });
+
         proxy.allDataAssetDetaill = data;
       } catch (error) {
         console.log(error);
@@ -543,6 +588,37 @@ export default {
     };
 
     /**
+     * API xuất dữ liệu excel
+     *  @author NNNinh(10/01/2023)
+     */
+    async function exportToExcel() {
+      try {
+        proxy.isLoading = true;
+        axios({
+          url: "https://localhost:44375/api/v1/Vouchers/export",
+          data: proxy.dataSelected,
+          method: "POST",
+          responseType: "blob",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("_token")}`,
+          },
+        }).then((res) => {
+          var FILE = window.URL.createObjectURL(new Blob([res.data]));
+          var docUrl = document.createElement("a");
+          docUrl.href = FILE;
+          docUrl.setAttribute("download", "Danh_sach_chứng_từ.xlsx");
+          document.body.appendChild(docUrl);
+          docUrl.click();
+          proxy.isLoading = false;
+        });
+      } catch (error) {
+        proxy.isLoading = false;
+        console.log(error);
+      }
+    }
+
+    /**
      * Sự kiện click action sửa và xóa của table chứng từ
      * @author NNNINH (01/01/2023)
      */
@@ -558,6 +634,7 @@ export default {
         case 2: // kiểm tra action = 1 là xóa
           //kiểm tra dataSelected bằng 1 => Hiển thị message : Bạn có muốn xóa tài sản <<Mã - Tên tài sản>?
           proxy.valueMessageBox = val.voucher_code;
+          proxy.idVoucher = val.voucher_id;
           proxy.isDialogMessDelete = true;
           break;
       }
@@ -583,6 +660,7 @@ export default {
               x.voucher_id?.toLowerCase().includes(res.toLowerCase())
             );
           }, 20);
+          proxy.focusFirst();
         } else {
           setTimeout(() => {
             proxy.loadDataVouder();
@@ -595,6 +673,7 @@ export default {
               x.voucher_id?.toLowerCase().includes(res.toLowerCase())
             );
           }, 20);
+          proxy.focusFirst();
         }
       } catch (error) {
         console.log(error);
@@ -616,8 +695,7 @@ export default {
      */
     async function deleteVoucherAPI() {
       try {
-        let voucher_id = proxy.dataSelected[0]?.voucher_id;
-        let res = await voucherAPI.delete("Vouchers", voucher_id);
+        let res = await voucherAPI.delete("Vouchers", proxy.idVoucher);
         if (res != null || res != "") {
           return true;
         } else {
@@ -638,6 +716,7 @@ export default {
           arr.push(data.voucher_id);
         });
         let res = await assetAPI.post("Vouchers/batch-delete", arr);
+
         if (res != null || res != "") {
           return true;
         } else {
@@ -658,12 +737,14 @@ export default {
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
           proxy.$refs.tables.resetData();
+          proxy.focusFirst();
         } else {
           proxy.isDialogMessDeleMultiple = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
           proxy.$refs.tables.resetData();
+          proxy.focusFirst();
         }
       } catch (error) {
         console.log(error);
@@ -683,15 +764,30 @@ export default {
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
           proxy.$refs.tables.resetData();
+          proxy.focusFirst();
         } else {
           proxy.isDialogMessDelete = false;
           proxy.typeMessage = "errorDelete";
           proxy.isShowMessage = true;
           proxy.loadDataVouder();
           proxy.$refs.tables.resetData();
+          proxy.focusFirst();
         }
       } catch (error) {
         console.log(error);
+      }
+    };
+
+    /**
+     * Xử lí sự kiện keyboard shortcut
+     * @author NNNINH (13/01/2023)
+     */
+    const keyboardEvent = (e) => {
+      if (e.which == Enum.KeyCode.Ctrl) {
+        proxy.ctrlPressed = true;
+      } else if (e.which == 49 && proxy.ctrlPressed == true) {
+        proxy.handleClickAdd();
+        proxy.ctrlPressed = false;
       }
     };
 
@@ -726,6 +822,7 @@ export default {
         type: "Text",
         align: "Left",
         width: 150,
+        color: "#0993EA",
       },
       {
         field: ResourceTable.FieldVoucher.voucherDate,
@@ -902,6 +999,11 @@ export default {
       isShowButtonDelete,
       deleteMultiVoucher,
       handleMultiDelete,
+      exportToExcel,
+      idVoucher,
+      keyboardEvent,
+      ctrlPressed,
+      focusFirst,
     };
   },
 };

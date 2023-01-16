@@ -34,8 +34,8 @@
           </div>
         </div>
       </div>
-      <div class="toast-bottom">
-        <slot ref="button"></slot>
+      <div class="toast-bottom" ref="buttons">
+        <slot></slot>
       </div>
     </div>
   </div>
@@ -119,7 +119,7 @@ export default {
      * NNNINH (24/11/2022)
      */
     const focusFirst = () => {
-      proxy.$refs.first.focus();
+      console.log(proxy.$refs.buttons);
     };
 
     return { focusFirst };

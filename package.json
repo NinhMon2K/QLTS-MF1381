@@ -41,6 +41,7 @@
     "vue-toast-notification": "^3.0.0",
     "vue3-click-away": "^1.2.4",
     "vue3-colorpicker": "^2.0.4",
+    "v-contextmenu": "^3.0.0",
     "vue3-promise-dialog": "^0.3.4",
     "vue3-resize": "^0.2.0",
     "vuex": "4.0.2",
