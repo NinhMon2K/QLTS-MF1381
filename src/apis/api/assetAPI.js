@@ -25,6 +25,13 @@ class AssetApi extends BaseAPI {
     };
     return await httpclient.postAsync(request);
   }
+
+  async checkIncrement(action, assetId) {
+    let request = {
+      url: this.getBaseURL() + "/" + action + '/'+assetId,
+    };
+    return await httpclient.getAsync(request);
+  }
 }
 
 export default new AssetApi();

@@ -341,19 +341,6 @@ td {
   background-color: rgba(26, 164, 200, 0.2);
 }
 
-#tbl_tbody {
-  tbody {
-    tr {
-      .text-center {
-        &:first-child {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      }
-    }
-  }
-}
 .paging_table {
   height: 40px;
   align-items: center;

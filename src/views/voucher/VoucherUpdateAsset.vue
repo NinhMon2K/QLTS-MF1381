@@ -1,7 +1,7 @@
 <template>
   <teleport to="body">
     <div class="model" v-on:keypress="keyboardEvent">
-      <div class="form-asset">
+      <div class="form-asset" ref="root">
         <div class="header-popup">
           <div class="form-asset__title">
             Sửa tài sản {{ dataFormAsset.fixed_asset_name }}
@@ -70,7 +70,7 @@
                     </div>
                     <div class="dialog-item price__cb">
                       <v-number
-                        :tabindex="`10${index * 2 + 1}`"
+                        :tabindex="`10${index * 2 - 1}`"
                         leftIcon
                         :disabledRight="false"
                         :radius="true"
@@ -342,8 +342,13 @@ export default {
     onMounted(() => {
       proxy.assetData = proxy.dataSelect;
       proxy.dataFormAsset = _.cloneDeep(proxy.modelValue);
+
       proxy.loadDataComboBudget();
       proxy.defaultValue();
+
+      setTimeout(() => {
+        proxy.$refs.root.querySelector("input:not([disabled])").focus();
+      }, 300);
     });
     const addField = (list) => {
       list.push({ budget_id: "", budget_name: "", cost: null });

@@ -163,22 +163,7 @@ input[type="radio"] {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
-#tbl_tbody {
-  tbody {
-    tr {
-      .text-center {
-        .td-inner {
-          &:first-child {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: -5px;
-          }
-        }
-      }
-    }
-  }
-}
+
 .grid-header {
   table {
     thead {

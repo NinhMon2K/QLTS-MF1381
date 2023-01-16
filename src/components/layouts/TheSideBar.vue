@@ -19,7 +19,7 @@
             <div
               class="menu-item"
               :href="item.path"
-              :class="[item.path == activeItem?.path ? 'active' : '']"
+              :class="[item.path == activeItem?.path ? 'active' : '', item.active]"
               @click.prevent="() => clickMenu(item)"
             >
               <div :class="['app-icon', item.icon]"></div>
@@ -223,6 +223,7 @@ export default {
           text: Resource.LeftMenu.FA,
           arrow: "ic-angle-down",
           title: Resource.LeftMenu.FA,
+          active: "active",
           childrens: [
             {
               itemID: 2,

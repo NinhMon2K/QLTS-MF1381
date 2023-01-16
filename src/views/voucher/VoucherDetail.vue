@@ -211,7 +211,12 @@
       :disabledValueRight="false"
       v-if="isDialogMessUpdate"
     >
-      <v-button tabindex="201" :text="Resource.TitleBtnDialog.Save.VI" radius></v-button>
+      <v-button
+        tabindex="201"
+        :text="Resource.TitleBtnDialog.Save.VI"
+        @click="saveData"
+        radius
+      ></v-button>
       <v-button
         tabindex="201"
         :text="Resource.TitleBtnDialog.NoSave.VI"
@@ -249,7 +254,10 @@
         tabindex="201"
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
-        @click="isDialogMessCancelAdd = false"
+        @click="
+          isDialogMessCancelAdd = false;
+          focusFirst();
+        "
         radius
       ></v-button>
     </v-message-box>

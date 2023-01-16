@@ -133,6 +133,7 @@ export default {
 
           localStorage.setItem("_token", res.token);
           localStorage.setItem("user_name", res.username);
+          // document.cookie = `_token=${res.token};secure`;
           proxy.isLoading = false;
           proxy.$router.push("/asset");
         } else {

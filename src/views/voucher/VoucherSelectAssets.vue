@@ -121,7 +121,10 @@
         tabindex="201"
         :text="Resource.TitleBtnDialog.NoCancel.VI"
         type="secodary"
-        @click="isDialogMessCancelAdd = false"
+        @click="
+          isDialogMessCancelAdd = false;
+          focusFirst();
+        "
         radius
       ></v-button>
     </v-message-box>
@@ -251,7 +254,10 @@ export default {
       }
     }
 
-    // Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
+    /**
+     * Sự kiện đóng close popup kiểm tra có sửa dữ liệu hay không
+     * @author NNNinh (13/01/2023)
+     */
     const handlePopupClose = () => {
       if (proxy.dataSelected.length > 0) {
         proxy.isDialogMessCancelAdd = true;
@@ -300,7 +306,7 @@ export default {
       } else {
         proxy.dataSelected.forEach((x) => {
           x.flag = 1;
-        });
+        }); // Xác định khi chọn tài sản là thêm mới với cờ là 1
         emit("SelectedData", proxy.dataSelected);
         proxy.handleClosePopupSelect();
       }

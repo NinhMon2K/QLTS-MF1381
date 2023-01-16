@@ -269,14 +269,6 @@ input[type="checkbox"] {
       margin-left: -3px;
     }
   }
-  .text-right {
-    &:first-child {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-  }
 }
 .text-align__center {
   text-align: center;

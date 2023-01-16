@@ -16,7 +16,7 @@
           ></div>
         </div>
 
-        <div class="toast-content__right" v-if="!disabledMultiple">
+        <div class="toast-content__right" v-if="!disabledMultiple && !disabledNoDelete">
           <div class="text-message">
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>
             {{ textMessageBox }}
@@ -31,6 +31,12 @@
             <span v-if="disabledValueLeft">{{ valueMessageBox }}</span>
             {{ text }}
             <span v-if="disabledValueRight">{{ valueMessageBox }}</span>
+          </div>
+        </div>
+
+        <div class="toast-content__right" v-if="disabledNoDelete">
+          <div class="text-message">
+            <p v-html="valueMessageBox"></p>
           </div>
         </div>
       </div>
@@ -107,6 +113,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    disabledNoDelete: {
+      default: false,
+      type: Boolean,
+    },
   },
   setup(props, { emit }) {
     const { proxy } = getCurrentInstance();
@@ -119,7 +129,7 @@ export default {
      * NNNINH (24/11/2022)
      */
     const focusFirst = () => {
-      console.log(proxy.$refs.buttons);
+      proxy.$refs.buttons.querySelector("button").focus();
     };
 
     return { focusFirst };

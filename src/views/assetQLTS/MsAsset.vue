@@ -156,9 +156,9 @@
       :disabledTop="false"
       leftIcon="ic-warning"
       :valueMessageBox="valueMessageBox"
-      :textMessageBox="Resource.TitleDialogMessage.CancelDelete.VI"
       :disabledValueLeft="false"
       :disabledValueRight="false"
+      :disabledNoDelete="true"
       v-if="isDialogMessCancelDelete"
     >
       <v-button
@@ -562,6 +562,27 @@ export default {
         console.log(error);
       }
     }
+
+    /**
+     * Check tài sản này đã có chứng từ hay không
+     * @author NNNinh (13/01/2023)
+     */
+    async function checkIncrement() {
+      try {
+        let res = await assetAPI.checkIncrement(
+          "Assets/checkIncrement",
+          proxy.dataSelected[0].fixed_asset_id
+        );
+        if (res != null || res != "") {
+          return res?.code;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     watch(
       () => isShowMessage.value,
       (newVal) => {
@@ -662,7 +683,7 @@ export default {
      * Sự kiện show mesagebox
      *  @author NNNinh(20/10/2021)
      */
-    const handleShowMessBox = () => {
+    const handleShowMessBox = async () => {
       try {
         //kiểm tra dataSelected bằng 0 => Hiển thị message : Bạn chưa chọn dữ liệu để xóa
         if (proxy.dataSelected.length == 0) {
@@ -672,6 +693,9 @@ export default {
           if (proxy.dataSelected.length == 1) {
             proxy.valueMessageBox = proxy.customValueMessBox(proxy.dataSelected.length);
             if (proxy.dataSelected[0].increment_status) {
+              let res = await proxy.checkIncrement();
+              let text = `Tài sản có mã <b>${proxy.dataSelected[0].fixed_asset_code}</b> đã phát sinh chứng từ ghi tăng có mã <b>${res}</b>`;
+              proxy.valueMessageBox = text;
               proxy.isDialogMessCancelDelete = true;
             } else {
               proxy.isDialogMessDelete = true;
@@ -926,6 +950,7 @@ export default {
       typeMessage,
       isShowMessage,
       customValueNumber,
+      checkIncrement,
     };
   },
 };

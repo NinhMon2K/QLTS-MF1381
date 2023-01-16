@@ -353,24 +353,32 @@ export default {
 
     /**
      * Xử lý sự kiện click thêm mới
-     *  @author NNNinh(20/10/2021)
+     *   @author NNNinh(05/01/2023)
      */
     const handleClickAdd = () => {
       proxy.pram.mode = Enum.Mode.Add;
       proxy.isShowPopup = true;
     };
-    // Sự kiện change page number
+
+    /**
+     * Sự kiện click pageing
+     *  @author NNNinh(05/01/2023)
+     */
     const handleTotalPage = (tableView, val) => {
       proxy.tableView = tableView;
       proxy.currentPage = val;
       proxy.loadDataVouder();
     };
 
-    // Sự kiện change giới hạn bản ghi
+    /**
+     * Sự kiện change số bản ghi cần hiện thị lên
+     *  @author NNNinh(05/01/2023)
+     */
     const handleChangeTab = (val) => {
       proxy.tableView = val;
       proxy.loadDataVouder();
     };
+
     watch(
       () => active.value,
       (newVal) => {
@@ -382,13 +390,20 @@ export default {
       proxy.focusFirst();
     });
 
+    /**
+     * Sự kiện click pageing tài sản
+     *  @author NNNinh(05/01/2023)
+     */
     const handleTotalPageAsset = (tableView, val) => {
       proxy.tableViewAsset = tableView;
       proxy.currentPageAsset = val;
       proxy.loadDataVoucherDetaill();
     };
 
-    // Sự kiện change giới hạn bản ghi
+    /**
+     * Sự kiện change số bản ghi cần hiện thị lên
+     *  @author NNNinh(05/01/2023)
+     */
     const handleChangeTabAsset = (val) => {
       proxy.tableViewAsset = val;
       proxy.loadDataVoucherDetaill();
@@ -434,6 +449,7 @@ export default {
       proxy.isShowVertical = true;
       proxy.menuSelect = false;
     };
+
     /**
      * Xử lý sự kiện dblclick table,F2,Ctrl+Insert
      * @author NNNinh (19/11/2022)
@@ -455,15 +471,17 @@ export default {
         }
       }
     );
-    const handleChangeSearch = () => {
-      proxy.loadDataVouder();
-    };
+
     watch(
       () => txtSearchVoucher.value,
       (newVal) => {
         proxy.loadDataVouder();
       }
     );
+
+    const handleChangeSearch = () => {
+      proxy.loadDataVouder();
+    };
 
     /**
      * Reset lại giá trị show toast message
@@ -476,9 +494,10 @@ export default {
         }, 2000);
       }
     });
+
     /**
      * Gọi API lấy toàn bộ dữ liệu chứng từ
-     * @author NNNINH (02/1/2023)
+     * @author NNNINH (02/01/2023)
      */
     async function loadDataVouder() {
       try {
@@ -543,17 +562,16 @@ export default {
 
         proxy.dataTotalAsset.totalCount = res.totalCount; // Lấy giá trị tổng số bản ghi
         let data = res?.data;
-        let dateNow = new Date();
-        let o = (proxy.currentPageAsset - 1) * proxy.tableViewAsset;
-
+        let dateNow = new Date(); // Lấy ngày hiện tại
+        let o = (proxy.currentPageAsset - 1) * proxy.tableViewAsset; // Tính số thứ tự
         data.forEach((x, i) => {
           x.STT = i + 1 + o;
           let hm =
             ((dateNow.getFullYear() - new Date(x.production_date).getFullYear()) *
               (x.depreciation_rate * x.cost)) /
-            100;
+            100; // Tính giá trị hao mòn năm
           x.depreciation_year = hm > x.cost ? x.cost : hm;
-          x.depreciation_residual = x.cost - x.depreciation_year;
+          x.depreciation_residual = x.cost - x.depreciation_year; // Tính giá trị còn lại
         });
 
         proxy.allDataAssetDetaill = data;
@@ -683,7 +701,7 @@ export default {
     //Custom giá trị truyền vào messbox
     function customValueMessBox(val) {
       if (val == 1) {
-        return `<<${proxy.dataSelected[0].fixed_asset_code} - ${proxy.dataSelected[0].fixed_asset_name}>>`;
+        return `${proxy.dataSelected[0].voucher_code}`;
       } else if (val < 10) {
         return `0${val}`;
       } else return val;
@@ -890,9 +908,9 @@ export default {
         field: ResourceTable.FieldAsset.STT,
         title: ResourceTable.lblTableAssets.STT,
         type: "Number",
-        width: 40,
-        minWidth: 40,
-        maxWidth: 40,
+        width: 60,
+        minWidth: 60,
+        maxWidth: 60,
         align: "Center",
       },
       {

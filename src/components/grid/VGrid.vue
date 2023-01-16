@@ -17,7 +17,7 @@
         <table>
           <thead>
             <tr>
-              <th v-if="selectedCol" style="width: 50px">
+              <th v-if="selectedCol" style="width: 54px">
                 <div class="th-inner">
                   <v-checkbox v-model="allSelected"></v-checkbox>
                 </div>
@@ -56,7 +56,7 @@
               @dblclick="handleEdit(item, i)"
               @keydown.ctrl.e="handleEdit(item, i)"
               @keydown.ctrl.insert="handleDuplicate(item, i)"
-              @keydown.ctrl.delete="handleDelete"
+              @keydown.ctrl.delete="handleDelete(item, i)"
               @keydown.up="prevItem"
               @keydown.down="nextItem"
               @keyup.enter="(e) => handleClick(i, e)"
@@ -359,8 +359,8 @@ export default defineComponent({
       emit("update:active", i);
     };
 
-    const handleDelete = () => {
-      emit("deleteOnKey");
+    const handleDelete = (item, i) => {
+      emit("deleteOnKey", item, i);
     };
     const pageIndex = ref(0);
 
